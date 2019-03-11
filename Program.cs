@@ -18,6 +18,8 @@ namespace DicomDisplayTest
       var image = new DicomImage(@"e.dcm");
       image.RenderImage().AsClonedBitmap().Save(@"test1.bmp");
       int tis = 10;
+      int foo = 42;
+      int bar = 12;
     }
   }
 }
