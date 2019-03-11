@@ -19,8 +19,8 @@ namespace DicomDisplayTest
 
       byte[] byteData = pixelData.GetFrame(0).Data;
 
-      int columns = f.Dataset.Get<int>(DicomTag.Columns);
-      int rows = f.Dataset.Get<int>(DicomTag.Rows);
+      int columns = f.Dataset.GetValue<int>(DicomTag.Columns, 0);
+      int rows = f.Dataset.GetValue<int>(DicomTag.Rows, 0);
 
       byte[,] byteMatrix = new byte[columns, rows];
 
