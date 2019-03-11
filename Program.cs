@@ -19,6 +19,7 @@ namespace DicomDisplayTest
       image.RenderImage().AsClonedBitmap().Save(@"test1.bmp");
       int tis = 10;
       int foo = 42;
+      int bar = 12;
     }
   }
 }
