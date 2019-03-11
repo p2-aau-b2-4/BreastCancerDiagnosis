@@ -14,9 +14,15 @@ namespace DicomDisplayTest
   {
     static void Main(string[] args)
     {
+      var img = DicomFile.Open(@"e.dcm");
+      var bytes = img.GetByteMatrix();
+      img.SetByteMatrix(bytes);
+
+      img.Save(@"e2.dcm");
+
       ImageManager.SetImplementation(WinFormsImageManager.Instance);
-      var image = new DicomImage(@"e.dcm");
-      image.RenderImage().AsClonedBitmap().Save(@"test1.bmp");
+      var image = new DicomImage(@"e2.dcm");
+      image.RenderImage().AsClonedBitmap().Save(@"test2.bmp");
     }
   }
 }
