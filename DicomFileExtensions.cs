@@ -20,8 +20,8 @@ namespace DicomDisplayTest
       byte[] byteData = pixelData.GetFrame(0).Data;
       Console.WriteLine("bytes real: " + byteData.Length);
 
-      int columns = f.Dataset.Get<int>(DicomTag.Columns);
-      int rows = f.Dataset.Get<int>(DicomTag.Rows);
+      int columns = f.Dataset.GetValue<int>(DicomTag.Columns, 0);
+      int rows = f.Dataset.GetValue<int>(DicomTag.Rows, 0);
 
       Console.WriteLine("bytes calculated: " + (2 * rows) * columns);
 
