@@ -38,8 +38,6 @@ namespace DicomDisplayTest
       int columns = byteMatrix.GetLength(0);
       int rows = byteMatrix.GetLength(1);
       
-      Console.WriteLine(columns + " " + rows);
-
       byte[] byteArray = new byte[columns * rows];
       for (int i = 0; i < rows; i++) {
         for (int j = 0; j < columns; j++) {
