@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 
 namespace DicomDisplayTest
@@ -10,9 +12,18 @@ namespace DicomDisplayTest
 
         public ushort[,] PixelArray { get; set; }
 
+        private ArrayList _overlays;
+        public ArrayList Overlays => _overlays;
+
+        public void AddOverlay(Bitmap overlay)
+        {
+            _overlays.Add(overlay);
+        }
+
         public UshortImageInfo(ushort[,] pixelArray)
         {
             this.PixelArray = pixelArray;
+            this._overlays = new ArrayList();
         }
         public void Render(String saveLoc)
         {
@@ -24,6 +35,15 @@ namespace DicomDisplayTest
                     int greyColor = (int) map(PixelArray[x, y],0,65535,0,255);
                     imgBitmap.SetPixel(x,y,Color.FromArgb(greyColor,greyColor,greyColor));
                 }
+            }
+            
+            // lets add all bitmaps:
+            Graphics g = Graphics.FromImage(imgBitmap);
+            g.CompositingMode = CompositingMode.SourceOver;
+            foreach (Bitmap bitmap in Overlays)
+            {
+                bitmap.MakeTransparent();
+                g.DrawImage(bitmap, new Point(0,0));
             }
             imgBitmap.Save(saveLoc,ImageFormat.Png);
         }
