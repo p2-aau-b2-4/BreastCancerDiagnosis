@@ -17,6 +17,10 @@ namespace DicomDisplayTest
         {
             var img = DicomFile.Open(@"e.dcm");
             UshortImageInfo imgInfo = img.GetUshortImageInfo();
+            imgInfo.Render("brystDef.png");
+
+            imgInfo.ApplyNoiseFilter(1);
+            imgInfo.Render("brystNoiseFilter.png");
             
             Bitmap overlayToAdd = new Bitmap(550,550);
             for (int x = 200; x < 500; x++)
