@@ -17,6 +17,8 @@ namespace DicomDisplayTest
       ImageManager.SetImplementation(WinFormsImageManager.Instance);
       var image = new DicomImage(@"e.dcm");
       image.RenderImage().AsClonedBitmap().Save(@"test1.bmp");
+      var image2 = Contrast.equalization(image);
+      image2.RenderImage().AsClonedBitmap().Save(@"test2.bmp");
     }
   }
 }
