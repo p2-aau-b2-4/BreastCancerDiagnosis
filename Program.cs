@@ -16,7 +16,22 @@ namespace DicomDisplayTest
         static void Main(string[] args)
         {
             var img = DicomFile.Open(@"e.dcm");
-            img.GetUshortImageInfo().Render("bryst.png");
+            UshortImageInfo imgInfo = img.GetUshortImageInfo();
+            
+            Bitmap overlayToAdd = new Bitmap(550,550);
+            for (int x = 200; x < 500; x++)
+            {
+                overlayToAdd.SetPixel(x,200,Color.Red);
+                overlayToAdd.SetPixel(x,400,Color.Red);
+            }
+            for (int y = 200; y < 400; y++)
+            {
+                overlayToAdd.SetPixel(200,y,Color.Red);
+                overlayToAdd.SetPixel(500,y,Color.Red);
+            }
+            imgInfo.AddOverlay(overlayToAdd);
+            
+            imgInfo.Render("bryst.png");
         }
     }
 }
