@@ -19,10 +19,17 @@ namespace DicomDisplayTest
             UshortImageInfo imgInfo = img.GetUshortImageInfo();
             imgInfo.Render("brystDef.png");
 
-            imgInfo.ApplyNoiseFilter(1);
-            imgInfo.Render("brystNoiseFilter.png");
+            //imgInfo.ApplyNoiseFilter(1);
+            //imgInfo.Render("brystNoiseFilter.png");
+
             
-            Bitmap overlayToAdd = new Bitmap(550,550);
+            ushort[,] pixels = new ushort[imgInfo.PixelArray.GetLength(0),imgInfo.PixelArray.GetLength(1)];
+            pixels = imgInfo.PixelArray;
+
+            var img2 = new UshortImageInfo(Contrast.equalization(pixels));
+            img2.Render("brystContrast.png");
+            
+            /*Bitmap overlayToAdd = new Bitmap(550,550);
             for (int x = 200; x < 500; x++)
             {
                 overlayToAdd.SetPixel(x,200,Color.Red);
@@ -35,7 +42,7 @@ namespace DicomDisplayTest
             }
             imgInfo.AddOverlay(overlayToAdd);
             
-            imgInfo.Render("bryst.png");
+            imgInfo.Render("bryst.png");*/
         }
     }
 }
