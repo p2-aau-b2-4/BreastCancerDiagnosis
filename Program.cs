@@ -17,7 +17,7 @@ namespace DicomDisplayTest
         {
             var img = DicomFile.Open(@"e.dcm");
             UshortImageInfo imgInfo = img.GetUshortImageInfo();
-            imgInfo.Render("brystDef.png");
+            //imgInfo.Render("brystDef.png");
 
             //imgInfo.ApplyNoiseFilter(1);
             //imgInfo.Render("brystNoiseFilter.png");
@@ -26,8 +26,47 @@ namespace DicomDisplayTest
             ushort[,] pixels = new ushort[imgInfo.PixelArray.GetLength(0),imgInfo.PixelArray.GetLength(1)];
             pixels = imgInfo.PixelArray;
 
-            var img2 = new UshortImageInfo(Contrast.equalization(pixels));
-            img2.Render("brystContrast.png");
+            var img2 = new UshortImageInfo(Contrast.Equalization(pixels,0.0));
+            img2.Render("brystContrast0.png");
+            
+            var img3 = new UshortImageInfo(Contrast.Equalization(pixels,10.0));
+            img3.Render("brystContrast10.png");
+            
+            var img4 = new UshortImageInfo(Contrast.Equalization(pixels,20.0));
+            img4.Render("brystContrast20.png");
+            
+            var img5 = new UshortImageInfo(Contrast.Equalization(pixels,30.0));
+            img5.Render("brystContrast30.png");
+            
+            var img6 = new UshortImageInfo(Contrast.Equalization(pixels,40.0));
+            img6.Render("brystContrast40.png");
+            
+            var img7 = new UshortImageInfo(Contrast.Equalization(pixels,50.0));
+            img7.Render("brystContrast50.png");
+            
+            var img8 = new UshortImageInfo(Contrast.Equalization(pixels,60.0));
+            img8.Render("brystContrast60.png");
+            
+            var img9 = new UshortImageInfo(Contrast.Equalization(pixels,70.0));
+            img9.Render("brystContrast70.png");
+            
+            var img10 = new UshortImageInfo(Contrast.Equalization(pixels,80.0));
+            img10.Render("brystContrast80.png");
+            
+            var img11 = new UshortImageInfo(Contrast.Equalization(pixels,90.0));
+            img11.Render("brystContrast90.png");
+            
+            var img12 = new UshortImageInfo(Contrast.Equalization(pixels,100.0));
+            img12.Render("brystContrast100.png");
+            
+            var img13 = new UshortImageInfo(Contrast.Equalization(pixels,-10.0));
+            img13.Render("brystContrast-10.png");
+            
+            var img14 = new UshortImageInfo(Contrast.Equalization(pixels,-40.0));
+            img14.Render("brystContrast-40.png");
+            
+            var img15 = new UshortImageInfo(Contrast.Equalization(pixels,-80.0));
+            img15.Render("brystContrast-80.png");
             
             /*Bitmap overlayToAdd = new Bitmap(550,550);
             for (int x = 200; x < 500; x++)
