@@ -8,32 +8,30 @@ namespace DicomDisplayTest
 {
     public class Contrast
     {
-        public static Bitmap equalization(DicomImage image)
+        public static ushort[,] equalization(ushort[,] image)
+        //public static Bitmap equalization(ushort[,] image)
         {
-            var image2 = image;
-
+            
             // Copying image to int array 
             //int[] pixels = new int[image2.Height * image2.Width];
-            int[] new_pixels = new int[image2.Height * image2.Width];
-            Color[] pixels = new Color[image2.Height * image2.Width];
-            DicomPixelData test;
+            ushort[,] new_pixels = new ushort[image.GetLength(0), image.GetLength(1)];
             
-            for (int i = 0; i < image2.Height; i++)
+            
+            for (int y = 0; y < image.GetLength(1); y++)
             {
-                for (int j = 0; j < image2.Width; j++)
+                for (int x = 0; x < image.GetLength(0); x++)
                 {
-                    pixels[image2.Width*i + j] = image2.RenderImage().AsClonedBitmap().GetPixel(j,i);
-                    test = image2.RenderImage().Pixels;
+                    new_pixels[x,y] = image[x,y];
                 }
             }
             
-            int[] cdf = new int[256];
-            int val;
-            for (int i = 0; i < image2.Height; i++)
+            ushort[] cdf = new ushort[256];
+            ushort val;
+            for (int y = 0; y < image.GetLength(1); y++)
             {
-                for (int j = 0; j < image2.Width; j++)
+                for (int x = 0; x < image.GetLength(0); x++)
                 {
-                    val = pixels[image2.Width*i + j].R;
+                    val = new_pixels[x,y];
                     cdf[val]++;
                 }
             }
@@ -42,7 +40,7 @@ namespace DicomDisplayTest
             // Finding the minimum brightness
             
             
-            int cdfMin = cdf[0];
+            ushort cdfMin = cdf[0];
             for(int i = 1; i < 256; i++) {
                 cdf[i] += cdf[i-1];
                 if(cdf[i] < cdfMin) {
@@ -57,26 +55,26 @@ namespace DicomDisplayTest
                 }
             }*/
             
-            for(int y = 0; y < image2.Height; y++) {
-                for(int x = 0; x < image2.Width; x++)
+            for(int y = 0; y < image.GetLength(1); y++) 
+            {
+                for(int x = 0; x < image.GetLength(0); x++)
                 {
-                    Console.WriteLine(pixels[y+x]);
-                    new_pixels[image2.Width*y + x] = Convert.ToInt32((Math.Round((double) cdf[pixels[image2.Width*y + x].R] - cdfMin)*255.0/(image2.Width*image2.Height-cdfMin)));
+                    new_pixels[x,y] = Convert.ToUInt16((Math.Round((double) cdf[new_pixels[x,y]] - cdfMin)*255.0/(image.GetLength(0)*image.GetLength(1)-cdfMin)));
                 }
             }
 
-            var bitmap = new Bitmap(image.Width, image.Height);
-            for(int y = 0; y < image2.Height; y++) {
-                for(int x = 0; x < image2.Width; x++)
+            var bitmap = new Bitmap(image.GetLength(0), image.GetLength(1));
+            for(int y = 0; y < image.GetLength(1); y++) {
+                for(int x = 0; x < image.GetLength(0); x++)
                 {
-                    bitmap.SetPixel(x,y,Color.FromArgb(new_pixels[image2.Width*y+x],new_pixels[image2.Width*y+x],new_pixels[image2.Width*y+x])); //= Convert.ToInt32((Math.Round((double) cdf[pixels[image2.Width*y + x].R] - cdfMin)*255.0/(image2.Width*image2.Height-cdfMin)));
+                    bitmap.SetPixel(x,y,Color.FromArgb(new_pixels[x,y],new_pixels[x,y],new_pixels[x,y]));
                 }
             }
             
             // Trying to make a grayscale bitmap insted of RGB
             //bitmap.SetPixel(x,y, Color.FromArg(new_pixels[x], new_pixels[x], new_pixels[x]));
             
-            return bitmap;
+            return new_pixels;
         }
     }
 }
