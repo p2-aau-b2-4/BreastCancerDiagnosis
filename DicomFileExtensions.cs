@@ -18,14 +18,17 @@ namespace DicomDisplayTest
       DicomPixelData pixelData = DicomPixelData.Create(f.Dataset);
 
       byte[] byteData = pixelData.GetFrame(0).Data;
+      Console.WriteLine("bytes real: " + byteData.Length);
 
-      int columns = f.Dataset.Get<int>(DicomTag.Columns);
-      int rows = f.Dataset.Get<int>(DicomTag.Rows);
+      int columns = f.Dataset.GetValue<int>(DicomTag.Columns, 0);
+      int rows = f.Dataset.GetValue<int>(DicomTag.Rows, 0);
 
-      byte[,] byteMatrix = new byte[columns, rows];
+      Console.WriteLine("bytes calculated: " + (2 * rows) * columns);
+
+      byte[,] byteMatrix = new byte[columns * 2, rows];
 
       for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < columns; j++)
+        for (int j = 0; j < columns * 2; j++)
           byteMatrix[j, i] = byteData[(rows * i) + j];
       }
       return byteMatrix;
@@ -34,11 +37,12 @@ namespace DicomDisplayTest
     {
       int columns = byteMatrix.GetLength(0);
       int rows = byteMatrix.GetLength(1);
-
-      byte[] byteArray = new byte[columns+rows];
+      
+      byte[] byteArray = new byte[columns * rows];
       for (int i = 0; i < rows; i++) {
         for (int j = 0; j < columns; j++) {
-          byteArray[(i * rows) + columns] = byteMatrix[i, j];
+	  Console.WriteLine(i + " " + j);
+          byteArray[(i * rows) + j] = byteMatrix[j, i];
         }
       }
       MemoryByteBuffer byteBuffer = new MemoryByteBuffer(byteArray);
