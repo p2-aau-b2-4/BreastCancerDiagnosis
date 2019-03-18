@@ -11,7 +11,8 @@ namespace DicomDisplayTest
     {
         public static ushort[,] Equalization(ushort[,] image, double threshold)
         {
-            
+
+            double pixBit = Math.Pow(2, 16) - 1;
             // Copying image to int array 
             //int[] pixels = new int[image2.Height * image2.Width];
             ushort[,] pixels = new ushort[image.GetLength(0), image.GetLength(1)];
@@ -33,12 +34,12 @@ namespace DicomDisplayTest
             {
                 for (int x = 0; x < image.GetLength(0); x++)
                 {
-                    grey = ((((pixels[x,y] / 65535.0) - 0.5) *  
-                             contrastLevel) + 0.5) * 65535.0;
+                    grey = ((((pixels[x,y] / pixBit) - 0.5) *  
+                             contrastLevel) + 0.5) * pixBit;
                     
-                    if (grey > 65535)
+                    if (grey > pixBit)
                     {
-                        grey = 65535;
+                        grey = pixBit;
                     } 
                     else if (grey < 0)
                     {
