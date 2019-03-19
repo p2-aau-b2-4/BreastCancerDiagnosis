@@ -15,6 +15,9 @@ namespace DicomDisplayTest
     {
         static void Main(string[] args)
         {
+            Console.WriteLine(DDSMImage.GetAllImagesFromCSVFile(@"E:\BrystTest\mass_case_description_train_set.csv").Count);
+            
+            /*
             var img = DicomFile.Open(@"e.dcm");
             UshortImageInfo imgInfo = img.GetUshortImageInfo();
             imgInfo.Render("brystDef.png");
@@ -35,7 +38,7 @@ namespace DicomDisplayTest
             }
             imgInfo.AddOverlay(overlayToAdd);
             
-            imgInfo.Render("bryst.png");
+            imgInfo.Render("bryst.png");*/
         }
     }
 }
