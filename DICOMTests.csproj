@@ -9,6 +9,7 @@
     <PackageReference Include="fo-dicom.Drawing" Version="4.0.0" />
     <PackageReference Include="fo-dicom.NetCore" Version="4.0.0" />
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="2.0.1" />
+    <PackageReference Include="MNIST.IO" Version="1.0.1" />
   </ItemGroup>
 
 </Project>

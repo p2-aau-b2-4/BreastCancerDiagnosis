@@ -1,13 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Text;
 using System.Windows;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Net.Mime;
 using Dicom;
 using Dicom.Imaging;
 using Microsoft.Win32;
+using MNIST.IO;
 
 namespace DicomDisplayTest
 {
@@ -15,7 +19,7 @@ namespace DicomDisplayTest
     {
         static void Main(string[] args)
         {
-            var img = DicomFile.Open(@"e.dcm");
+            /*var img = DicomFile.Open(@"e.dcm");
             UshortImageInfo imgInfo = img.GetUshortImageInfo();
             imgInfo.Render("brystDef.png");
 
@@ -33,9 +37,58 @@ namespace DicomDisplayTest
                 overlayToAdd.SetPixel(200,y,Color.Red);
                 overlayToAdd.SetPixel(500,y,Color.Red);
             }
-            imgInfo.AddOverlay(overlayToAdd);
+            imgInfo.AddOverlay(overlayToAdd);*/
             
-            imgInfo.Render("bryst.png");
+            var data = FileReaderMNIST.LoadImagesAndLables(
+                "train-labels-idx1-ubyte.gz",
+                "train-images-idx3-ubyte.gz");
+
+            var t = data.GetEnumerator();
+            byte[,] image = new byte[28,28];
+            
+            //ImageMark[] imageArray = new ImageMark[30000];
+            List<byte[,]> imageList = new List<byte[,]>();
+            
+            int i = 0;
+            
+            while (t.MoveNext())
+            {
+                image = t.Current.Image;
+                //imageList.Add(image);
+                
+                Bitmap imgBitmap = new Bitmap(28,28);
+            
+                for (int x = 0; x < imgBitmap.Width; x++)
+                {
+                    for (int y = 0; y < imgBitmap.Height; y++)
+                    {
+                        int greyColor = image[y,x];
+                        imgBitmap.SetPixel(x, y, Color.FromArgb(greyColor, greyColor, greyColor));
+                    }
+                }
+
+                var currentLabel = t.Current.Label;
+                imgBitmap.Save("mnist3/" + i + "_" + currentLabel + ".png", ImageFormat.Png);
+                
+                t.MoveNext();
+                i++;
+            }
+            
+            Console.WriteLine(i);
+            t.Dispose();
+
+            //imgInfo.Render("bryst.png");
+        }
+    }
+
+    public class ImageMark
+    {
+        private static int _size;
+        private byte[,] _image = new byte[_size,_size];
+        public ImageMark(byte[,] pixels, int size)
+        {
+            _size = size;
+            _image = pixels;
         }
     }
 }
