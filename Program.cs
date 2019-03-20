@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using Dicom;
 using Dicom.Imaging;
 using Microsoft.Win32;
@@ -15,7 +17,17 @@ namespace DicomDisplayTest
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(DDSMImage.GetAllImagesFromCSVFile(@"E:\BrystTest\mass_case_description_train_set.csv").Count);
+            List<DDSMImage> DDSMImages =
+                DDSMImage.GetAllImagesFromCSVFile(@"E:\BrystTest\mass_case_description_train_set.csv");
+            Console.WriteLine($"Found {DDSMImages.Count}");
+            
+            // Lets render a picture:
+            Console.WriteLine(DDSMImages.First().DcomMaskFilePath);
+            
+            DDSMImages.First().GetDcomOriginalImage().Render("original.png");
+            DDSMImages.First().GetDcomMaskImage().Render("mask.png");
+            DDSMImages.First().GetDcomCroppedImage().Render("cropped.png");
+            
             
             /*
             var img = DicomFile.Open(@"e.dcm");

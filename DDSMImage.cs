@@ -1,8 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+using CharLS;
+using CSJ2K.j2k.quantization;
+using Dicom;
 
 namespace DicomDisplayTest
 {
@@ -83,8 +89,10 @@ namespace DicomDisplayTest
         public String DcomMaskFilePath { get; set; }
         public String DcomCroppedFilePath { get; set; }
 
-        public DDSMImage(int breastDensity, BreastSideEnum breastSide, ImageViewEnum imageView, int abnormalityId, MassShapesEnum massShape,
-            MassMarginsEnum massMargins, Pathologies pathology, int subtlety, string dcomFilePath, string dcomMaskFilePath,
+        public DDSMImage(int breastDensity, BreastSideEnum breastSide, ImageViewEnum imageView, int abnormalityId,
+            MassShapesEnum massShape,
+            MassMarginsEnum massMargins, Pathologies pathology, int subtlety, string dcomFilePath,
+            string dcomMaskFilePath,
             string dcomCroppedFilePath)
         {
             BreastDensity = breastDensity;
@@ -117,46 +125,174 @@ namespace DicomDisplayTest
 
                 ImageViewEnum imageView = ImageViewEnum.CC;
                 if (informations[3].Equals("MLO")) imageView = ImageViewEnum.MLO;
-                
+
                 if (!int.TryParse(informations[4], out var abnormalityId)) throw new Exception();
 
-                MassShapesEnum massShape = GetMassShapeFromString(informations[5]);
-                
-                MassMarginsEnum massMargins = GetMassMarginsFromString(informations[6]);
-                
-                Pathologies pathology = Pathologies.BENIGN;
-                if (informations[7].Equals("MALIGNANT")) pathology = Pathologies.MALIGNANT;
-                if (informations[7].Equals("BENIGN_WITHOUT_CALLBACK")) pathology = Pathologies.BENIGN_WITHOUT_CALLBACK;
+                //abnormality type?
 
-                if (!int.TryParse(informations[8], out var subtlety)) throw new Exception();
-                String dcomFilePath = GetDcomFilePathFromString(informations[9]);
-                (String, String) filePathsMaskAndCropped = GetDcomMaskAndCroppedPathsFromString(informations[10]);
+                MassShapesEnum massShape = GetMassShapeFromString(informations[6]);
+
+                MassMarginsEnum massMargins = GetMassMarginsFromString(informations[7]);
+                
+                // assesment?
+
+                Pathologies pathology = Pathologies.BENIGN;
+                if (informations[9].Equals("MALIGNANT")) pathology = Pathologies.MALIGNANT;
+                if (informations[9].Equals("BENIGN_WITHOUT_CALLBACK")) pathology = Pathologies.BENIGN_WITHOUT_CALLBACK;
+
+                if (!int.TryParse(informations[10], out var subtlety)) throw new Exception();
+                String dcomFilePath = GetDcomFilePathFromString(csvFilePath, informations[11]);
+                
+                (String, String) filePathsMaskAndCropped = GetDcomMaskAndCroppedPathsFromString(csvFilePath, informations[12]);
                 imagesToReturn.Add(new DDSMImage(breastDensity, breastSide, imageView, abnormalityId, massShape,
-                    massMargins, pathology, subtlety, dcomFilePath, filePathsMaskAndCropped.Item1, filePathsMaskAndCropped.Item2));
+                    massMargins, pathology, subtlety, dcomFilePath, filePathsMaskAndCropped.Item1,
+                    filePathsMaskAndCropped.Item2));
             }
 
             return imagesToReturn;
         }
 
-        private static MassMarginsEnum GetMassMarginsFromString(string orignalStr)
+        private static MassMarginsEnum GetMassMarginsFromString(string originalStr)
         {
-            throw new NotImplementedException();
+            switch (originalStr)
+            {
+                case "CIRCUMSCRIBED": return MassMarginsEnum.CIRCUMSCRIBED;
+                case "CIRCUMSCRIBED-ILL_DEFINED": return MassMarginsEnum.CIRCUMSCRIBED_ILL_DEFINED;
+                case "CIRCUMSCRIBED-MICROLOBULATED": return MassMarginsEnum.CIRCUMSCRIBED_MICROLOBULATED;
+                case "CIRCUMSCRIBED-OBSCURED": return MassMarginsEnum.CIRCUMSCRIBED_OBSCURED;
+                case "ILL_DEFINED": return MassMarginsEnum.ILL_DEFINED;
+                case "ILL_DEFINED-SPICULATED": return MassMarginsEnum.ILL_DEFINED_SPICULATED;
+                case "MICROLOBULATED": return MassMarginsEnum.MICROLOBULATED;
+                case "MICROLOBULATED-ILL_DEFINED": return MassMarginsEnum.MICROLOBULATED_ILL_DEFINED;
+                case "MICROLOBULATED-ILL_DEFINED-SPICULATED":
+                    return MassMarginsEnum.MICROLOBULATED_ILL_DEFINED_SPICULATED;
+                case "MICROLOBULATED-SPICULATED": return MassMarginsEnum.MICROLOBULATED_SPICULATED;
+                case "N/A": return MassMarginsEnum.NOT_AVAILABLE;
+                case "OBSCURED": return MassMarginsEnum.OBSCURED;
+                case "OBSCURED-ILL_DEFINED-SPICULATED": return MassMarginsEnum.OBSCURED_ILL_DEFINED_SPICULATED;
+                case "OBSCURED-ILL_DEFINED": return MassMarginsEnum.OBSCURED_ILL_DEFINED;
+                case "OBSCURED-SPICULATED": return MassMarginsEnum.OBSCURED_ILL_DEFINED;
+                case "SPICULATED": return MassMarginsEnum.SPICULATED;
+                default:
+                    throw new ArgumentException($"Input {originalStr} was not found in table", nameof(originalStr));
+            }
         }
 
         private static MassShapesEnum GetMassShapeFromString(string originalStr)
         {
-            throw new NotImplementedException();
+            switch (originalStr)
+            {
+                case "ARCHITECTURAL_DISTORTION": return MassShapesEnum.ARCHITECTURAL_DISTORTION;
+                case "ASYMMETRIC_BREAST_TISSUE": return MassShapesEnum.ASYMMETRIC_BREAST_TISSUE;
+                case "FOCAL_ASYMMETRIC_DENSITY": return MassShapesEnum.FOCAL_ASYMMETRIC_DENSITY;
+                case "IRREGULAR": return MassShapesEnum.IRREGULAR;
+                case "IRREGULAR-ARCHITECTURAL_DISTORTION": return MassShapesEnum.IRREGULAR_ARCHITECTURAL_DISTORTION;
+                case "IRREGULAR-FOCAL_ASYMMETRIC_DENSITY": return MassShapesEnum.IRREGULAR_FOCAL_ASYMMETRIC_DENSITY;
+                case "LOBULATED": return MassShapesEnum.LOBULATED;
+                case "LOBULATED-ARCHITECTURAL_DISTORTION": return MassShapesEnum.LOBULATED_ARCHITECTURAL_DISTORTION;
+                case "LOBULATED-IRREGULAR": return MassShapesEnum.LOBULATED_IRREGULAR;
+                case "LOBULATED-LYMPH_NODE": return MassShapesEnum.LOBULATED_LYMPH_NODE;
+                case "LOBULATED-OVAL": return MassShapesEnum.LOBULATED_OVAL;
+                case "LYMPH_NODE": return MassShapesEnum.LYMPH_NODE;
+                case "N/A": return MassShapesEnum.NOT_AVAILABLE;
+                case "OVAL": return MassShapesEnum.OVAL;
+                case "OVAL-LYMPH_NODE": return MassShapesEnum.OVAL_LYMPH_NODE;
+                case "ROUND": return MassShapesEnum.ROUND;
+                case "ROUND-IRREGULAR-ARCHITECTURAL_DISTORTION":
+                    return MassShapesEnum.ROUND_IRREGULAR_ARCHITECTURAL_DISTORTION;
+                case "ROUND-LOBULATED": return MassShapesEnum.ROUND_LOBULATED;
+                case "ROUND-OVAL": return MassShapesEnum.ROUND_OVAL;
+                default:
+                    throw new ArgumentException($"Input {originalStr} was not found in table", nameof(originalStr));
+            }
         }
 
-        private static String GetDcomFilePathFromString(string s)
+        private static string GetDcomFilePathFromString(string csvFilePath, string s)
         {
-            throw new NotImplementedException();
+            csvFilePath = csvFilePath.Substring(0, csvFilePath.LastIndexOf(@"\")+1);
+            
+            StringBuilder stringBuilder = new StringBuilder(csvFilePath);
+            String[] folders = s.Split("/");
+            stringBuilder.Append(folders[0]);
+            String folderFound = System.IO.Directory.GetDirectories(stringBuilder.ToString())[0];
+            folderFound = System.IO.Directory.GetDirectories(folderFound)[0];
+            //todo maybe check if filename is equal to last element of folders string array.
+            return System.IO.Directory.GetFiles(folderFound)[0];
         }
 
-        public static (String, String) GetDcomMaskAndCroppedPathsFromString(String originalPath)
+        public static ( string, string) GetDcomMaskAndCroppedPathsFromString(string csvFilePath, string originalPath)
         {
-            throw new NotImplementedException();
-            return (Mask: null, Cropped:null);
+            // so the logic is:
+            // 1. First explode the originalPathString, and navigate into first folder.
+            // 2. If there is 2 folders there, then one contains "mask", the other "cropped" as a part of the name in a subfolder.
+            // 2a. Then in each of those folder is the corresponding dcom file
+            // 3. else, there is only one folder. Go down as far as you can go, and then find two files at the end. Look at originalPath filename, that should be the filepath of the cropped image, the other image is the mask.
+            // lets implement
+            csvFilePath = csvFilePath.Substring(0, csvFilePath.LastIndexOf(@"\")+1);
+            
+            String[] folders = originalPath.Split("/");
+            String[] foldersInFirstFolder = System.IO.Directory.GetDirectories(csvFilePath+folders[0]);
+
+            String maskFilePath = null;
+            String croppedFilePath = null;
+
+            if (foldersInFirstFolder.Length > 1)
+            {
+                // step 2
+                // lets first find the mask image:
+                foreach(String folderInFirstFolder in foldersInFirstFolder)
+                {
+                    String subfolder = System.IO.Directory.GetDirectories(folderInFirstFolder)[0];
+                    if(subfolder.Contains("mask"))
+                    {
+                        maskFilePath = System.IO.Directory.GetFiles(subfolder)[0];
+                    }
+                    else if(subfolder.Contains("cropped"))
+                    {
+                        croppedFilePath = System.IO.Directory.GetFiles(subfolder)[0];
+                    }
+                    else
+                    {
+                        throw new System.IO.DirectoryNotFoundException();
+                    }
+                }
+            }
+            else
+            {
+                // step 3;
+                String activeFolder = foldersInFirstFolder[0];
+                while (System.IO.Directory.GetDirectories(activeFolder).Length > 0)
+                    activeFolder = System.IO.Directory.GetDirectories(activeFolder)[0];
+                String[] files = System.IO.Directory.GetFiles(activeFolder);
+                foreach (String file in files)
+                {
+                    if (file.EndsWith(folders[folders.Length - 1]))
+                    {
+                        maskFilePath = file;
+                    }
+                    else if (file.EndsWith(".dcm"))
+                    {
+                        croppedFilePath = file;
+                    }
+                }
+
+                //throw new NotImplementedException();
+            }
+            return (Mask: maskFilePath, Cropped: croppedFilePath);
+        }
+
+
+        public UshortImageInfo GetDcomOriginalImage()
+        {
+            return DicomFile.Open(DcomFilePath).GetUshortImageInfo();
+        }
+        public UshortImageInfo GetDcomMaskImage()
+        {
+            return DicomFile.Open(DcomMaskFilePath).GetUshortImageInfo();
+        }
+        public UshortImageInfo GetDcomCroppedImage()
+        {
+            return DicomFile.Open(DcomCroppedFilePath).GetUshortImageInfo();
         }
     }
 }
