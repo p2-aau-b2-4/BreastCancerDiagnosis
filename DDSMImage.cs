@@ -120,7 +120,8 @@ namespace DICOMTests
                 if (informations.Length == 1) continue; // some lines are encoded with no info, lets skip those.
                 String patientId = informations[0];
 
-                if (!int.TryParse(informations[1], out var breastDensity)) throw new Exception();
+                if (!int.TryParse(informations[1], out var breastDensity))
+                    throw new Exception(); //todo proper exception
 
                 BreastSideEnum breastSide = BreastSideEnum.RightBreast;
                 if (informations[2].Equals("LEFT")) breastSide = BreastSideEnum.LeftBreast;
@@ -128,7 +129,8 @@ namespace DICOMTests
                 ImageViewEnum imageView = ImageViewEnum.Cc;
                 if (informations[3].Equals("MLO")) imageView = ImageViewEnum.Mlo;
 
-                if (!int.TryParse(informations[4], out var abnormalityId)) throw new Exception();
+                if (!int.TryParse(informations[4], out var abnormalityId))
+                    throw new Exception(); //todo proper exception
 
                 //No reason to read field nr 5, as it just contains abnormality type, which is always "mass"
 
@@ -136,13 +138,13 @@ namespace DICOMTests
 
                 MassMarginsEnum massMargins = GetMassMarginsFromString(informations[7]);
 
-                if (!int.TryParse(informations[8], out var abnormality)) throw new Exception();
+                if (!int.TryParse(informations[8], out var abnormality)) throw new Exception(); //todo proper exception
 
                 Pathologies pathology = Pathologies.Benign;
                 if (informations[9].Equals("MALIGNANT")) pathology = Pathologies.Malignant;
                 if (informations[9].Equals("BENIGN_WITHOUT_CALLBACK")) pathology = Pathologies.BenignWithoutCallback;
 
-                if (!int.TryParse(informations[10], out var subtlety)) throw new Exception();
+                if (!int.TryParse(informations[10], out var subtlety)) throw new Exception(); //todo proper exception
                 String dcomFilePath = GetDcomFilePathFromString(csvFilePath, informations[11]);
 
                 (String, String) filePathsMaskAndCropped =
@@ -298,9 +300,9 @@ namespace DICOMTests
             return DicomFile.Open(DcomFilePath).GetUshortImageInfo();
         }
 
-        public UshortArrayAsImage GetDcomMaskImage()
+        public UByteArrayAsImage GetDcomMaskImage()
         {
-            return DicomFile.Open(DcomMaskFilePath).GetUshortImageInfo();
+            return DicomFile.Open(DcomMaskFilePath).GetUByteImageInfo();
         }
 
         public UshortArrayAsImage GetDcomCroppedImage()

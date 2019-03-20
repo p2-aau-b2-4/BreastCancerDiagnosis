@@ -1,60 +1,39 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using DICOMTests;
 
 namespace DicomDisplayTest
 {
-    public class UshortArrayAsImage
+    public class UshortArrayAsImage : ArrayAsImageAbstract
     {
-        public ushort[,] PixelArray { get; set; }
+        private ushort[,] _pixelArray;
 
-        private ArrayList _overlays;
-        public ArrayList Overlays => _overlays;
-
-        public void AddOverlay(Bitmap overlay)
+        public ushort[,] PixelArray
         {
-            _overlays.Add(overlay);
-        }
-
-        public UshortArrayAsImage(ushort[,] pixelArray)
-        {
-            this.PixelArray = pixelArray;
-            this._overlays = new ArrayList();
-        }
-
-        public void RenderAsPng(String saveLoc)
-        {
-            Bitmap imgBitmap = new Bitmap(PixelArray.GetLength(0), PixelArray.GetLength(1));
-            for (int x = 0; x < PixelArray.GetLength(0); x++)
+            get
             {
-                for (int y = 0; y < PixelArray.GetLength(1); y++)
+                if (_pixelArray == null)
                 {
-                    int greyColor = (int) map(PixelArray[x, y], 0, 65535, 0, 255);
-                    imgBitmap.SetPixel(x, y, Color.FromArgb(greyColor, greyColor, greyColor));
+                    // lets generate it from PixelData
+                    Console.WriteLine($"{Width}x{Height}");
+                    ushort[,] toReturn = new ushort[Width, Height];
+                    for (var i = 0; i < PixelData.Length; i = i + 2)
+                    {
+                        toReturn[i / 2 % Width, i / 2 / Width] = BitConverter.ToUInt16(PixelData, i);
+                    }
+
+                    _pixelArray = toReturn;
                 }
-            }
 
-            // lets add all bitmaps:
-            Graphics g = Graphics.FromImage(imgBitmap);
-            g.CompositingMode = CompositingMode.SourceOver;
-            foreach (Bitmap bitmap in Overlays)
-            {
-                bitmap.MakeTransparent();
-                g.DrawImage(bitmap, new Point(0, 0));
+                return _pixelArray;
             }
-
-            imgBitmap.Save(saveLoc, ImageFormat.Png);
         }
 
-        private static float map(float s, float a1, float a2, float b1, float b2)
-            // lånt fra https://forum.unity.com/threads/re-map-a-number-from-one-range-to-another.119437/
-        {
-            return b1 + (s - a1) * (b2 - b1) / (a2 - a1);
-        }
-
-        public void ApplyNoiseFilter(int radius)
+        /*public void ApplyNoiseFilter(int radius)
         {
             ushort[,] tempMatrix = new ushort[PixelArray.GetLength(0), PixelArray.GetLength(1)];
             for (int x = 0; x < tempMatrix.GetLength(0); x++)
@@ -80,6 +59,34 @@ namespace DicomDisplayTest
             }
 
             PixelArray = tempMatrix;
+        }*/
+
+        public override void SaveAsPng(string saveLoc)
+        {
+            Bitmap imgBitmap = new Bitmap(PixelArray.GetLength(0), PixelArray.GetLength(1));
+            for (int x = 0; x < PixelArray.GetLength(0); x++)
+            {
+                for (int y = 0; y < PixelArray.GetLength(1); y++)
+                {
+                    int greyColor = (int) Map(PixelArray[x, y], 0, 65535, 0, 255);
+                    imgBitmap.SetPixel(x, y, Color.FromArgb(greyColor, greyColor, greyColor));
+                }
+            }
+
+            // lets add all bitmaps:
+            Graphics g = Graphics.FromImage(imgBitmap);
+            g.CompositingMode = CompositingMode.SourceOver;
+            foreach (Bitmap bitmap in Overlays)
+            {
+                bitmap.MakeTransparent();
+                g.DrawImage(bitmap, new Point(0, 0));
+            }
+
+            imgBitmap.Save(saveLoc, ImageFormat.Png);
+        }
+
+        public UshortArrayAsImage(byte[] pixelData, int width, int height) : base(pixelData, width, height)
+        {
         }
     }
 }
