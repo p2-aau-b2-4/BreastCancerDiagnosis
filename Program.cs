@@ -25,9 +25,9 @@ namespace DicomDisplayTest
             // Lets render a picture:
             Console.WriteLine(DDSMImages.First().DcomMaskFilePath);
             
-            DDSMImages.First().GetDcomOriginalImage().RenderAsPng("original.png");
-            DDSMImages.First().GetDcomMaskImage().RenderAsPng("mask.png");
-            DDSMImages.First().GetDcomCroppedImage().RenderAsPng("cropped.png");
+            DDSMImages.First().GetDcomOriginalImage().SaveAsPng("original.png");
+            DDSMImages.First().GetDcomMaskImage().SaveAsPng("mask.png");
+            DDSMImages.First().GetDcomCroppedImage().SaveAsPng("cropped.png");
             
             
             /*
