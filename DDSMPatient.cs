@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
+using DICOMTests;
 
 namespace DicomDisplayTest
 {
     public class DDSMPatient
     {
-        public List<DDSMImage> Images;
+        public List<DdsmImage> Images;
         public String PatientId {get;set;}
     }
 }

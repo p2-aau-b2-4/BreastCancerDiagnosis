@@ -6,10 +6,8 @@ using System.Drawing.Imaging;
 
 namespace DicomDisplayTest
 {
-    public class UshortImageInfo
+    public class UshortArrayAsImage
     {
-        // noget med kræftdiagnose properties her, som indlæses af csv filer..
-
         public ushort[,] PixelArray { get; set; }
 
         private ArrayList _overlays;
@@ -20,13 +18,13 @@ namespace DicomDisplayTest
             _overlays.Add(overlay);
         }
 
-        public UshortImageInfo(ushort[,] pixelArray)
+        public UshortArrayAsImage(ushort[,] pixelArray)
         {
             this.PixelArray = pixelArray;
             this._overlays = new ArrayList();
         }
 
-        public void Render(String saveLoc)
+        public void RenderAsPng(String saveLoc)
         {
             Bitmap imgBitmap = new Bitmap(PixelArray.GetLength(0), PixelArray.GetLength(1));
             for (int x = 0; x < PixelArray.GetLength(0); x++)
