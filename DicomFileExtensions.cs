@@ -13,9 +13,9 @@ namespace DicomDisplayTest
 {
     public static class DicomFileExtensions
     {
-        public static UshortImageInfo GetUshortImageInfo(this DicomFile f)
+        public static UshortArrayAsImage GetUshortImageInfo(this DicomFile f)
         {
-            return new UshortImageInfo(GetUshortMatrix(f));
+            return new UshortArrayAsImage(GetUshortMatrix(f));
         }
         
         public static ushort[,] GetUshortMatrix(this DicomFile f)

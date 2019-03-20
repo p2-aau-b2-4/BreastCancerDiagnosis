@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using Dicom;
 using Dicom.Imaging;
+using DICOMTests;
 using Microsoft.Win32;
 
 namespace DicomDisplayTest
@@ -17,16 +18,16 @@ namespace DicomDisplayTest
     {
         static void Main(string[] args)
         {
-            List<DDSMImage> DDSMImages =
-                DDSMImage.GetAllImagesFromCSVFile(@"E:\BrystTest\mass_case_description_train_set.csv");
+            List<DdsmImage> DDSMImages =
+                DdsmImage.GetAllImagesFromCsvFile(@"E:\BrystTest\mass_case_description_train_set.csv");
             Console.WriteLine($"Found {DDSMImages.Count}");
             
             // Lets render a picture:
             Console.WriteLine(DDSMImages.First().DcomMaskFilePath);
             
-            DDSMImages.First().GetDcomOriginalImage().Render("original.png");
-            DDSMImages.First().GetDcomMaskImage().Render("mask.png");
-            DDSMImages.First().GetDcomCroppedImage().Render("cropped.png");
+            DDSMImages.First().GetDcomOriginalImage().RenderAsPng("original.png");
+            DDSMImages.First().GetDcomMaskImage().RenderAsPng("mask.png");
+            DDSMImages.First().GetDcomCroppedImage().RenderAsPng("cropped.png");
             
             
             /*
