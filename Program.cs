@@ -12,8 +12,12 @@ using Dicom;
 using Dicom.Imaging;
 using Microsoft.Win32;
 using MNIST.IO;
+using Accord.Statistics;
+using Accord.MachineLearning;
+using Accord.Statistics.Analysis;
+using Accord.Statistics.Models.Regression.Linear;
 
-namespace DicomDisplayTest
+namespace DicomDisplayTest    
 {
     class Program
     {
@@ -38,6 +42,8 @@ namespace DicomDisplayTest
                 overlayToAdd.SetPixel(500,y,Color.Red);
             }
             imgInfo.AddOverlay(overlayToAdd);*/
+
+            Program2.RunPCA();
             
             var data = FileReaderMNIST.LoadImagesAndLables(
                 "train-labels-idx1-ubyte.gz",
@@ -51,7 +57,11 @@ namespace DicomDisplayTest
             
             int i = 0;
             
-            while (t.MoveNext())
+            // Let's create an analysis with centering (covariance method)
+            // but no standardization (correlation method) and whitening:
+            
+            
+            /*while (t.MoveNext())
             {
                 image = t.Current.Image;
                 //imageList.Add(image);
@@ -72,7 +82,7 @@ namespace DicomDisplayTest
                 
                 t.MoveNext();
                 i++;
-            }
+            }*/
             
             Console.WriteLine(i);
             t.Dispose();
