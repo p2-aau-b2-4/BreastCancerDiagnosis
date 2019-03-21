@@ -45,15 +45,15 @@ namespace DicomDisplayTest
 
             Program2.RunPCA();
             
-            var data = FileReaderMNIST.LoadImagesAndLables(
+            /*var data = FileReaderMNIST.LoadImagesAndLables(
                 "train-labels-idx1-ubyte.gz",
                 "train-images-idx3-ubyte.gz");
 
             var t = data.GetEnumerator();
-            byte[,] image = new byte[28,28];
+            byte[,] image = new byte[28,28];*/
             
             //ImageMark[] imageArray = new ImageMark[30000];
-            List<byte[,]> imageList = new List<byte[,]>();
+            //List<byte[,]> imageList = new List<byte[,]>();
             
             int i = 0;
             
@@ -85,7 +85,7 @@ namespace DicomDisplayTest
             }*/
             
             Console.WriteLine(i);
-            t.Dispose();
+            //t.Dispose();
 
             //imgInfo.Render("bryst.png");
         }
