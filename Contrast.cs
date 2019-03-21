@@ -12,7 +12,7 @@ namespace DicomDisplayTest
         public static ushort[,] Equalization(ushort[,] image, double threshold)
         {
 
-            double pixBit = Math.Pow(2, 16) - 1;
+            double pixBit = Uint16.MaxValue;
             // Copying image to int array 
             //int[] pixels = new int[image2.Height * image2.Width];
             ushort[,] pixels = new ushort[image.GetLength(0), image.GetLength(1)];
