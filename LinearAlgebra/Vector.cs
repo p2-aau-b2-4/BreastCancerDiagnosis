@@ -6,7 +6,7 @@ namespace LinearAlgebra
   ///<summary>
   ///A vector
   ///</summary>
-  Class Vector 
+  public class Vector 
   {
     ///<summary>
     ///internal field containing all elements in the vector.
