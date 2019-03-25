@@ -47,5 +47,12 @@ namespace LinearAlgebra.Test
       Assert.AreEqual(vector.Elements, points);
     }
 
+    [Test, Description("Dimensions property returns the correct count")]
+    public void DimensionsReturnsCount()
+    {
+      Vector vector = new Vector(new List<double>() {1, 2, 3, 4, 5});
+      Assert.AreEqual(5, vector.Dimensions);
+    }
+
   }
 }
