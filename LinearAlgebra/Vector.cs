@@ -62,5 +62,13 @@ namespace LinearAlgebra
       _elements.Add(0);
     }
 
+    ///<summary> 
+    ///Marks the vector as transposed
+    ///</summary>
+    public void Transpose()
+    {
+      _transpose = _transpose == false ? true : false;
+    }
+
   }
 }
