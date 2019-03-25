@@ -42,7 +42,7 @@ namespace LinearAlgebra.Test
     [Test, Description("Constructor works with multiple values")]
     public void ConstructMultiDimensionalVector()
     {
-      List<double> points = new List<double>() {double.MaxValue, double.MinValue, 0, -1, 1, 5.123, 682.3}
+      List<double> points = new List<double>() {double.MaxValue, double.MinValue, 0, -1, 1, 5.123, 682.3};
       Vector vector = new Vector(points);
       Assert.AreEqual(vector.Elements, points);
     }
