@@ -27,6 +27,14 @@ namespace LinearAlgebra
     ///</summary>
     public bool Transposed { get; }
 
+    public int Dimensions
+    {
+      get
+      {
+        return _elements.Count;
+      }
+    }
+
     ///<summary>
     ///Initialises a new vector with one element.
     ///</summary>
@@ -67,7 +75,7 @@ namespace LinearAlgebra
     ///</summary>
     public void Transpose()
     {
-      _transpose = _transpose == false ? true : false;
+      _transposed = _transposed == false ? true : false;
     }
 
   }
