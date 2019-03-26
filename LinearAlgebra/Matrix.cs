@@ -45,14 +45,6 @@ namespace LinearAlgebra
     ///</summary>
     private bool _transposed;
 
-    ///<summary>
-    ///Gets the elements of the vector as a List<double>
-    ///</summary>
-    public List<double> Elements { get; }
-    ///<summary>
-    ///Gets the transposed state of the vector. This is only relevant when doing
-    ///Matrix-Vector calculations.
-    ///</summary>
     public bool Transposed { get; }
 
     public int Dimensions
@@ -63,16 +55,28 @@ namespace LinearAlgebra
       }
     }
 
-    ///<summary>
-    ///Initialises a new vector with one element.
-    ///</summary>
-    ///<param name="elem">the element the vector contains</param>
-    ///<param name="transposed">transposed state of the vector, this is optional
-    ///and defaults to false</param>
-    public Vector(double elem, bool transposed = false)
+    public Vector(double[,] matrix, bool transposed = false)
     {
       _transposed = transposed;
-      _elements.Add(elem);
+      _n = matrix.GetLength(0);
+      _m = matrix.GetLength(1);
+      _IA = {0};
+
+      for (int i = 0; i < _m; i++)
+      {
+        for (j = 0; j < _n; j++)
+        {
+          if (matrix[i, j] != 0)
+          {
+            _A.Add(matrix[i, j]);
+            _JA.Add(j);
+            
+            _NNZ++;
+          }
+        }
+        _IA.Add(NNZ);
+      }
+
     }
 
     ///<summary>
