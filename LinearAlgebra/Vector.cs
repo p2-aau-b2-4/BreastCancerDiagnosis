@@ -79,19 +79,54 @@ namespace LinearAlgebra
       _transposed = _transposed == false ? true : false;
     }
     
+    ///<summary> 
+    ///Adds two vectors together
+    ///</summary>
+    ///<param name="vector1">input vector 1</param>
+    ///<param name="vector2">input vector 2</param>
+    public static Vector operator +(Vector vector1, Vector vector2) 
+    {
+      if (vector1.Dimensions != vector2.Dimensions)
+        throw new IncompatibleDimensionsException("Vectors with different dimensions cannot be added together");
+      List<double> elems = new List<double>();
+      for (int i = 0, i < vector1.Dimensions; i++)
+        elems.Add(vector1._elements[i] + vector2._elements[i]);
+      return new Vector(elems, vector1.Transposed);
+    }
 
-    public static Vector operator *(Vector vector, double scalar) {
+    ///<summary> 
+    ///Subtracts two vectors
+    ///</summary>
+    ///<param name="vector1">input vector 1</param>
+    ///<param name="vector2">input vector 2</param>
+    public static Vector operator +(Vector vector1, Vector vector2) 
+    {
+      if (vector1.Dimensions != vector2.Dimensions)
+        throw new IncompatibleDimensionsException("Vectors with different dimensions cannot be added together");
+      List<double> elems = new List<double>();
+      for (int i = 0, i < vector1.Dimensions; i++)
+        elems.Add(vector1._elements[i] - vector2._elements[i]);
+      return new Vector(elems, vector1.Transposed);
+    }
+
+    ///<summary> 
+    ///Dots a vector and a scalar.
+    ///</summary>
+    ///<param name="vector">input vector</param>
+    ///<param name="scalar">input scalar</param>
+    public static Vector operator *(Vector vector, double scalar) 
+    {
       List<double> elems = new List<double>();
       foreach (var v in vector._elements)
         elems.Add(v * scalar);
       return new Vector(elems, vector.Transposed);
     }
-/* old version
-    public Vector Scale(double scalar)
-    {
-      return DotScalar(this, scalar);
-    }
-*/
+
+    ///<summary> 
+    ///Dots a vector and a vector.
+    ///</summary>
+    ///<param name="vector1">input vector 1</param>
+    ///<param name="vector2">input vector 2</param>
     public static double operator *(Vector vector1, Vector vector2)
     {
       if (vector1.Dimensions != vector2.Dimensions)
@@ -104,12 +139,6 @@ namespace LinearAlgebra
       }
       return result;
     }
-/* old version
-    public double Dot(Vector vector)
-    {
-      return Dot(this, vector);
-    }
-*/
   }
 
   public class IncompatibleDimensionsException : Exception
