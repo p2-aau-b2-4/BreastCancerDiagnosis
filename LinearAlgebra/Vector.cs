@@ -78,10 +78,11 @@ namespace LinearAlgebra
     {
       _transposed = _transposed == false ? true : false;
     }
+    
 
     public static Vector operator *(Vector vector, double scalar) {
       List<double> elems = new List<double>();
-      foreach (v in vector)
+      foreach (var v in vector._elements)
         elems.Add(v * scalar);
       return new Vector(elems, vector.Transposed);
     }
@@ -99,7 +100,7 @@ namespace LinearAlgebra
       double result = 0;
       for (int i = 0; i < vector1.Dimensions; i++)
       {
-        result =+ vector1[i] * vector2[i];
+        result =+ vector1._elements[i] * vector2._elements[i];
       }
       return result;
     }
@@ -128,6 +129,7 @@ namespace LinearAlgebra
       : base(message)
     {
     }
+
     ///<summary>
     ///construct exception with message and inner exception
     ///</summary>
@@ -135,5 +137,7 @@ namespace LinearAlgebra
     ///<param name="inner">inner exception</param>
     public IncompatibleDimensionsException(string message, Exception inner)
       : base(message, inner)
+    {
+    }
   }
 }

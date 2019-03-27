@@ -22,18 +22,18 @@ namespace LinearAlgebra
     ///<summary>
     ///Stores the values of the non-zero elements of the matrix.
     ///</summary>
-    private Vector _A;
+    private List<double> _A;
     ///<summary>
     ///Stores the cumulative number of non-zero elements up to (not including)
     ///the ith row. Defined by the recursive relation:
     ///IA[0] = 0
     ///IA[i] = IA[i-1] + num of non-zero elements in the (i-1)th row.
     ///</summary>
-    private Vector _IA;
+    private List<double> _IA;
     ///<summary>
     ///Stores the column index of each element in _A
     ///</summary>
-    private Vector _JA;
+    private List<double> _JA;
 
     ///<summary>
     ///Nonzero elements in the matrix.
@@ -47,15 +47,15 @@ namespace LinearAlgebra
 
     public bool Transposed { get; }
 
-    public int Dimensions
+    public int? Dimensions
     {
       get
       {
-	return _elements.Count;
+	      return null;
       }
     }
 
-    public Vector(double[,] matrix, bool transposed = false)
+    public Matrix(double[,] matrix, bool transposed = false)
     {
       _transposed = transposed;
       _n = matrix.GetLength(0);
@@ -64,7 +64,7 @@ namespace LinearAlgebra
 
       for (int i = 0; i < _m; i++)
       {
-        for (j = 0; j < _n; j++)
+        for (int j = 0; j < _n; j++)
         {
           if (matrix[i, j] != 0)
           {
@@ -140,31 +140,5 @@ namespace LinearAlgebra
       return Dot(this, vector);
     }
 */
-  }
-
-  public class IncompatibleDimensionsException : Exception
-  {
-    ///<summary>
-    ///construct exception
-    ///</summary>
-    public IncompatibleDimensionsException()
-    {
-    }
-
-    ///<summary>
-    ///construct exception with message
-    ///</summary>
-    ///<param name="message">exception message</param>
-    public IncompatibleDimensionsException(string message) 
-      : base(message)
-    {
-    }
-    ///<summary>
-    ///construct exception with message and inner exception
-    ///</summary>
-    ///<param name="message">exception message</param>
-    ///<param name="inner">inner exception</param>
-    public IncompatibleDimensionsException(string message, Exception inner)
-      : base(message, inner)
   }
 }
