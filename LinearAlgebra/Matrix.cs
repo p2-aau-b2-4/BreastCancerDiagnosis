@@ -126,5 +126,16 @@ namespace LinearAlgebra
     {
       _transposed = _transposed == false ? true : false;
     }
+    
+    public Matrix CovarianceMatrix()
+    {
+      
+      return new Matrix();
+    }
+
+    public Matrix UnitEigenvectors()
+    {
+      return new Matrix();
+    }
   }
 }

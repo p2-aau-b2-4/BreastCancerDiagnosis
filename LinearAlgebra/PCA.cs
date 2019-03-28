@@ -7,15 +7,6 @@ namespace LinearAlgebra
             
         }
 
-        public Matrix CovarianceMatrix()
-        {
-            
-            return new Matrix();
-        }
-
-        public Matrix UnitEigenvectors()
-        {
-            return new Matrix();
-        }
+       
     }
 }
