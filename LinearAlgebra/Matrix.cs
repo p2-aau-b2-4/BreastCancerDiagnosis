@@ -40,14 +40,20 @@ namespace LinearAlgebra
     ///<summary>
     ///Nonzero elements in the matrix.
     ///</summary>
-    private int NNZ;
+    private int _NNZ;
 
     ///<summary>
     ///internal field containing the transposed state of the Matrix.
     ///</summary>
     private bool _transposed;
 
-    public bool Transposed { get; }
+    public bool Transposed
+    {
+      get
+      {
+        return _transposed; 
+      }
+    }
 
     public int? Dimensions
     {
@@ -62,13 +68,15 @@ namespace LinearAlgebra
       _transposed = transposed;
       _n = matrix.GetLength(0);
       _m = matrix.GetLength(1);
-      _IA = {0};
+      _A = new List<double>();
+      _JA = new List<double>();
+      _IA = new List<double> {0};
 
       for (int i = 0; i < _m; i++)
       {
         for (int j = 0; j < _n; j++)
         {
-          if (matrix[i, j] != 0)
+          if (matrix[i, j] != 0.0)
           {
             _A.Add(matrix[i, j]);
             _JA.Add(j);
@@ -76,7 +84,7 @@ namespace LinearAlgebra
             _NNZ++;
           }
         }
-        _IA.Add(NNZ);
+        _IA.Add(_NNZ);
       }
     }
 
@@ -88,25 +96,7 @@ namespace LinearAlgebra
     ///and defaults to false</param>
     public Matrix(List<Vector> vectors, bool transposed = false)
     {
-      _transposed = transposed;
-      _n = matrix.GetLength(0);
-      _m = matrix.GetLength(1);
-      _IA = {0};
-
-      for (int i = 0; i < _m; i++)
-      {
-        for (int j = 0; j < _n; j++)
-        {
-          if (matrix[i, j] != 0)
-          {
-            _A.Add(matrix[i, j]);
-            _JA.Add(j);
-
-            _NNZ++;
-          }
-        }
-        _IA.Add(NNZ);
-      }
+      
     }
 
     public override string ToString()
@@ -114,12 +104,23 @@ namespace LinearAlgebra
       string matrix = new String("");
       int valIndex = 0;
       if (Transposed) {
-
+        for (int i = 0; i < _n; i++) {
+          for (int j = 0; j < _m; j++) {
+            if (_IA[j+1] > _IA[j] && valIndex < _NNZ && _JA[valIndex] == i) {
+              matrix += $"{_A[valIndex]} ";
+              valIndex++;
+            }
+            else {
+              matrix += "0 ";
+            }
+          }
+          matrix += "\n";
+        }
       }
       else {
         for (int i = 0; i < _m; i++) {
           for (int j = 0; j < _n; j++) {
-            if (_IA[i+1] > _IA[i] && _JA[valIndex] == j) {
+            if (_IA[i+1] > _IA[i] && valIndex < _NNZ && _JA[valIndex] == j) {
               matrix += $"{_A[valIndex]} ";
               valIndex++;
             }
@@ -138,10 +139,10 @@ namespace LinearAlgebra
     ///</summary>
     public void Transpose()
     {
-      _transposed = _transposed == false ? true : false;
+      _transposed = _transposed ? false : true;
     }
     
-    public Matrix CovarianceMatrix()
+    /*public Matrix CovarianceMatrix()
     {
       
       return new Matrix();
@@ -150,6 +151,6 @@ namespace LinearAlgebra
     public Matrix UnitEigenvectors()
     {
       return new Matrix();
-    }
+    }*/
   }
 }
