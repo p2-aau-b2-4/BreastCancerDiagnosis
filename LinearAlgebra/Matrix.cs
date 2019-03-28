@@ -111,12 +111,26 @@ namespace LinearAlgebra
 
     public override string ToString()
     {
+      string matrix = new String("");
+      int valIndex = 0;
       if (Transposed) {
 
       }
       else {
-        return new string
+        for (int i = 0; i < _m; i++) {
+          for (int j = 0; j < _n; j++) {
+            if (_IA[i+1] > _IA[i] && _JA[valIndex] == j) {
+              matrix += $"{_A[valIndex]} ";
+              valIndex++;
+            }
+            else {
+              matrix += "0 ";
+            }
+          }
+          matrix += "\n";
+        }
       }
+      return matrix;
     }
 
     ///<summary> 
