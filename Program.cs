@@ -29,7 +29,13 @@ namespace DicomDisplayTest
               {0, 5, 7, 0},
               {0, 4, 0, 0}
             };
-            Matrix m = new Matrix(arr);
+            LinearAlgebra.Matrix m = new LinearAlgebra.Matrix(arr);
+
+            Console.WriteLine(m.ToString());
+
+            m.Transpose();
+            Console.WriteLine(m.ToString());
+
         }
     }
 }
