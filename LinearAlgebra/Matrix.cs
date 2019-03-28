@@ -129,7 +129,7 @@ namespace LinearAlgebra
       _transposed = _transposed == false ? true : false;
     }
 
-    public static Vector operator *(Vector vector, double scalar) {
+    public Vector operator *(Vector vector, double scalar) {
       List<double> elems = new List<double>();
       foreach (v in vector)
         elems.Add(v * scalar);
@@ -141,7 +141,7 @@ namespace LinearAlgebra
        return DotScalar(this, scalar);
        }
        */
-    public static double operator *(Vector vector1, Vector vector2)
+    public double operator *(Vector vector1, Vector vector2)
     {
       if (vector1.Dimensions != vector2.Dimensions)
         throw new IncompatibleDimensionsException("Vectors with different dimensions cannot be dotted.");

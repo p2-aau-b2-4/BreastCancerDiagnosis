@@ -84,7 +84,7 @@ namespace LinearAlgebra
     ///</summary>
     ///<param name="vector1">input vector 1</param>
     ///<param name="vector2">input vector 2</param>
-    public static Vector operator +(Vector vector1, Vector vector2) 
+    public Vector operator +(Vector vector1, Vector vector2) 
     {
       if (vector1.Dimensions != vector2.Dimensions)
         throw new IncompatibleDimensionsException("Vectors with different dimensions cannot be added together");
@@ -99,7 +99,7 @@ namespace LinearAlgebra
     ///</summary>
     ///<param name="vector1">input vector 1</param>
     ///<param name="vector2">input vector 2</param>
-    public static Vector operator +(Vector vector1, Vector vector2) 
+    public Vector operator +(Vector vector1, Vector vector2) 
     {
       if (vector1.Dimensions != vector2.Dimensions)
         throw new IncompatibleDimensionsException("Vectors with different dimensions cannot be added together");
@@ -114,7 +114,7 @@ namespace LinearAlgebra
     ///</summary>
     ///<param name="vector">input vector</param>
     ///<param name="scalar">input scalar</param>
-    public static Vector operator *(Vector vector, double scalar) 
+    public Vector operator *(Vector vector, double scalar) 
     {
       List<double> elems = new List<double>();
       foreach (var v in vector._elements)
@@ -127,7 +127,7 @@ namespace LinearAlgebra
     ///</summary>
     ///<param name="vector1">input vector 1</param>
     ///<param name="vector2">input vector 2</param>
-    public static double operator *(Vector vector1, Vector vector2)
+    public double operator *(Vector vector1, Vector vector2)
     {
       if (vector1.Dimensions != vector2.Dimensions)
         throw new IncompatibleDimensionsException("Vectors with different dimensions cannot be dotted.");
