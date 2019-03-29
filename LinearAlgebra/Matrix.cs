@@ -22,7 +22,7 @@ namespace LinearAlgebra
     ///<summary>
     ///Stores the values of the non-zero elements of the matrix.
     ///</summary>
-    private List<double> _A;
+    private List<double> val;
 
     ///<summary>
     ///Stores the cumulative number of non-zero elements up to (not including)
@@ -30,17 +30,17 @@ namespace LinearAlgebra
     ///IA[0] = 0
     ///IA[i] = IA[i-1] + num of non-zero elements in the (i-1)th row.
     ///</summary>
-    private List<double> _IA;
+    private List<double> rowOffset;
 
     ///<summary>
-    ///Stores the column index of each element in _A
+    ///Stores the column index of each element in val
     ///</summary>
-    private List<double> _JA;
+    private List<double> col;
 
     ///<summary>
     ///Nonzero elements in the matrix.
     ///</summary>
-    private int _NNZ;
+    private int nonZeroVals;
 
     ///<summary>
     ///internal field containing the transposed state of the Matrix.
@@ -68,9 +68,9 @@ namespace LinearAlgebra
       _transposed = transposed;
       _n = matrix.GetLength(0);
       _m = matrix.GetLength(1);
-      _A = new List<double>();
-      _JA = new List<double>();
-      _IA = new List<double> {0};
+      val = new List<double>();
+      col = new List<double>();
+      rowOffset = new List<double> {0};
 
       for (int i = 0; i < _m; i++)
       {
@@ -78,13 +78,13 @@ namespace LinearAlgebra
         {
           if (matrix[i, j] != 0.0)
           {
-            _A.Add(matrix[i, j]);
-            _JA.Add(j);
+            val.Add(matrix[i, j]);
+            col.Add(j);
 
-            _NNZ++;
+            nonZeroVals++;
           }
         }
-        _IA.Add(_NNZ);
+        rowOffset.Add(nonZeroVals);
       }
     }
 
@@ -106,8 +106,8 @@ namespace LinearAlgebra
       if (Transposed) {
         for (int i = 0; i < _n; i++) {
           for (int j = 0; j < _m; j++) {
-            if (_IA[j+1] > _IA[j] && valIndex < _NNZ && _JA[valIndex] == i) {
-              matrix += $"{_A[valIndex]} ";
+            if (rowOffset[j+1] > rowOffset[j] && valIndex < nonZeroVals && col[valIndex] == i) {
+              matrix += $"{val[valIndex]} ";
               valIndex++;
             }
             else {
@@ -120,8 +120,8 @@ namespace LinearAlgebra
       else {
         for (int i = 0; i < _m; i++) {
           for (int j = 0; j < _n; j++) {
-            if (_IA[i+1] > _IA[i] && valIndex < _NNZ && _JA[valIndex] == j) {
-              matrix += $"{_A[valIndex]} ";
+            if (rowOffset[i+1] > rowOffset[i] && valIndex < nonZeroVals && col[valIndex] == j) {
+              matrix += $"{val[valIndex]} ";
               valIndex++;
             }
             else {
