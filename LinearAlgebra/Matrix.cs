@@ -47,6 +47,22 @@ namespace LinearAlgebra
     ///</summary>
     private bool _transposed;
 
+    public int Columns
+    {
+      get 
+      {
+        return _n;
+      }
+    }
+
+    public int Rows
+    {
+      get
+      {
+        return _m
+      }
+    }
+
     public bool Transposed
     {
       get
@@ -97,6 +113,15 @@ namespace LinearAlgebra
     public Matrix(List<Vector> vectors, bool transposed = false)
     {
       
+    }
+
+    public double this[int rowIndex, int colIndex]
+    {
+      if (rowIndex >= _m || colIndex >= _n)
+        throw new IndexOutOfRangeException;
+
+      if (rowOffset[rowIndex + 1] > rowOffset[rowIndex] &&
+          col[colIndex]
     }
 
     public override string ToString()
