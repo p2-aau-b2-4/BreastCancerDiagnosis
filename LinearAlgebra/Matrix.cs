@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace LinearAlgebra 
 {
@@ -140,6 +141,62 @@ namespace LinearAlgebra
     public void Transpose()
     {
       _transposed = _transposed ? false : true;
+    }
+    
+    public double Covariance()
+    {
+      
+      return 0.0;
+    }
+
+    public void MeanSubtraction(double[,] matrix)
+    {
+      int tmp = 4;
+
+      double sum = 0;
+      
+      double[] x_i = new double[tmp];
+      double[] y_i = new double[tmp];
+      
+      for (int y = 0; y < tmp; y++)
+      {
+        for (int x = 0; x < tmp; x++)
+        {
+          sum += matrix[x, y];
+        }
+        x_i[y] = sum / tmp;
+        sum = 0;
+      }
+      
+      for (int x = 0; x < tmp; x++)
+      {
+        for (int y = 0; y < tmp; y++)
+        {
+          sum += matrix[x, y];
+        }
+        y_i[x] = sum / tmp;
+        sum = 0;
+      }
+      
+      
+      
+    }
+
+    public void CombinationsCovariance(int set,
+      int index_pos, int r, int n, dyn_array_int *subsets)
+    {
+      if (r == 0) {
+        add_int_to_end_i(subsets, set);
+      }
+      else {
+        for (int i = index_pos; i < n; i++) {
+          set = set | (1 << i);
+
+          CombinationsCovariance(set, i + 1, r - 1, n, subsets);
+
+          set = set & ~(1 << i);
+        }
+      }
     }
     
     /*public Matrix CovarianceMatrix()
