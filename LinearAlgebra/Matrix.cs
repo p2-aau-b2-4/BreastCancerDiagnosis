@@ -58,10 +58,7 @@ namespace LinearAlgebra
 
     public int Rows
     {
-      get
-      {
-        return _m
-      }
+      get { return _m; }
     }
 
     public bool Transposed
@@ -118,11 +115,15 @@ namespace LinearAlgebra
 
     public double this[int rowIndex, int colIndex]
     {
-      if (rowIndex >= _m || colIndex >= _n)
-        throw new IndexOutOfRangeException;
+      get 
+      {
+        if (rowIndex >= _m || colIndex >= _n)
+          throw new IndexOutOfRangeException;
 
-      if (rowOffset[rowIndex + 1] > rowOffset[rowIndex] &&
-          col[colIndex]
+        if (rowOffset[rowIndex + 1] > rowOffset[rowIndex] &&
+            col[colIndex])
+      }
+      
     }
 
     public override string ToString()
@@ -202,12 +203,18 @@ namespace LinearAlgebra
         y_i[x] = sum / tmp;
         sum = 0;
       }
-      
-      
+
+      for (int y = 0; y < tmp; y++)
+      {
+        for (int x = 0; x < tmp; x++)
+        {
+          matrix[x, y] -= tmp;
+        }
+      }
       
     }
 
-    public void CombinationsCovariance(int set,
+    /*public void CombinationsCovariance(int set,
       int index_pos, int r, int n, dyn_array_int *subsets)
     {
       if (r == 0) {
@@ -222,7 +229,7 @@ namespace LinearAlgebra
           set = set & ~(1 << i);
         }
       }
-    }
+    }*/
     
     /*public Matrix CovarianceMatrix()
     {
