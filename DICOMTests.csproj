@@ -6,13 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Accord.MachineLearning" Version="3.8.2-alpha" />
-    <PackageReference Include="Accord.Statistics" Version="3.8.2-alpha" />
     <PackageReference Include="fo-dicom.Drawing" Version="4.0.0" />
     <PackageReference Include="fo-dicom.NetCore" Version="4.0.0" />
+    <PackageReference Include="MathNet.Numerics" Version="4.7.0" />
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="2.0.1" />
-    <PackageReference Include="MNIST.IO" Version="1.0.1" />
     <PackageReference Include="NUnit" Version="3.11.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Program2.cs" />
   </ItemGroup>
 
 </Project>
