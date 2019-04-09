@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.IO.Enumeration;
 using System.Linq;
 using System.Text;
 using Dicom;
@@ -9,6 +10,14 @@ using DicomDisplayTest;
 
 namespace DICOMTests
 {
+    class FileSizeComparer : IComparer<FileInfo> 
+    {
+        public int Compare(FileInfo x, FileInfo y)
+        {
+            return Convert.ToInt32(y.Length) - Convert.ToInt32(x.Length);
+        }
+    }
+    [Serializable]
     public class DdsmImage
     {
         public enum BreastSideEnum
@@ -87,7 +96,7 @@ namespace DICOMTests
         public String DcomMaskFilePath { get; }
         public String DcomCroppedFilePath { get; }
 
-        public DdsmImage(String patientId, int breastDensity, BreastSideEnum breastSide, ImageViewEnum imageView,
+        private DdsmImage(String patientId, int breastDensity, BreastSideEnum breastSide, ImageViewEnum imageView,
             int abnormalityId,
             MassShapesEnum massShape,
             MassMarginsEnum massMargins, int assessment, Pathologies pathology, int subtlety, string dcomFilePath,
@@ -112,6 +121,11 @@ namespace DICOMTests
         public static List<DdsmImage> GetAllImagesFromCsvFile(String csvFilePath)
         {
             List<DdsmImage> imagesToReturn = new List<DdsmImage>();
+            
+            // lets first check if binary file exists:
+            String binaryFileLoc = csvFilePath.Replace(".csv", ".bin");
+            // if exists, then loda, else find all data, and save to file, to save time in future.
+            
             List<String> lines = File.ReadAllLines(csvFilePath).ToList();
             lines.RemoveAt(0);
             foreach (String line in lines)
@@ -147,12 +161,11 @@ namespace DICOMTests
                 if (!int.TryParse(informations[10], out var subtlety)) throw new Exception(); //todo proper exception
                 String dcomFilePath = GetDcomFilePathFromString(csvFilePath, informations[11]);
 
-                (String, String) filePathsMaskAndCropped =
-                    GetDcomMaskAndCroppedPathsFromString(csvFilePath, informations[12]);
+                var (maskFilePath, croppedFilePath) = GetDcomMaskAndCroppedPathsFromString(csvFilePath, informations[12]);
                 imagesToReturn.Add(new DdsmImage(patientId, breastDensity, breastSide, imageView, abnormalityId,
                     massShape,
-                    massMargins, abnormality, pathology, subtlety, dcomFilePath, filePathsMaskAndCropped.Item1,
-                    filePathsMaskAndCropped.Item2));
+                    massMargins, abnormality, pathology, subtlety, dcomFilePath, maskFilePath,
+                    croppedFilePath));
             }
 
             return imagesToReturn;
@@ -276,19 +289,17 @@ namespace DICOMTests
                 while (Directory.GetDirectories(activeFolder).Length > 0)
                     activeFolder = Directory.GetDirectories(activeFolder)[0];
                 String[] files = Directory.GetFiles(activeFolder);
+
+                List<FileInfo> DcmFilesFound = new List<FileInfo>();
                 foreach (String file in files)
                 {
-                    if (file.EndsWith(folders[folders.Length - 1]))
-                    {
-                        maskFilePath = file;
-                    }
-                    else if (file.EndsWith(".dcm"))
-                    {
-                        croppedFilePath = file;
+                    if(file.EndsWith(".dcm")){
+                        DcmFilesFound.Add(new FileInfo(file));
                     }
                 }
-
-                //throw new NotImplementedException();
+                DcmFilesFound.Sort(new FileSizeComparer());
+                maskFilePath = DcmFilesFound[0].FullName;
+                croppedFilePath = DcmFilesFound[1].FullName;
             }
 
             return (maskFilePath, croppedFilePath);
