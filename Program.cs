@@ -74,7 +74,8 @@ namespace DicomDisplayTest
             //m.MeanSubtraction(arr);
             //m.CombinationsSubset(2,3, list);
             PCA pca = new PCA();
-            pca.CovarianceMatrix(sM);
+            double[,] cArr = pca.CovarianceMatrix(sM);
+            pca.UnitEigenvectors(cArr);
             
             /*Console.WriteLine(list.Count);
             Console.WriteLine(list[0]);
