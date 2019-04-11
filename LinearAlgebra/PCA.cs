@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Numerics;
+using BitMiracle.LibJpeg.Classic;
+using MathNet.Numerics.LinearAlgebra;
+//using System.Numerics;
 using MathNet.Numerics.LinearAlgebra.Double;
 
-namespace LinearAlgebra
+namespace PCA
 {
     public class PCA
     {
@@ -149,10 +151,15 @@ namespace LinearAlgebra
                     }
                 }
 
-                SwapRows();
+                SwapRows(sparseMatrix, i, r);
+                
                 if (sparseMatrix[r,lead] != 0)
                 {
                     //If M[r, lead] is not 0 divide row r by M[r, lead]
+                    for (int j = 0; j < sparseMatrix.ColumnCount; j++)
+                    {
+                        sparseMatrix[r, j] = sparseMatrix[r, j] / sparseMatrix[r, lead];
+                    }
                 }
 
                 for (; i >= 0 && i < rowCount; i++)
@@ -160,6 +167,9 @@ namespace LinearAlgebra
                     if (i != r)
                     {
                         //Subtract M[i, lead] multiplied by row r from row i
+                            sparseMatrix.Row(i).
+                                Subtract(sparseMatrix.Row(r).
+                                    Multiply(sparseMatrix[i, lead]));
                     }
                 }
 
@@ -167,9 +177,34 @@ namespace LinearAlgebra
             }
         }
 
-        public void SwapRows()
+        public void SolveEchelonForm(SparseMatrix sparseMatrix)
         {
+            double[] val = new double[sparseMatrix.RowCount];
+            double[] res = new double[sparseMatrix.RowCount];
+            int j = 0;
+            for (int i = sparseMatrix.RowCount; i >= 0; i--)
+            {
+                for (int k = sparseMatrix.ColumnCount; k >= 0; k--)
+                {
+                    if ()
+                    {
+                        
+                    }
+                    //sparseMatrix.Row(i)[k] * sparseMatrix.Row(i);
+                }
+                val[i]
+                 = sparseMatrix.Row(i)[1];
+            }
+
             
+        }
+
+        private void SwapRows(SparseMatrix sparseMatrix, int i, int r)
+        {
+            Vector<double> vector = sparseMatrix.Row(i);
+            
+            sparseMatrix.SetRow(i,sparseMatrix.Row(r));
+            sparseMatrix.SetRow(r,vector);
         }
 
         public double Determinant(SparseMatrix sparseMatrix)
