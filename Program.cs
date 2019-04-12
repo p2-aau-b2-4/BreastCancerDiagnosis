@@ -18,12 +18,14 @@ namespace DicomDisplayTest
     {
         static void Main(string[] args)
         {
-            
-            List<DdsmImage> DDSMImages = 
+            List<DdsmImage> DDSMImages =
                 DdsmImage.GetAllImagesFromCsvFile(@"E:\BrystTest\mass_case_description_train_set.csv");
             Console.WriteLine($"Found {DDSMImages.Count}");
-            DDSMImages.First().GetNormalizedSizedCrop(1000).SaveAsPng("black.png");
-            
+
+            var x = DDSMImages.First();
+            x.GetDcomCroppedImage().PixelArray = x.GetDcomCroppedImage().PixelArray;
+            x.GetNormalizedSizedCrop(1000).SaveAsPng("black.png");
+
 //            Serializer.Save("data.bin", DDSMImages);
 //            foreach (DdsmImage ddsmImage in DDSMImages)
 //            {
