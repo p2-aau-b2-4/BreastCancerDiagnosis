@@ -16,7 +16,7 @@ namespace DicomDisplayTest
         {
             get
             {
-                ushort[,] result = new ushort[this.Width,this.Height];
+                ushort[,] result = new ushort[this.Height,this.Width];
                 // this uses blockcopy, since data format is the same in byte[] and ushort[,]
                 Buffer.BlockCopy(PixelData, 0, result, 0, PixelData.Length);
                 return result;
@@ -60,12 +60,12 @@ namespace DicomDisplayTest
         public override void SaveAsPng(string saveLoc)
         {
             var pixelArray = PixelArray;
-            Bitmap imgBitmap = new Bitmap(pixelArray.GetLength(0), pixelArray.GetLength(1));
-            for (int x = 0; x < pixelArray.GetLength(0); x++)
+            Bitmap imgBitmap = new Bitmap(pixelArray.GetLength(1), pixelArray.GetLength(0));
+            for (int x = 0; x < pixelArray.GetLength(1); x++)
             {
-                for (int y = 0; y < pixelArray.GetLength(1); y++)
+                for (int y = 0; y < pixelArray.GetLength(0); y++)
                 {
-                    int greyColor = (int) Map(pixelArray[x, y], 0, 65535, 0, 255);
+                    int greyColor = (int) Map(pixelArray[y, x], 0, 65535, 0, 255);
                     imgBitmap.SetPixel(x, y, Color.FromArgb(greyColor, greyColor, greyColor));
                 }
             }
