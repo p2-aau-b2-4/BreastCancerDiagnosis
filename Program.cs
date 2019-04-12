@@ -18,6 +18,7 @@ namespace DicomDisplayTest
     {
         static void Main(string[] args)
         {
+            
             List<DdsmImage> DDSMImages = 
                 DdsmImage.GetAllImagesFromCsvFile(@"E:\BrystTest\mass_case_description_train_set.csv");
             Console.WriteLine($"Found {DDSMImages.Count}");
