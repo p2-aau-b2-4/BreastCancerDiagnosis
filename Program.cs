@@ -18,6 +18,7 @@ namespace DicomDisplayTest
     {
         static void Main(string[] args)
         {
+<<<<<<< HEAD
             var img = DicomFile.Open(@"e.dcm");
             UshortArrayAsImage imgInfo = img.GetUshortImageInfo();
             imgInfo.SaveAsPng("eINFO.PNG");
@@ -32,6 +33,21 @@ namespace DicomDisplayTest
             //            {
             //                Console.WriteLine($"{ddsmImage.PatientId} | {ddsmImage.ImageView} | {ddsmImage.BreastSide} | {ddsmImage.GetDcomCroppedImage().Width}x{ddsmImage.GetDcomCroppedImage().Height}");
             //            }
+=======
+            List<DdsmImage> DDSMImages =
+                DdsmImage.GetAllImagesFromCsvFile(@"E:\BrystTest\mass_case_description_train_set.csv");
+            Console.WriteLine($"Found {DDSMImages.Count}");
+
+            var x = DDSMImages.First();
+            x.GetDcomCroppedImage().PixelArray = x.GetDcomCroppedImage().PixelArray;
+            x.GetNormalizedSizedCrop(1000).SaveAsPng("black.png");
+
+//            Serializer.Save("data.bin", DDSMImages);
+//            foreach (DdsmImage ddsmImage in DDSMImages)
+//            {
+//                Console.WriteLine($"{ddsmImage.PatientId} | {ddsmImage.ImageView} | {ddsmImage.BreastSide} | {ddsmImage.GetDcomCroppedImage().Width}x{ddsmImage.GetDcomCroppedImage().Height}");
+//            }
+>>>>>>> 9ab45b190b6b8ae7092ea6eb154a77aa245141c4
 
             // Lets render a picture:
             //            Console.WriteLine(DDSMImages[10].DcomMaskFilePath);
