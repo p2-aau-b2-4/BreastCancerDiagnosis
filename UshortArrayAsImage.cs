@@ -10,26 +10,22 @@ namespace DicomDisplayTest
 {
     public class UshortArrayAsImage : ArrayAsImageAbstract
     {
-        private ushort[,] _pixelArray;
+//        private ushort[,] _pixelArray;
 
         public ushort[,] PixelArray
         {
             get
             {
-                if (_pixelArray == null)
-                {
-                    // lets generate it from PixelData
-                    Console.WriteLine($"{Width}x{Height}");
-                    ushort[,] toReturn = new ushort[Width, Height];
-                    for (var i = 0; i < PixelData.Length; i = i + 2)
-                    {
-                        toReturn[i / 2 % Width, i / 2 / Width] = BitConverter.ToUInt16(PixelData, i);
-                    }
-
-                    _pixelArray = toReturn;
-                }
-
-                return _pixelArray;
+                ushort[,] result = new ushort[this.Width,this.Height];
+                // this uses blockcopy, since data format is the same in byte[] and ushort[,]
+                Buffer.BlockCopy(PixelData, 0, result, 0, PixelData.Length);
+                return result;
+            }
+            set
+            {
+                byte[] result = new byte[this.Width * this.Height * 2];
+                Buffer.BlockCopy(value,0,result,0,PixelData.Length);
+                PixelData = result;
             }
         }
 
@@ -63,12 +59,13 @@ namespace DicomDisplayTest
 
         public override void SaveAsPng(string saveLoc)
         {
-            Bitmap imgBitmap = new Bitmap(PixelArray.GetLength(0), PixelArray.GetLength(1));
-            for (int x = 0; x < PixelArray.GetLength(0); x++)
+            var pixelArray = PixelArray;
+            Bitmap imgBitmap = new Bitmap(pixelArray.GetLength(0), pixelArray.GetLength(1));
+            for (int x = 0; x < pixelArray.GetLength(0); x++)
             {
-                for (int y = 0; y < PixelArray.GetLength(1); y++)
+                for (int y = 0; y < pixelArray.GetLength(1); y++)
                 {
-                    int greyColor = (int) Map(PixelArray[x, y], 0, 65535, 0, 255);
+                    int greyColor = (int) Map(pixelArray[x, y], 0, 65535, 0, 255);
                     imgBitmap.SetPixel(x, y, Color.FromArgb(greyColor, greyColor, greyColor));
                 }
             }

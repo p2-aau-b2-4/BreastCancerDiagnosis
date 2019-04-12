@@ -8,7 +8,7 @@ namespace DICOMTests
     {
         public int Width { get; }
         public int Height { get; }
-        public byte[] PixelData { get; } // up to class to interpret byte array;
+        public byte[] PixelData { get; set; } // up to class to interpret byte array;
 
         protected ArrayAsImageAbstract(byte[] pixelData, int width, int height)
         {

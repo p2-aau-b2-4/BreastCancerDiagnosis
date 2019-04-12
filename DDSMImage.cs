@@ -153,7 +153,7 @@ namespace DICOMTests
 
                 MassMarginsEnum massMargins = GetMassMarginsFromString(informations[7]);
 
-                if (!int.TryParse(informations[8], out var abnormality)) throw new Exception(); //todo proper exception
+                if (!int.TryParse(informations[8], out var assessment)) throw new Exception(); //todo proper exception
 
                 Pathologies pathology = Pathologies.Benign;
                 if (informations[9].Equals("MALIGNANT")) pathology = Pathologies.Malignant;
@@ -165,7 +165,7 @@ namespace DICOMTests
                 var (maskFilePath, croppedFilePath) = GetDcomMaskAndCroppedPathsFromString(csvFilePath, informations[12]);
                 imagesToReturn.Add(new DdsmImage(patientId, breastDensity, breastSide, imageView, abnormalityId,
                     massShape,
-                    massMargins, abnormality, pathology, subtlety, dcomFilePath, maskFilePath,
+                    massMargins, assessment, pathology, subtlety, dcomFilePath, maskFilePath,
                     croppedFilePath));
             }
 
