@@ -183,8 +183,11 @@ namespace PCA
             //Func<double, double> f = x => Polynomial.Evaluate(x,);
             //Complex[] d = MathNet.Numerics.FindRoots.Polynomial(new double[]{3,-4,1});
 
-            var evd = sparseMatrix.Evd(MathNet.Numerics.LinearAlgebra.Symmetricity.Symmetric);
+            var evd = sparseMatrix.Evd(MathNet.Numerics.LinearAlgebra.Symmetricity.Asymmetric);
+            var eigen = sparseMatrix.Evd();
             Console.WriteLine("Her kommer the d");
+            Console.WriteLine(eigen.EigenValues);
+            Console.WriteLine(eigen.EigenVectors);
             Console.WriteLine(evd.EigenValues);
             Console.WriteLine(evd.EigenVectors);
             
