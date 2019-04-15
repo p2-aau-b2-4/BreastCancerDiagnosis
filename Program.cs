@@ -29,6 +29,7 @@ namespace DicomDisplayTest
               {0, 4, 0, 0}
             };
             LinearAlgebra.Matrix m = new LinearAlgebra.Matrix(arr);
+            SparseMatrix ms = SparseMatrix.OfArray(arr);
 
             Console.WriteLine(m.ToString());
             
@@ -77,7 +78,7 @@ namespace DicomDisplayTest
             PCA.PCA pca = new PCA.PCA();
             //double[,] cArr = pca.CovarianceMatrix(sM);
             //pca.UnitEigenvectors(cArr);
-            pca.SolveEchelonForm();
+            pca.SolveEchelonForm(ms);
 
             /*Console.WriteLine(list.Count);
             Console.WriteLine(list[0]);
