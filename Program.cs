@@ -72,13 +72,19 @@ namespace DicomDisplayTest
             //sVL.Add(sV3);
             
             SparseMatrix sM = SparseMatrix.OfColumns(sVL);
+            double[,] covarianceMat = new double[2,2] {
+              {0.616555556, 0.615444444},
+              {0.615444444, 0.716555556}
+
+            };
             //m.Transpose();
             //m.MeanSubtraction(arr);
             //m.CombinationsSubset(2,3, list);
             PCA.PCA pca = new PCA.PCA();
             //double[,] cArr = pca.CovarianceMatrix(sM);
             //pca.UnitEigenvectors(cArr);
-            pca.SolveEchelonForm(ms);
+            SparseMatrix cov = SparseMatrix.OfArray(covarianceMat);
+            pca.SolveEchelonForm(cov);
 
             /*Console.WriteLine(list.Count);
             Console.WriteLine(list[0]);
