@@ -11,7 +11,7 @@ using System.Net.Mime;
 using Dicom;
 using Dicom.Imaging;
 using Microsoft.Win32;
-using LinearAlgebra;
+using PCA;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Numerics.LinearAlgebra.Storage;
@@ -74,10 +74,11 @@ namespace DicomDisplayTest
             //m.Transpose();
             //m.MeanSubtraction(arr);
             //m.CombinationsSubset(2,3, list);
-            PCA pca = new PCA();
-            double[,] cArr = pca.CovarianceMatrix(sM);
-            pca.UnitEigenvectors(cArr);
-            
+            PCA.PCA pca = new PCA.PCA();
+            //double[,] cArr = pca.CovarianceMatrix(sM);
+            //pca.UnitEigenvectors(cArr);
+            pca.SolveEchelonForm();
+
             /*Console.WriteLine(list.Count);
             Console.WriteLine(list[0]);
             Console.WriteLine(list[1]);

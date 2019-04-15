@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using BitMiracle.LibJpeg.Classic;
-using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics;
 //using System.Numerics;
 using MathNet.Numerics.LinearAlgebra.Double;
 
@@ -177,15 +178,25 @@ namespace PCA
             }
         }
 
-        public void SolveEchelonForm(SparseMatrix sparseMatrix)
+        public void SolveEchelonForm(/*SparseMatrix sparseMatrix*/)
         {
-            double[] val = new double[sparseMatrix.RowCount];
+            //Func<double, double> f = x => Polynomial.Evaluate(x,);
+            Complex[] d = MathNet.Numerics.FindRoots.Polynomial(new double[]{3,-4,1});
+            Console.WriteLine("Her kommer the d");
+            foreach (var D in d)
+            {
+                Console.WriteLine(D.Real);
+            }
+            
+            /*double[] val = new double[sparseMatrix.RowCount];
             double[] res = new double[sparseMatrix.RowCount];
             int j = 0;
             for (int i = sparseMatrix.RowCount; i >= 0; i--)
             {
                 for (int k = sparseMatrix.ColumnCount; k >= 0; k--)
                 {
+                    
+                    
                     if ()
                     {
                         
@@ -194,14 +205,14 @@ namespace PCA
                 }
                 val[i]
                  = sparseMatrix.Row(i)[1];
-            }
+            }*/
 
             
         }
 
         private void SwapRows(SparseMatrix sparseMatrix, int i, int r)
         {
-            Vector<double> vector = sparseMatrix.Row(i);
+            MathNet.Numerics.LinearAlgebra.Vector<double> vector = sparseMatrix.Row(i);
             
             sparseMatrix.SetRow(i,sparseMatrix.Row(r));
             sparseMatrix.SetRow(r,vector);
