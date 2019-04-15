@@ -178,15 +178,15 @@ namespace PCA
             }
         }
 
-        public void SolveEchelonForm(/*SparseMatrix sparseMatrix*/)
+        public void SolveEchelonForm(SparseMatrix sparseMatrix)
         {
             //Func<double, double> f = x => Polynomial.Evaluate(x,);
-            Complex[] d = MathNet.Numerics.FindRoots.Polynomial(new double[]{3,-4,1});
+            //Complex[] d = MathNet.Numerics.FindRoots.Polynomial(new double[]{3,-4,1});
+
+            var evd = sparseMatrix.Evd(MathNet.Numerics.LinearAlgebra.Symmetricity.Symmetric);
             Console.WriteLine("Her kommer the d");
-            foreach (var D in d)
-            {
-                Console.WriteLine(D.Real);
-            }
+            Console.WriteLine(evd.EigenValues);
+            Console.WriteLine(evd.EigenVectors);
             
             /*double[] val = new double[sparseMatrix.RowCount];
             double[] res = new double[sparseMatrix.RowCount];
