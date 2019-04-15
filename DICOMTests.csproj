@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <Compile Remove="Program2.cs" />
+    <Compile Remove="Contrast.cs" />
   </ItemGroup>
 
 </Project>
