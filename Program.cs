@@ -33,7 +33,7 @@ namespace DicomDisplayTest
 
             Console.WriteLine(m.ToString());
             
-            double[,] matrix = new double[,]
+            double[,] matrix1 = new double[,]
             {
                 {2.5,2.4},
                 {0.5,0.7},
@@ -47,11 +47,19 @@ namespace DicomDisplayTest
                 {1.1,0.9}
             };
             
-            SparseMatrix sM = SparseMatrix.OfArray(matrix);
+            double[,] matrix2 = new double[,]
+            {
+                {7,3},
+                {3,-1}
+            };
+            
+            SparseMatrix sM1 = SparseMatrix.OfArray(matrix1);
+            SparseMatrix sM2 = SparseMatrix.OfArray(matrix2);
 
             PCA.PCA pca = new PCA.PCA();
             
-            pca.SolveEigenValues(sM);
+            pca.SolveEigenValues(sM1);
+            pca.SolveEigenValues(sM2);
 
         }
     }
