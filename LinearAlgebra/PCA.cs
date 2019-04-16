@@ -14,7 +14,7 @@ namespace PCA
         {
         }
 
-        public void MeanSubtraction(SparseMatrix matrix)
+        private void MeanSubtraction(SparseMatrix matrix)
         {
             int tmp = matrix.RowCount;
             double sum = 0;
@@ -63,7 +63,7 @@ namespace PCA
             Console.WriteLine("\n");
         }
 
-        public void CombinationsSubset(int numberOfElements, int numberOfDimensions, List<int> subsets)
+        private void CombinationsSubset(int numberOfElements, int numberOfDimensions, List<int> subsets)
         {
             CombinationsCovariance(0, 0, numberOfElements, numberOfDimensions, subsets);
         }
@@ -87,12 +87,12 @@ namespace PCA
             }
         }
 
-        public double Covariance(double x, double y, int dim)
+        private double Covariance(double x, double y, int dim)
         {
             return (x * y) / (dim - 1);
         }
 
-        public SparseMatrix CovarianceMatrix(SparseMatrix sparseMatrix)
+        private SparseMatrix CovarianceMatrix(SparseMatrix sparseMatrix)
         {
             MeanSubtraction(sparseMatrix);
 
@@ -144,7 +144,7 @@ namespace PCA
             sparseMatrix.SetRow(r,vector);
         }
 
-        public double Determinant(SparseMatrix sparseMatrix)
+        private double Determinant(SparseMatrix sparseMatrix)
         {
             return sparseMatrix.Determinant();
         }
