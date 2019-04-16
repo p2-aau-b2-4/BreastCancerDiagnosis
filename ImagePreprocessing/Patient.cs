@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace DicomDisplayTest
+namespace ImagePreprocessing
 {
     public class Patient
     {

@@ -2,7 +2,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 
-namespace DICOMTests
+namespace ImagePreprocessing
 {
     public class UByteArrayAsImage : ArrayAsImageAbstract
     {

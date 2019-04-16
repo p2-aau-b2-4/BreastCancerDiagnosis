@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using DICOMTests;
 
-namespace DicomDisplayTest
+namespace ImagePreprocessing
 {
     public class DDSMPatient
     {

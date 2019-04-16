@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using DicomDisplayTest;
 
-namespace DICOMTests
+namespace ImagePreprocessing
 {
     static class UShortArrayAsImageImageProcessingExtensions
     {

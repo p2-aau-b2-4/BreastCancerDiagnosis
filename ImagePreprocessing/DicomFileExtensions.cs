@@ -10,7 +10,7 @@ using Dicom.IO.Buffer;
 using Dicom.Imaging;
 using DICOMTests;
 
-namespace DicomDisplayTest
+namespace ImagePreprocessing
 {
     public static class DicomFileExtensions
     {

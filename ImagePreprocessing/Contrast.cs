@@ -5,7 +5,7 @@ using Dicom;
 using Dicom.Imaging;
 using Dicom.Imaging.Codec;
 
-namespace DicomDisplayTest
+namespace ImagePreprocessing
 {
     public class Contrast
     {

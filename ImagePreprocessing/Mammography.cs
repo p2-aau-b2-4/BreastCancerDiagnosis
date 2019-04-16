@@ -1,6 +1,6 @@
 using System;
 
-namespace DicomDisplayTest
+namespace ImagePreprocessing
 {
     public class Mammography
     {

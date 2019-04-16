@@ -12,7 +12,7 @@ using Dicom.Imaging;
 using DICOMTests;
 using Microsoft.Win32;
 
-namespace DicomDisplayTest
+namespace ImagePreprocessing
 {
     class Program
     {
