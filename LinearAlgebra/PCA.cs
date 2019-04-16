@@ -171,53 +171,7 @@ namespace PCA
             return sparseMatrix.Determinant();
         }
 
-        public void Eigenvectors(SparseMatrix sparseMatrix)
-        {
-            List<double> list = new List<double>();
-            list.Add(1);
-            list.Add(0);
-            
-            List<double> list2 = new List<double>();
-            list2.Add(0);
-            list2.Add(1);
-            
-            SparseVector sV = SparseVector.OfEnumerable(list);
-            SparseVector sV2 = SparseVector.OfEnumerable(list2);
-            
-            List<SparseVector> sVL = new List<SparseVector>();
-            sVL.Add(sV);
-            sVL.Add(sV2);
-            
-            /*SparseMatrix sMa = SparseMatrix.OfColumns(sVL);
-
-            sparseMatrix * sMa;
-            
-            Determinant();*/
-        }
-
-        public void UnitEigenvectors(double[,] cArr)
-        {
-            double len = 0.0, len2 = 0.0;
-
-            len = Math.Sqrt((cArr[0, 0] * cArr[0, 0]) + (cArr[1, 0] * cArr[1, 0]));
-            len2 = Math.Sqrt((cArr[0, 1] * cArr[0, 1]) + (cArr[1, 1] * cArr[1, 1]));
-
-            cArr[0, 0] = cArr[0, 0] / len;
-            cArr[1, 0] = cArr[1, 0] / len;
-
-            cArr[0, 1] = cArr[0, 1] / len2;
-            cArr[1, 1] = cArr[1, 1] / len2;
-
-            Console.WriteLine();
-            for (int y = 0; y < 2; y++)
-            {
-                for (int x = 0; x < 2; x++)
-                {
-                    Console.Write(Math.Round(cArr[x, y], 5) + " ");
-                }
-
-                Console.WriteLine();
-            }
-        }
+        
+        
     }
 }
