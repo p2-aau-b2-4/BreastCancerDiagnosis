@@ -16,33 +16,20 @@ namespace DimensionReduction
 
         public void MeanSubtraction(SparseMatrix matrix)
         {
-            int tmp = matrix.RowCount;
             double sum = 0;
             double xI = 0;
 
-            for (int x = 0; x < matrix.RowCount; x++)
-            {
-                for (int y = 0; y < matrix.ColumnCount; y++)
-                {
-                    Console.Write(matrix.Storage[x, y] + " ");
-                }
-
-                Console.WriteLine();
-            }
-
-            Console.WriteLine("\n");
-
             for (int i = 0; i < matrix.ColumnCount; i++)
             {
-                for (int x = 0; x < tmp; x++)
+                for (int x = 0; x < matrix.RowCount; x++)
                 {
                     sum += matrix.Storage[x, i];
                 }
 
-                xI = sum / tmp;
+                xI = sum / matrix.RowCount;
                 sum = 0;
 
-                for (int x = 0; x < tmp; x++)
+                for (int x = 0; x < matrix.RowCount; x++)
                 {
                     matrix.Storage[x, i] -= xI;
                 }
