@@ -1,7 +1,7 @@
 @model object
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Vælg knude";
     Layout = "_Layout";
 }
 <style>
@@ -14,27 +14,27 @@
 </style>
 
 <style>
-    #canvas{border:1px solid red;}
+    #canvas { width: 100% }
 </style>
 
 <script>
-    $(function(){
+    $(function() {
 
-        var canvas=document.getElementById("canvas");
-        var ctx=canvas.getContext("2d");
-        ctx.lineWidth=2;
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+        ctx.lineWidth = 2;
 
+        var resizedWidth = 0.0;
 
-
-        var img=new Image();
-        img.onload=function(){
-            canvas.width=img.width;
-            canvas.height=img.height;
-            ctx.drawImage(img,0,0);
-
+        var img = new Image();
+        img.onload = function() {
+            canvas.width = img.width;
+            resizedWidth = img.width * 1.0 / canvas.offsetWidth;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
         }
-        
-        img.src="/analyze/showPng/@ViewBag.FileName";
+
+        img.src = "/analyze/showPng/@ViewBag.FileName";
 
         var x1 = 0;
         var y1 = 0;
@@ -43,21 +43,18 @@
 
         var mousePressed = false;
 
-        function handleMouseMove(e){
-            var canvasOffset=$("#canvas").offset();
-            var offsetX=canvasOffset.left;
-            var offsetY = canvasOffset.top- window.scrollY;
-            var mouseXLoc = parseInt(e.clientX-offsetX);
-            var mouseYLoc = parseInt(e.clientY-offsetY);
+        function handleMouseMove(e) {
+            var mouseXLoc = mouseOnImageLoc(e)[0];
+            var mouseYLoc = mouseOnImageLoc(e)[1];
 
-            ctx.clearRect(0,0,canvas.width,canvas.height);
-            ctx.drawImage(img,0,0);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0);
             ctx.beginPath();
-            ctx.moveTo(mouseXLoc,0);
-            ctx.lineTo(mouseXLoc,canvas.height);
-            ctx.moveTo(0,mouseYLoc);
-            ctx.lineTo(canvas.width,mouseYLoc);
-            
+            ctx.moveTo(mouseXLoc, 0);
+            ctx.lineTo(mouseXLoc, canvas.height);
+            ctx.moveTo(0, mouseYLoc);
+            ctx.lineTo(canvas.width, mouseYLoc);
+
             ctx.lineWidth = 1;
             ctx.strokeStyle = "#000000";
             ctx.stroke();
@@ -67,45 +64,76 @@
             ctx.strokeStyle = "#FF0000";
 
             if (mousePressed) {
-                x2 = mouseXLoc;
-                y2 = mouseYLoc;
+                x2 = mouseOnImageLoc(e)[0];
+                y2 = mouseOnImageLoc(e)[1];
             }
-            ctx.rect(x1, y1, x2-x1,y2-y1);
+            ctx.rect(x1, y1, x2 - x1, y2 - y1);
             ctx.stroke();
             ctx.closePath();
 
         }
-        function handleMouseDown(e){
-            var canvasOffset=$("#canvas").offset();
-            var offsetX=canvasOffset.left;
-            var offsetY = canvasOffset.top- window.scrollY;
-            var mouseXLoc = parseInt(e.clientX-offsetX);
-            var mouseYLoc = parseInt(e.clientY-offsetY);
 
-            x1 = x2 = mouseXLoc;
-            y1 = y2 = mouseYLoc;
+        function handleMouseDown(e) {
+            x1 = x2 = mouseOnImageLoc(e)[0];
+            y1 = y2 = mouseOnImageLoc(e)[1];
             mousePressed = true;
         }
-        function handleMouseUp(e){
-            var canvasOffset=$("#canvas").offset();
-            var offsetX=canvasOffset.left;
-            var offsetY = canvasOffset.top- window.scrollY;
-            var mouseXLoc = parseInt(e.clientX-offsetX);
-            var mouseYLoc = parseInt(e.clientY-offsetY);
 
-            x2 = mouseXLoc;
-            y2 = mouseYLoc;
+        function handleMouseUp(e) {
+            x2 = mouseOnImageLoc(e)[0];
+            y2 = mouseOnImageLoc(e)[1];
             mousePressed = false;
+            updateDiv();
+            updateForm();
         }
 
-        $("#canvas").mousemove(function(e){handleMouseMove(e);});
-        $("#canvas").mousedown(function(e){handleMouseDown(e);});
-        $("#canvas").mouseup(function(e){handleMouseUp(e);});
+        function updateDiv() {
+            document.getElementById("testDiv").innerText = parseInt(x1 * resizedWidth) +
+                "," +
+                parseInt(y1 * resizedWidth) +
+                " | " +
+                parseInt(x2 * resizedWidth) +
+                "," +
+                parseInt(y2 * resizedWidth);
+        }
+
+        $("#canvas").mousemove(function(e) { handleMouseMove(e); });
+        $("#canvas").mousedown(function(e) { handleMouseDown(e); });
+        $("#canvas").mouseup(function(e) { handleMouseUp(e); });
+
+        function mouseOnImageLoc(e) {
+            resizedWidth = img.width * 1.0 / canvas.offsetWidth;
+            var canvasOffset = $("#canvas").offset();
+            var offsetX = canvasOffset.left;
+            var offsetY = canvasOffset.top - window.scrollY;
+            var mouseXLoc = parseInt((e.clientX - offsetX) * resizedWidth);
+            var mouseYLoc = parseInt((e.clientY - offsetY) * resizedWidth);
+            return [mouseXLoc, mouseYLoc];
+        }
+        
+        function updateForm() {
+            document.getElementById("submitInput").disabled = false;
+            document.getElementById("x1Input").value = x1;
+            document.getElementById("y1Input").value = y1;
+            document.getElementById("x2Input").value = x2;
+            document.getElementById("y2Input").value = y2;
+            
+        }
 
 
     }); // end $(function(){});
 </script>
 
 <h2>Vælg et område med knuden, som algoritmen skal analysere</h2>
-<canvas id="canvas" class="2center" width=300 height=300></canvas>
+<canvas id="canvas" class="2center"></canvas>
+<h2 class="center"id="testDiv"></h2>
+<form method="post" enctype="multipart/form-data" asp-controller="Analyze" asp-action="StartAnalyzing">
+    <input type="hidden" name="x1" id="x1Input"/>
+    <input type="hidden" name="y1" id="y1Input"/>
+    <input type="hidden" name="x2" id="x2Input"/>
+    <input type="hidden" name="y2" id="y2Input"/>
+    <input type="hidden" name="filePath" value="@ViewBag.FileName"/>
+    <br></br>
+    <button type="submit" class="btn btn-primary btn-lg btn-block" id="submitInput" disabled>Videre: Foretag analyse</button>
+</form>
 @*<img class="center" src="/analyze/showPng/@ViewBag.FileName" onmousemove="MoveImage()" onmousedown="ClickImage()">*@

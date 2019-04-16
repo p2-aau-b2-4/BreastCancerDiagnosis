@@ -72,9 +72,17 @@ namespace WebApp
                     new {controller = "Analyze", action = "GetPngFromTempPath"},
                     new {path = @"\w+"});
                 routes.MapRoute(
+                    "StartAnalyzing",
+                    "/analyze/startAnalyze",
+                    new {controller = "Analyze", action = "StartAnalyzing"});
+                routes.MapRoute(
+                    "StartAnalyzing",
+                    "/analyze/showResult/{path}",
+                    new {controller = "Analyze", action = "ShowAnalysis"}, new {path = @"\w+"});
+                routes.MapRoute(
                     "default",
                     "/",
-                new {controller = "Home", action = "Index"});
+                    new {controller = "Home", action = "Index"});
             });
         }
     }
