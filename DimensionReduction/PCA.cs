@@ -43,25 +43,35 @@ namespace DimensionReduction
             }
         }
         
+        ///<summary>
+        ///Finds covariance for two doubles
+        ///</summary>
+        ///<param name=x>first value</param>
+        ///<param name=y>second value</param>
+        ///<param name=dim>dimensions of parent matrix</param>
         private double Covariance(double x, double y, int dim)
         {
             return (x * y) / (dim - 1);
         }
 
-        public SparseMatrix CovarianceMatrix(SparseMatrix sparseMatrix)
+        ///<summary>
+        ///Finds the covariance matrix of a SparseMatrix
+        ///</summary>
+        ///<param name=matrix>input matrix</param>
+        public SparseMatrix CovarianceMatrix(SparseMatrix matrix)
         {
-            MeanSubtraction(sparseMatrix);
+            MeanSubtraction(matrix);
 
-            double[,] cMatrix = new double[sparseMatrix.ColumnCount, sparseMatrix.ColumnCount];
+            double[,] cMatrix = new double[matrix.ColumnCount, matrix.ColumnCount];
 
-            for (int x = 0; x < sparseMatrix.ColumnCount; x++)
+            for (int x = 0; x < matrix.ColumnCount; x++)
             {
-                for (int y = 0; y < sparseMatrix.ColumnCount; y++)
+                for (int y = 0; y < matrix.ColumnCount; y++)
                 {
-                    for (int i = 0; i < sparseMatrix.RowCount; i++)
+                    for (int i = 0; i < matrix.RowCount; i++)
                     {
-                        cMatrix[x, y] = Covariance(sparseMatrix.Storage[i, x], sparseMatrix.Storage[i, y],
-                            sparseMatrix.RowCount);
+                        cMatrix[x, y] = Covariance(matrix.Storage[i, x], matrix.Storage[i, y],
+                            matrix.RowCount);
                     }
                 }
             }
@@ -69,12 +79,16 @@ namespace DimensionReduction
             return SparseMatrix.OfArray(cMatrix);
         }
         
-        public void SolveEigenValues(SparseMatrix sparseMatrix)
+        ///<summary>
+        ///Finds the eigen values of a matrix
+        ///</summary>
+        ///<param name=matrix>input matrix</param>
+        public void SolveEigenValues(SparseMatrix matrix)
         {
-            sparseMatrix = CovarianceMatrix(sparseMatrix);
+            covMatrix = CovarianceMatrix(matrix);
             
-            var evd = sparseMatrix.Evd(MathNet.Numerics.LinearAlgebra.Symmetricity.Asymmetric);
-            var eigen = sparseMatrix.Evd();
+            var evd = covMatrix.Evd(MathNet.Numerics.LinearAlgebra.Symmetricity.Asymmetric);
+            var eigen = covMatrix.Evd();
             Console.WriteLine("Her kommer the d");
             Console.WriteLine(eigen.EigenValues);
             Console.WriteLine(eigen.EigenVectors);
@@ -82,7 +96,7 @@ namespace DimensionReduction
             Console.WriteLine(evd.EigenVectors);
         }
 
-        public void SolveEigenVectors(SparseMatrix sparseMatrix)
+        public void SolveEigenVectors(SparseMatrix matrix)
         {
             
         }
