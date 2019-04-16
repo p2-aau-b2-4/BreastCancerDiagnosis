@@ -26,6 +26,8 @@ namespace DimensionReduction
                     sum += matrix.Storage[x, i];
                 }
 
+                if (Double.IsNegativeInfinity(sum) || Double.IsInfinity(sum))
+                  throw new NotFiniteNumberException(sum);
                 xI = sum / matrix.RowCount;
                 sum = 0;
 
