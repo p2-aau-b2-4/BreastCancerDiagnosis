@@ -101,7 +101,7 @@ namespace PCA
             return SparseMatrix.OfArray(cMatrix);
         }
         
-        public void SolveEchelonForm(SparseMatrix sparseMatrix)
+        public void SolveEigenValues(SparseMatrix sparseMatrix)
         {
             sparseMatrix = CovarianceMatrix(sparseMatrix);
             
@@ -112,6 +112,11 @@ namespace PCA
             Console.WriteLine(eigen.EigenVectors);
             Console.WriteLine(evd.EigenValues);
             Console.WriteLine(evd.EigenVectors);
+        }
+
+        public void SolveEigenVectors(SparseMatrix sparseMatrix)
+        {
+            
         }
 
         private void SwapRows(SparseMatrix sparseMatrix, int i, int r)
