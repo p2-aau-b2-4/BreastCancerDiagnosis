@@ -37,31 +37,7 @@ namespace DimensionReduction
                 xI = 0;
             }
         }
-
-        private void CombinationsSubset(int numberOfElements, int numberOfDimensions, List<int> subsets)
-        {
-            CombinationsCovariance(0, 0, numberOfElements, numberOfDimensions, subsets);
-        }
-
-        private void CombinationsCovariance(int set, int indexPos, int r, int n, List<int> subsets)
-        {
-            if (r == 0)
-            {
-                subsets.Add(set);
-            }
-            else
-            {
-                for (int i = indexPos; i < n; i++)
-                {
-                    set = set | (1 << i);
-
-                    CombinationsCovariance(set, i + 1, r - 1, n, subsets);
-
-                    set = set & ~(1 << i);
-                }
-            }
-        }
-
+        
         private double Covariance(double x, double y, int dim)
         {
             return (x * y) / (dim - 1);
@@ -104,19 +80,6 @@ namespace DimensionReduction
         public void SolveEigenVectors(SparseMatrix sparseMatrix)
         {
             
-        }
-
-        private void SwapRows(SparseMatrix sparseMatrix, int i, int r)
-        {
-            MathNet.Numerics.LinearAlgebra.Vector<double> vector = sparseMatrix.Row(i);
-            
-            sparseMatrix.SetRow(i,sparseMatrix.Row(r));
-            sparseMatrix.SetRow(r,vector);
-        }
-
-        private double Determinant(SparseMatrix sparseMatrix)
-        {
-            return sparseMatrix.Determinant();
         }
     }
 }
