@@ -8,7 +8,6 @@ using System.IO;
 using Dicom;
 using Dicom.IO.Buffer;
 using Dicom.Imaging;
-using DICOMTests;
 
 namespace ImagePreprocessing
 {
