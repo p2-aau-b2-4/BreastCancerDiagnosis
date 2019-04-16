@@ -12,6 +12,7 @@ namespace DimensionReduction
         public PCA()
         {
         }
+
         ///<summary>
         ///Finds the mean of each column in a matrix, then subtracts the mean of
         ///each column from all its values
@@ -85,6 +86,7 @@ namespace DimensionReduction
         {
             if (matrix.RowCount != matrix.ColumnCount)
               throw new ArgumentException();
+
             var evd = covMatrix.Evd(MathNet.Numerics.LinearAlgebra.Symmetricity.Asymmetric);
             var eigen = covMatrix.Evd();
             Console.WriteLine("Her kommer the d");

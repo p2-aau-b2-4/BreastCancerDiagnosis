@@ -59,19 +59,25 @@ namespace DimensionReduction.Tests
       CollectionAssert.AreEqual(res.ToArray(), matrix.ToArray(), new Comparer(floatingPointTolerance));
     }
 
-    [Test, Description("Tests a normal case for MeanSubtraction")]
+    [Test, Description("Tests edge case where values in a column sum up to infinity")]
     public void MeanSubtractionEdgeCaseLargeValuesTest()
     {
-      double[,] matrixArray = new double[5,5] {
-        {Double.MaxValue, Double.MaxValue, Double.MinValue, Double.MinValue, Double.MaxValue},
-        {Double.MaxValue, Double.MinValue, Double.MinValue, Double.MinValue, Double.MinValue},
-        {Double.MaxValue, Double.MaxValue, Double.MinValue, Double.MinValue, Double.MinValue},
-        {Double.MaxValue, Double.MinValue, Double.MinValue, Double.MaxValue, Double.MaxValue},
-        {Double.MaxValue, Double.MaxValue, Double.MinValue, Double.MaxValue, Double.MinValue}
+      double[,] matrixArray = new double[3,5] {
+        {Double.MaxValue, Double.MaxValue, Double.MinValue},
+        {Double.MaxValue, Double.MinValue, Double.MinValue},
+        {Double.MaxValue, Double.MaxValue, Double.MinValue},
+        {Double.MaxValue, Double.MinValue, Double.MinValue},
+        {Double.MaxValue, Double.MaxValue, Double.MinValue}
       };
 
       SparseMatrix matrix = SparseMatrix.OfArray(matrixArray);
       Assert.Throws<NotFiniteNumberException>(() => p.MeanSubtraction(matrix));
+    }
+    
+    [Test, Description("Tests a normal case for CovarianceMatrix")]
+    public void CovarianceMatrixNormalCaseTest()
+    {
+      double [,] matrix = new matrix[,]
     }
   }
 }
