@@ -10,7 +10,7 @@ namespace DimensionReduction.Tests
   [TestFixture, Description("Tests for the PCA Class")]
   public class VectorTests
   {
-    PCA.PCA p = new PCA.PCA();
+    PCA p = new PCA();
 
     [Test, Description("Tests a normal case for MeanSubtraction")]
     public void MeanSubtractionTest()
