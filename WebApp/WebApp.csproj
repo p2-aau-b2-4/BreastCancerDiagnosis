@@ -17,7 +17,12 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\ImagePreprocessing\ImagePreprocessing.csjproj" />
+    <ProjectReference Include="..\ImagePreprocessing\ImagePreprocessing.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="Pages" />
   </ItemGroup>
 
 </Project>

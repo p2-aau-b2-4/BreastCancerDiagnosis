@@ -47,5 +47,10 @@ namespace BrysterAsp.Controllers
 
             return new FileStreamResult(ms, "image/png");
         }
+
+        public IActionResult SelectRegion()
+        {
+            return null;
+        }
     }
 }
