@@ -49,18 +49,6 @@ namespace PCA
 
                 xI = 0;
             }
-
-            for (int x = 0; x < matrix.RowCount; x++)
-            {
-                for (int y = 0; y < matrix.ColumnCount; y++)
-                {
-                    Console.Write(matrix.Storage[x, y] + " ");
-                }
-
-                Console.WriteLine();
-            }
-
-            Console.WriteLine("\n");
         }
 
         private void CombinationsSubset(int numberOfElements, int numberOfDimensions, List<int> subsets)
@@ -108,16 +96,6 @@ namespace PCA
                             sparseMatrix.RowCount);
                     }
                 }
-            }
-
-            for (int y = 0; y < sparseMatrix.ColumnCount; y++)
-            {
-                for (int x = 0; x < sparseMatrix.ColumnCount; x++)
-                {
-                    Console.Write(Math.Round(cMatrix[x, y], 5) + " ");
-                }
-
-                Console.WriteLine();
             }
 
             return SparseMatrix.OfArray(cMatrix);
