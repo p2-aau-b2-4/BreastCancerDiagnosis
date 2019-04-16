@@ -9,7 +9,6 @@ using System.IO;
 using System.Linq;
 using Dicom;
 using Dicom.Imaging;
-using DICOMTests;
 using Microsoft.Win32;
 
 namespace ImagePreprocessing
