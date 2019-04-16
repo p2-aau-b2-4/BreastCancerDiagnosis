@@ -52,7 +52,9 @@ namespace ImagePreprocessing
             Round,
             RoundIrregularArchitecturalDistortion,
             RoundLobulated,
-            RoundOval
+            RoundOval,
+            OvalLobulated,
+            IrregularAsymmetricBreastTissue
         }
 
         public enum MassMarginsEnum
@@ -72,7 +74,11 @@ namespace ImagePreprocessing
             Obscured,
             ObscuredIllDefinedSpiculated,
             ObscuredSpiculated,
-            Spiculated
+            Spiculated,
+            ObscuredCircumscribed,
+            CircumscribedSpiculated,
+            CircumscribedObscuredIllDefined,
+            CircumscribedMicrolobulatedIllDefined
         }
 
         public enum Pathologies
@@ -178,16 +184,19 @@ namespace ImagePreprocessing
                 case "CIRCUMSCRIBED": return MassMarginsEnum.Circumscribed;
                 case "CIRCUMSCRIBED-ILL_DEFINED": return MassMarginsEnum.CircumscribedIllDefined;
                 case "CIRCUMSCRIBED-MICROLOBULATED": return MassMarginsEnum.CircumscribedMicrolobulated;
+                case "CIRCUMSCRIBED-MICROLOBULATED-ILL_DEFINED": return MassMarginsEnum.CircumscribedMicrolobulatedIllDefined;
                 case "CIRCUMSCRIBED-OBSCURED": return MassMarginsEnum.CircumscribedObscured;
+                case "CIRCUMSCRIBED-OBSCURED-ILL_DEFINED": return MassMarginsEnum.CircumscribedObscuredIllDefined;
+                case "CIRCUMSCRIBED-SPICULATED": return MassMarginsEnum.CircumscribedSpiculated;
                 case "ILL_DEFINED": return MassMarginsEnum.IllDefined;
                 case "ILL_DEFINED-SPICULATED": return MassMarginsEnum.IllDefinedSpiculated;
                 case "MICROLOBULATED": return MassMarginsEnum.Microlobulated;
                 case "MICROLOBULATED-ILL_DEFINED": return MassMarginsEnum.MicrolobulatedIllDefined;
-                case "MICROLOBULATED-ILL_DEFINED-SPICULATED":
-                    return MassMarginsEnum.MicrolobulatedIllDefinedSpiculated;
+                case "MICROLOBULATED-ILL_DEFINED-SPICULATED": return MassMarginsEnum.MicrolobulatedIllDefinedSpiculated;
                 case "MICROLOBULATED-SPICULATED": return MassMarginsEnum.MicrolobulatedSpiculated;
                 case "N/A": return MassMarginsEnum.NotAvailable;
                 case "OBSCURED": return MassMarginsEnum.Obscured;
+                case "OBSCURED-CIRCUMSCRIBED": return MassMarginsEnum.ObscuredCircumscribed;
                 case "OBSCURED-ILL_DEFINED-SPICULATED": return MassMarginsEnum.ObscuredIllDefinedSpiculated;
                 case "OBSCURED-ILL_DEFINED": return MassMarginsEnum.ObscuredIllDefined;
                 case "OBSCURED-SPICULATED": return MassMarginsEnum.ObscuredSpiculated;
@@ -206,6 +215,7 @@ namespace ImagePreprocessing
                 case "FOCAL_ASYMMETRIC_DENSITY": return MassShapesEnum.FocalAsymmetricDensity;
                 case "IRREGULAR": return MassShapesEnum.Irregular;
                 case "IRREGULAR-ARCHITECTURAL_DISTORTION": return MassShapesEnum.IrregularArchitecturalDistortion;
+                case "IRREGULAR-ASYMMETRIC_BREAST_TISSUE": return MassShapesEnum.IrregularAsymmetricBreastTissue;
                 case "IRREGULAR-FOCAL_ASYMMETRIC_DENSITY": return MassShapesEnum.IrregularFocalAsymmetricDensity;
                 case "LOBULATED": return MassShapesEnum.Lobulated;
                 case "LOBULATED-ARCHITECTURAL_DISTORTION": return MassShapesEnum.LobulatedArchitecturalDistortion;
@@ -216,6 +226,7 @@ namespace ImagePreprocessing
                 case "N/A": return MassShapesEnum.NotAvailable;
                 case "OVAL": return MassShapesEnum.Oval;
                 case "OVAL-LYMPH_NODE": return MassShapesEnum.OvalLymphNode;
+                case "OVAL-LOBULATED": return MassShapesEnum.OvalLobulated;
                 case "ROUND": return MassShapesEnum.Round;
                 case "ROUND-IRREGULAR-ARCHITECTURAL_DISTORTION":
                     return MassShapesEnum.RoundIrregularArchitecturalDistortion;
