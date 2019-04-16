@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Dicom;
 using DicomDisplayTest;
 
-namespace DICOMTests
+namespace ImagePreprocessing
 {
     class FileSizeComparer : IComparer<FileInfo> 
     {

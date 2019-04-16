@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace DICOMTests
+namespace ImagePreprocessing
 {
     public abstract class ArrayAsImageAbstract
     {

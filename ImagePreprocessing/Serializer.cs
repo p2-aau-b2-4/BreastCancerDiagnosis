@@ -1,7 +1,7 @@
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace DICOMTests
+namespace ImagePreprocessing
 
 //https://stackoverflow.com/questions/5005900/how-to-serialize-listt
 {

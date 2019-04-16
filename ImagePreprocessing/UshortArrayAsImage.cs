@@ -6,7 +6,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using DICOMTests;
 
-namespace DicomDisplayTest
+namespace ImagePreprocessing
 {
     public class UshortArrayAsImage : ArrayAsImageAbstract
     {
