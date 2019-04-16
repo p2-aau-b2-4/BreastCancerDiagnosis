@@ -14,7 +14,7 @@ namespace DimensionReduction
         {
         }
 
-        private void MeanSubtraction(SparseMatrix matrix)
+        public void MeanSubtraction(SparseMatrix matrix)
         {
             int tmp = matrix.RowCount;
             double sum = 0;
