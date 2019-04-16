@@ -68,7 +68,7 @@ namespace DimensionReduction
                 {
                     for (int i = 0; i < matrix.RowCount; i++)
                     {
-                        cMatrix[x, y] = Covariance(matrix.Storage[i, x], matrix.Storage[i, y],
+                        cMatrix[x, y] += Covariance(matrix.Storage[i, x], matrix.Storage[i, y],
                             matrix.RowCount);
                     }
                 }
@@ -85,8 +85,8 @@ namespace DimensionReduction
         {
             if (matrix.RowCount != matrix.ColumnCount)
               throw new ArgumentException();
-            var evd = covMatrix.Evd(MathNet.Numerics.LinearAlgebra.Symmetricity.Asymmetric);
-            var eigen = covMatrix.Evd();
+            var evd = matrix.Evd(MathNet.Numerics.LinearAlgebra.Symmetricity.Asymmetric);
+            var eigen = matrix.Evd();
             Console.WriteLine("Her kommer the d");
             Console.WriteLine(eigen.EigenValues);
             Console.WriteLine(eigen.EigenVectors);
