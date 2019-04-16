@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -51,18 +52,29 @@ namespace WebApp
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-                routes.MapRoute(
-                    "Default",                                              // Route name
-                    "/png",                           // URL with parameters
-                    new { controller = "Home", action = "Png", id = "" }  // Parameter defaults
+                    "Default", // Route name
+                    "/png", // URL with parameters
+                    new {controller = "Home", action = "Png"} // Parameter defaults
                 );
                 routes.MapRoute(
-                    "OperationUpload",                                              // Route name
-                    "/opr/uploadfile",                           // URL with parameters
-                    new { controller = "Operations", action = "UploadFile", id = "" }  // Parameter defaults
+                    "OperationUpload", // Route name
+                    "/opr/uploadfile", // URL with parameters
+                    new {controller = "Operations", action = "UploadFile"} // Parameter defaults
                 );
+                routes.MapRoute(
+                    "SelectRegion",
+                    "/analyze/selectregion/{FileName}",
+                    new {controller = "Analyze", action = "SelectRegion"},
+                    new {FileName = @"\w+"});
+                routes.MapRoute(
+                    "ShowPng",
+                    "/analyze/showPng/{path}",
+                    new {controller = "Analyze", action = "GetPngFromTempPath"},
+                    new {path = @"\w+"});
+                routes.MapRoute(
+                    "default",
+                    "/",
+                new {controller = "Home", action = "Index"});
             });
         }
     }
