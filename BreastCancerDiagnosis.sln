@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImagePreprocessing", "ImagePreprocessing\ImagePreprocessing.csjproj", "{FA05551E-0598-48F9-9F69-363203762779}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImagePreprocessing", "ImagePreprocessing\ImagePreprocessing.csproj", "{FA05551E-0598-48F9-9F69-363203762779}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DimensionReduction", "DimensionReduction\DimensionReduction.csproj", "{732A19A6-A01F-48D0-85C6-3A55FF570CB2}"
 EndProject
