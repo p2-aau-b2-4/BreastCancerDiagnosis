@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.IO;
 
 namespace ImagePreprocessing
 {
@@ -15,7 +16,7 @@ namespace ImagePreprocessing
         {
             get
             {
-                ushort[,] result = new ushort[this.Height,this.Width];
+                ushort[,] result = new ushort[this.Height, this.Width];
                 // this uses blockcopy, since data format is the same in byte[] and ushort[,]
                 Buffer.BlockCopy(PixelData, 0, result, 0, PixelData.Length);
                 return result;
@@ -23,7 +24,7 @@ namespace ImagePreprocessing
             set
             {
                 byte[] result = new byte[this.Width * this.Height * 2];
-                Buffer.BlockCopy(value,0,result,0,PixelData.Length);
+                Buffer.BlockCopy(value, 0, result, 0, PixelData.Length);
                 PixelData = result;
             }
         }
@@ -83,6 +84,34 @@ namespace ImagePreprocessing
 
         public UshortArrayAsImage(byte[] pixelData, int width, int height) : base(pixelData, width, height)
         {
+        }
+
+        public Stream GetPngAsMemoryStream()
+        {
+            var pixelArray = PixelArray;
+            Bitmap imgBitmap = new Bitmap(pixelArray.GetLength(1), pixelArray.GetLength(0));
+            for (int x = 0; x < pixelArray.GetLength(1); x++)
+            {
+                for (int y = 0; y < pixelArray.GetLength(0); y++)
+                {
+                    int greyColor = (int) Map(pixelArray[y, x], 0, 65535, 0, 255);
+                    imgBitmap.SetPixel(x, y, Color.FromArgb(greyColor, greyColor, greyColor));
+                }
+            }
+
+            // lets add all bitmaps:
+            Graphics g = Graphics.FromImage(imgBitmap);
+            g.CompositingMode = CompositingMode.SourceOver;
+            foreach (Bitmap bitmap in Overlays)
+            {
+                bitmap.MakeTransparent();
+                g.DrawImage(bitmap, new Point(0, 0));
+            }
+
+            MemoryStream ms = new MemoryStream();
+            imgBitmap.Save(ms, ImageFormat.Png);
+            ms.Seek(0, SeekOrigin.Begin);
+            return ms;
         }
     }
 }
