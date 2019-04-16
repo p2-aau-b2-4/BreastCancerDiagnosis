@@ -60,8 +60,6 @@ namespace DimensionReduction
         ///<param name=matrix>input matrix</param>
         public SparseMatrix CovarianceMatrix(SparseMatrix matrix)
         {
-            MeanSubtraction(matrix);
-
             double[,] cMatrix = new double[matrix.ColumnCount, matrix.ColumnCount];
 
             for (int x = 0; x < matrix.ColumnCount; x++)
@@ -80,13 +78,13 @@ namespace DimensionReduction
         }
         
         ///<summary>
-        ///Finds the eigen values of a matrix
+        ///Finds the eigen values of a matrix.
         ///</summary>
-        ///<param name=matrix>input matrix</param>
+        ///<param name=matrix>input matrix. Must be square</param>
         public void SolveEigenValues(SparseMatrix matrix)
         {
-            covMatrix = CovarianceMatrix(matrix);
-            
+            if (matrix.RowCount != matrix.ColumnCount)
+              throw new ArgumentException();
             var evd = covMatrix.Evd(MathNet.Numerics.LinearAlgebra.Symmetricity.Asymmetric);
             var eigen = covMatrix.Evd();
             Console.WriteLine("Her kommer the d");
