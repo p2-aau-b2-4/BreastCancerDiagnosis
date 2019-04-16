@@ -34,13 +34,12 @@ namespace BrysterAsp.Controllers
                     await formFile.CopyToAsync(stream);
                 }
             }
-            ;
-            return new FileStreamResult(DicomFile.Open(filePath).GetUshortImageInfo().GetPngAsMemoryStream(), "image/png");
-            
-            
-            
 
-            return Ok(new {count = files.Count, size, filePath, name=files.First().FileName});
+
+            return Redirect("analyze/selectregion/" +filePath.Split("/")[2].Split(".")[0]);
+
+
+            return Ok(new {count = files.Count, size, filePath, name = files.First().FileName});
         }
     }
 }
