@@ -92,7 +92,7 @@ namespace PCA
             return (x * y) / (dim - 1);
         }
 
-        public double[,] CovarianceMatrix(SparseMatrix sparseMatrix)
+        public SparseMatrix CovarianceMatrix(SparseMatrix sparseMatrix)
         {
             MeanSubtraction(sparseMatrix);
 
@@ -120,14 +120,13 @@ namespace PCA
                 Console.WriteLine();
             }
 
-            return cMatrix;
+            return SparseMatrix.OfArray(cMatrix);
         }
         
         public void SolveEchelonForm(SparseMatrix sparseMatrix)
         {
-            //Func<double, double> f = x => Polynomial.Evaluate(x,);
-            //Complex[] d = MathNet.Numerics.FindRoots.Polynomial(new double[]{3,-4,1});
-
+            sparseMatrix = CovarianceMatrix(sparseMatrix);
+            
             var evd = sparseMatrix.Evd(MathNet.Numerics.LinearAlgebra.Symmetricity.Asymmetric);
             var eigen = sparseMatrix.Evd();
             Console.WriteLine("Her kommer the d");
@@ -135,27 +134,6 @@ namespace PCA
             Console.WriteLine(eigen.EigenVectors);
             Console.WriteLine(evd.EigenValues);
             Console.WriteLine(evd.EigenVectors);
-            
-            /*double[] val = new double[sparseMatrix.RowCount];
-            double[] res = new double[sparseMatrix.RowCount];
-            int j = 0;
-            for (int i = sparseMatrix.RowCount; i >= 0; i--)
-            {
-                for (int k = sparseMatrix.ColumnCount; k >= 0; k--)
-                {
-                    
-                    
-                    if ()
-                    {
-                        
-                    }
-                    //sparseMatrix.Row(i)[k] * sparseMatrix.Row(i);
-                }
-                val[i]
-                 = sparseMatrix.Row(i)[1];
-            }*/
-
-            
         }
 
         private void SwapRows(SparseMatrix sparseMatrix, int i, int r)
@@ -170,8 +148,5 @@ namespace PCA
         {
             return sparseMatrix.Determinant();
         }
-
-        
-        
     }
 }
