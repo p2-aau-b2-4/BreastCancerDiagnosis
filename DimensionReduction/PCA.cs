@@ -69,7 +69,7 @@ namespace DimensionReduction
                 {
                     for (int i = 0; i < matrix.RowCount; i++)
                     {
-                        cMatrix[x, y] = Covariance(matrix.Storage[i, x], matrix.Storage[i, y],
+                        cMatrix[x, y] += Covariance(matrix.Storage[i, x], matrix.Storage[i, y],
                             matrix.RowCount);
                     }
                 }
