@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Numerics;
 using BitMiracle.LibJpeg.Classic;
 using MathNet.Numerics;
-//using System.Numerics;
 using MathNet.Numerics.LinearAlgebra.Double;
 
 namespace DimensionReduction
@@ -13,7 +12,11 @@ namespace DimensionReduction
         public PCA()
         {
         }
-
+        ///<summary>
+        ///Finds the mean of each column in a matrix, then subtracts the mean of
+        ///each column from all its values
+        ///</summary>
+        ///<param name=matrix>a SparseMatrix to perform MeanSubtraction on</param>
         public void MeanSubtraction(SparseMatrix matrix)
         {
             double sum = 0;
