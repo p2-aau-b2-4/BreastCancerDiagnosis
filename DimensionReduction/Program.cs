@@ -55,12 +55,13 @@ namespace DicomDisplayTest
             
             SparseMatrix sM1 = SparseMatrix.OfArray(matrix1);
             SparseMatrix sM2 = SparseMatrix.OfArray(matrix2);
+            SparseMatrix sM3 = SparseMatrix.OfArray(arr);
 
             PCA pca = new PCA();
             
             pca.SolveEigenValues(sM1);
             pca.SolveEigenValues(sM2);
-
+            pca.SolveEigenValues(sM3);
         }
     }
 }
