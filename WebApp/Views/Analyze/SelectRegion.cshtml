@@ -5,15 +5,6 @@
     Layout = "_Layout";
 }
 <style>
-    .center {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-        width: 50%;
-    }
-</style>
-
-<style>
     #canvas { width: 100% }
 </style>
 
@@ -88,13 +79,7 @@
         }
 
         function updateDiv() {
-            document.getElementById("testDiv").innerText = parseInt(x1 * resizedWidth) +
-                "," +
-                parseInt(y1 * resizedWidth) +
-                " | " +
-                parseInt(x2 * resizedWidth) +
-                "," +
-                parseInt(y2 * resizedWidth);
+            document.getElementById("testDiv").innerText = x1 + "," + y1 + " | " + x2 + "," + y2;
         }
 
         $("#canvas").mousemove(function(e) { handleMouseMove(e); });
@@ -110,14 +95,14 @@
             var mouseYLoc = parseInt((e.clientY - offsetY) * resizedWidth);
             return [mouseXLoc, mouseYLoc];
         }
-        
+
         function updateForm() {
             document.getElementById("submitInput").disabled = false;
             document.getElementById("x1Input").value = x1;
             document.getElementById("y1Input").value = y1;
             document.getElementById("x2Input").value = x2;
             document.getElementById("y2Input").value = y2;
-            
+
         }
 
 
@@ -127,7 +112,7 @@
 <h2>Vælg et område med knuden, som algoritmen skal analysere</h2>
 <canvas id="canvas" class="2center"></canvas>
 <h2 class="center"id="testDiv"></h2>
-<form method="post" enctype="multipart/form-data" asp-controller="Analyze" asp-action="StartAnalyzing">
+<form method="post" enctype="multipart/form-data" asp-controller="Analyze" asp-action="ShowAnalysis">
     <input type="hidden" name="x1" id="x1Input"/>
     <input type="hidden" name="y1" id="y1Input"/>
     <input type="hidden" name="x2" id="x2Input"/>
