@@ -39,7 +39,7 @@ namespace BrysterAsp.Controllers
             return Redirect("analyze/selectregion/" +filePath.Split("/")[2].Split(".")[0]);
 
 
-            return Ok(new {count = files.Count, size, filePath, name = files.First().FileName});
+            //return Ok(new {count = files.Count, size, filePath, name = files.First().FileName});
         }
     }
 }
