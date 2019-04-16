@@ -76,9 +76,9 @@ namespace WebApp
                     "/analyze/startAnalyze",
                     new {controller = "Analyze", action = "StartAnalyzing"});
                 routes.MapRoute(
-                    "StartAnalyzing",
-                    "/analyze/showResult/{path}",
-                    new {controller = "Analyze", action = "ShowAnalysis"}, new {path = @"\w+"});
+                    "ShowAnalysis",
+                    "/analyze/showResult",
+                    new {controller = "Analyze", action = "ShowAnalysis"});
                 routes.MapRoute(
                     "default",
                     "/",
