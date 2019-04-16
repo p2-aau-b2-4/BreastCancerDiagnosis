@@ -6,7 +6,7 @@ using MathNet.Numerics;
 //using System.Numerics;
 using MathNet.Numerics.LinearAlgebra.Double;
 
-namespace PCA
+namespace DimensionReduction
 {
     public class PCA
     {
