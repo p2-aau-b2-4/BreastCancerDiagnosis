@@ -8,6 +8,8 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using BrysterAsp.Models;
+using Dicom;
+using ImagePreprocessing;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore.Scaffolding;
@@ -32,6 +34,8 @@ namespace BrysterAsp.Controllers
                     await formFile.CopyToAsync(stream);
                 }
             }
+            ;
+            return new FileStreamResult(DicomFile.Open(filePath).GetUshortImageInfo().GetPngAsMemoryStream(), "image/png");
             
             
             
