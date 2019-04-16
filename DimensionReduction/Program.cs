@@ -53,15 +53,38 @@ namespace DicomDisplayTest
                 {3,-1}
             };
             
+            double[,] matrix3 = new double[,]
+            {
+                {64,580,29},
+                {66,570,33},
+                {68,590,37},
+                {69,660,46},
+                {73,600,55}
+            };
+            
             SparseMatrix sM1 = SparseMatrix.OfArray(matrix1);
             SparseMatrix sM2 = SparseMatrix.OfArray(matrix2);
-            SparseMatrix sM3 = SparseMatrix.OfArray(arr);
-
-            PCA pca = new PCA();
+            SparseMatrix sM3 = SparseMatrix.OfArray(matrix3);
+            SparseMatrix sM4 = SparseMatrix.OfArray(arr);
             
-            pca.SolveEigenValues(sM1);
+            
+            PCA pca = new PCA();
+
+            pca.CovarianceMatrix(sM3);
+
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    Console.Write(sM3[i,j].ToString());
+                }
+
+                Console.WriteLine();
+            }
+            
+            /*pca.SolveEigenValues(sM1);
             pca.SolveEigenValues(sM2);
-            pca.SolveEigenValues(sM3);
+            pca.SolveEigenValues(sM4);*/
         }
     }
 }
