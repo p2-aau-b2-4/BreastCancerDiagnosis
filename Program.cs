@@ -83,8 +83,8 @@ namespace DicomDisplayTest
             PCA.PCA pca = new PCA.PCA();
             //double[,] cArr = pca.CovarianceMatrix(sM);
             //pca.UnitEigenvectors(cArr);
-            SparseMatrix cov = SparseMatrix.OfArray(covarianceMat);
-            pca.SolveEchelonForm(cov);
+            
+            pca.SolveEigenValues(sM);
 
             /*Console.WriteLine(list.Count);
             Console.WriteLine(list[0]);
