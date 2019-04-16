@@ -31,8 +31,8 @@ namespace DimensionReduction.Tests
         {1.96, 5.96, -3.94, 5.96, -9.94}
       };
 
-      SparseMatrix matrix = new SparseMatrix.FromArray(matrixArray);
-      SparseMatrix res = new SparseMatrix.FromArray(resArray);
+      SparseMatrix matrix = SparseMatrix.OfArray(matrixArray);
+      SparseMatrix res = SparseMatrix.OfArray(resArray);
       p.MeanSubtraction(matrix);
       Assert.AreEqual(matrix, res);
     }

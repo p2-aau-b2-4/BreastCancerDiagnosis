@@ -10,8 +10,8 @@ using System.IO;
 using System.Net.Mime;
 using Dicom;
 using Dicom.Imaging;
+using DimensionReduction;
 using Microsoft.Win32;
-using PCA;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Numerics.LinearAlgebra.Storage;
@@ -56,7 +56,7 @@ namespace DicomDisplayTest
             SparseMatrix sM1 = SparseMatrix.OfArray(matrix1);
             SparseMatrix sM2 = SparseMatrix.OfArray(matrix2);
 
-            PCA.PCA pca = new PCA.PCA();
+            PCA pca = new PCA();
             
             pca.SolveEigenValues(sM1);
             pca.SolveEigenValues(sM2);
