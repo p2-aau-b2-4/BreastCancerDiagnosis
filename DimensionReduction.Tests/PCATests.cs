@@ -10,6 +10,7 @@ namespace DimensionReduction.Tests
   [TestFixture, Description("Tests for the PCA Class")]
   public class VectorTests
   {
+    double floatingPointTolerance = 0.0000001;
     PCA p = new PCA();
 
     [Test, Description("Tests a normal case for MeanSubtraction")]
@@ -24,17 +25,17 @@ namespace DimensionReduction.Tests
       };
 
       double[,] resArray = new double[5,5] {
-        {-0.68, 0.72, -2.68, 0.22, 2.42},
-        {-0.68, 5.42, 4.12, -6.08, -2.78},
-        {-2.94, -2.54, 4.16, -5.14, 6.46},
-        {7.40, -2.80, -1.50, -6.50, 0.40},
-        {1.96, 5.96, -3.94, 5.96, -9.94}
+        {-0.50, 0.56, -2.12, 3.72, 4.32},
+        {0.60, 6.36, 5.78, -1.48, 0.22},
+        {-8.60, -8.54, -1.12, -7.48, 2.52},
+        {7.40, -3.14, 1.88, -3.18, 2.02},
+        {1.10, 4.76, -4.42, 8.42, -9.08}
       };
 
       SparseMatrix matrix = SparseMatrix.OfArray(matrixArray);
       SparseMatrix res = SparseMatrix.OfArray(resArray);
       p.MeanSubtraction(matrix);
-      Assert.AreEqual(matrix, res);
+      CollectionAssert.AreEqual(res.ToArray(), matrix.ToArray(), new Comparer(floatingPointTolerance));
     }
   }
 }
