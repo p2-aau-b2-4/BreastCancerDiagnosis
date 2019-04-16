@@ -122,62 +122,7 @@ namespace PCA
 
             return cMatrix;
         }
-
-        public void ReduceRowEchelonForm(SparseMatrix sparseMatrix)
-        {
-            int lead = 0;
-            int rowCount = sparseMatrix.RowCount;
-            int columnCount = sparseMatrix.ColumnCount;
-
-            for (int r = 0; r < rowCount; r++)
-            {
-                if (columnCount <= lead)
-                {
-                    break;
-                }
-
-                int i = r;
-
-                while (sparseMatrix[i,lead] == 0)
-                {
-                    i++;
-                    if (rowCount == i)
-                    {
-                        i = r;
-                        lead++;
-                        if (columnCount == lead)
-                        {
-                            break;
-                        }
-                    }
-                }
-
-                SwapRows(sparseMatrix, i, r);
-                
-                if (sparseMatrix[r,lead] != 0)
-                {
-                    //If M[r, lead] is not 0 divide row r by M[r, lead]
-                    for (int j = 0; j < sparseMatrix.ColumnCount; j++)
-                    {
-                        sparseMatrix[r, j] = sparseMatrix[r, j] / sparseMatrix[r, lead];
-                    }
-                }
-
-                for (; i >= 0 && i < rowCount; i++)
-                {
-                    if (i != r)
-                    {
-                        //Subtract M[i, lead] multiplied by row r from row i
-                            sparseMatrix.Row(i).
-                                Subtract(sparseMatrix.Row(r).
-                                    Multiply(sparseMatrix[i, lead]));
-                    }
-                }
-
-                lead++;
-            }
-        }
-
+        
         public void SolveEchelonForm(SparseMatrix sparseMatrix)
         {
             //Func<double, double> f = x => Polynomial.Evaluate(x,);
