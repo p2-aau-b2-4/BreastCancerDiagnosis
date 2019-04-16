@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DimensionReduction.Tests", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImagePreprocessing.Tests", "ImagePreprocessing.Tests\ImagePreprocessing.Tests.csproj", "{47A93198-3839-4000-88B4-87A2CD9C05A0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrysterAsp", "WebApp/WebApp.csproj", "{9EB291E5-69C4-4C54-A1CC-27F601046958}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
