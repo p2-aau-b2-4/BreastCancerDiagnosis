@@ -35,7 +35,9 @@ namespace DimensionReduction.Tests
       SparseMatrix matrix = SparseMatrix.OfArray(matrixArray);
       SparseMatrix res = SparseMatrix.OfArray(resArray);
       p.MeanSubtraction(matrix);
-      CollectionAssert.AreEqual(res.ToArray(), matrix.ToArray(), new Comparer(floatingPointTolerance));
+      CollectionAssert.AreEqual(res.ToArray(),
+          matrix.ToArray(),
+          new Comparer(floatingPointTolerance));
     }
 
     [Test, Description("Tests the edge case where all values are 0 for MeanSubtraction")]
@@ -56,13 +58,15 @@ namespace DimensionReduction.Tests
       SparseMatrix matrix = SparseMatrix.OfArray(matrixArray);
       SparseMatrix res = SparseMatrix.OfArray(resArray);
       p.MeanSubtraction(matrix);
-      CollectionAssert.AreEqual(res.ToArray(), matrix.ToArray(), new Comparer(floatingPointTolerance));
+      CollectionAssert.AreEqual(res.ToArray(),
+          matrix.ToArray(),
+          new Comparer(floatingPointTolerance));
     }
 
     [Test, Description("Tests edge case where values in a column sum up to infinity")]
     public void MeanSubtractionEdgeCaseLargeValuesTest()
     {
-      double[,] matrixArray = new double[3,5] {
+      double[,] matrixArray = new double[5,3] {
         {Double.MaxValue, Double.MaxValue, Double.MinValue},
         {Double.MaxValue, Double.MinValue, Double.MinValue},
         {Double.MaxValue, Double.MaxValue, Double.MinValue},
@@ -77,7 +81,30 @@ namespace DimensionReduction.Tests
     [Test, Description("Tests a normal case for CovarianceMatrix")]
     public void CovarianceMatrixNormalCaseTest()
     {
-      double [,] matrix = new matrix[,]
+      double[,] matrixArr = new double[10,2] {
+        {0.69, 0.49},
+        {-1.31, -1.21},
+        {0.39, 0.99},
+        {0.09, 0.29},
+        {1.29, 1.09},
+        {0.49, 0.79},
+        {0.19, -0.31},
+        {-0.81, -0.81},
+        {-0.31, -0.31},
+        {-0.71, -1.01}
+      };
+
+      double[,] expectation = new double[2,2] {
+          {0.6165555556, 0.6154444444},
+          {0.6154444444, 0.7165555556}
+      };
+
+      SparseMatrix matrix = SparseMatrix.OfArray(matrixArr);
+      SparseMatrix expectationMatrix = SparseMatrix.OfArray(expectation);
+      matrix = p.CovarianceMatrix(matrix);
+      CollectionAssert.AreEqual(expectationMatrix.ToArray(),
+          matrix.ToArray(),
+          new Comparer(floatingPointTolerance));
     }
   }
 }
