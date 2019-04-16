@@ -10,11 +10,11 @@ namespace DimensionReduction.Tests
   [TestFixture, Description("Tests for the PCA Class")]
   public class VectorTests
   {
-    double floatingPointTolerance = 0.0000001;
+    double floatingPointTolerance = 0.00000001;
     PCA p = new PCA();
 
     [Test, Description("Tests a normal case for MeanSubtraction")]
-    public void MeanSubtractionTest()
+    public void MeanSubtractionNormalCaseTest()
     {
       double[,] matrixArray = new double[5,5] {
         {2.0, 3.4, 0.0, 2.9, 5.1},
@@ -36,6 +36,42 @@ namespace DimensionReduction.Tests
       SparseMatrix res = SparseMatrix.OfArray(resArray);
       p.MeanSubtraction(matrix);
       CollectionAssert.AreEqual(res.ToArray(), matrix.ToArray(), new Comparer(floatingPointTolerance));
+    }
+
+    [Test, Description("Tests the edge case where all values are 0 for MeanSubtraction")]
+    public void MeanSubtractionEdgeCaseAllZeroTest()
+    {
+      double[,] matrixArray = new double[3,3] {
+        {0.0, 0.0, 0.0},
+        {0.0, -0.0, 0.0},
+        {-0.0, 0.0, -0.0}
+      };
+
+      double[,] resArray = new double[3,3] {
+        {0.0, 0.0, 0.0},
+        {0.0, 0.0, 0.0},
+        {0.0, 0.0, 0.0}
+      };
+
+      SparseMatrix matrix = SparseMatrix.OfArray(matrixArray);
+      SparseMatrix res = SparseMatrix.OfArray(resArray);
+      p.MeanSubtraction(matrix);
+      CollectionAssert.AreEqual(res.ToArray(), matrix.ToArray(), new Comparer(floatingPointTolerance));
+    }
+
+    [Test, Description("Tests a normal case for MeanSubtraction")]
+    public void MeanSubtractionEdgeCaseLargeValuesTest()
+    {
+      double[,] matrixArray = new double[5,5] {
+        {Double.MaxValue, Double.MaxValue, Double.MinValue, Double.MinValue, Double.MaxValue},
+        {Double.MaxValue, Double.MinValue, Double.MinValue, Double.MinValue, Double.MinValue},
+        {Double.MaxValue, Double.MaxValue, Double.MinValue, Double.MinValue, Double.MinValue},
+        {Double.MaxValue, Double.MinValue, Double.MinValue, Double.MaxValue, Double.MaxValue},
+        {Double.MaxValue, Double.MaxValue, Double.MinValue, Double.MaxValue, Double.MinValue}
+      };
+
+      SparseMatrix matrix = SparseMatrix.OfArray(matrixArray);
+      Assert.Throws<NotFiniteNumberException>(() => p.MeanSubtraction(matrix));
     }
   }
 }
