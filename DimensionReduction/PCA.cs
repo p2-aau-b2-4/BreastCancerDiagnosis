@@ -43,7 +43,7 @@ namespace DimensionReduction
             return (x * y) / (dim - 1);
         }
 
-        private SparseMatrix CovarianceMatrix(SparseMatrix sparseMatrix)
+        public SparseMatrix CovarianceMatrix(SparseMatrix sparseMatrix)
         {
             MeanSubtraction(sparseMatrix);
 
@@ -55,7 +55,7 @@ namespace DimensionReduction
                 {
                     for (int i = 0; i < sparseMatrix.RowCount; i++)
                     {
-                        cMatrix[x, y] += Covariance(sparseMatrix.Storage[i, x], sparseMatrix.Storage[i, y],
+                        cMatrix[x, y] = Covariance(sparseMatrix.Storage[i, x], sparseMatrix.Storage[i, y],
                             sparseMatrix.RowCount);
                     }
                 }
