@@ -72,7 +72,7 @@ $(function() {
     }
 
     function updateDiv() {
-        $("#CoordinatesH3").innerText = "(" + x1 + "," + y1 + ") (" + x2 + "," + y2 + ")";
+        $("#CoordinatesH3")[0].innerText = "(" + x1 + "," + y1 + ") (" + x2 + "," + y2 + ")";
     }
 
     function mouseOnImageLoc(e) {
@@ -87,10 +87,10 @@ $(function() {
 
     function updateForm() {
         // updates the hidden inputs of the form
-        $("#submitInput").disabled = false;
-        $("#x1Input").value = x1;
-        $("#y1Input").value = y1;
-        $("#x2Input").value = x2;
-        $("#y2Input").value = y2;
+        $("#submitInput")[0].disabled = false;
+        $("#x1Input")[0].value = x1;
+        $("#y1Input")[0].value = y1;
+        $("#x2Input")[0].value = x2;
+        $("#y2Input")[0].value = y2;
     }
 });
