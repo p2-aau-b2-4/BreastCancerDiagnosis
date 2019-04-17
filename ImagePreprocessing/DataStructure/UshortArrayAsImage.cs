@@ -148,7 +148,6 @@ namespace ImagePreprocessing
             byte[] resultBytes = new byte[sizeX*sizeY * 2];
             Buffer.BlockCopy(result, 0, resultBytes, 0, resultBytes.Length);
             var finalResult = new UshortArrayAsImage(resultBytes,sizeX,sizeY);
-            finalResult.SaveAsPng("test.png");
             return finalResult;
         }
     }
