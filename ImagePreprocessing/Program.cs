@@ -20,6 +20,12 @@ namespace ImagePreprocessing
             var img = DicomFile.Open(@"e.dcm");
             UshortArrayAsImage imgInfo = img.GetUshortImageInfo();
             imgInfo.SaveAsPng("eINFO.PNG");
+
+            
+            imgInfo.PixelArray = Contrast.Equalization(imgInfo.PixelArray, 25);
+            imgInfo.SaveAsPng("eINFOContrast.png");    //REMOVE
+            var imgOverlay = imgInfo.Edge(1000);
+            imgOverlay.SaveAsPng("OliverErEnNar.png");
             
             //list<ddsmimage> ddsmimages =
             //    ddsmimage.getallimagesfromcsvfile(@"e:\brysttest\mass_case_description_train_set.csv");
@@ -31,14 +37,14 @@ namespace ImagePreprocessing
             //            {
             //                Console.WriteLine($"{ddsmImage.PatientId} | {ddsmImage.ImageView} | {ddsmImage.BreastSide} | {ddsmImage.GetDcomCroppedImage().Width}x{ddsmImage.GetDcomCroppedImage().Height}");
             //            }
-            List<DdsmImage> DDSMImages =
+           /* List<DdsmImage> DDSMImages =
                 DdsmImage.GetAllImagesFromCsvFile(@"E:\BrystTest\mass_case_description_train_set.csv");
             Console.WriteLine($"Found {DDSMImages.Count}");
 
             var x = DDSMImages.First();
             x.GetDcomCroppedImage().PixelArray = x.GetDcomCroppedImage().PixelArray;
             x.GetNormalizedSizedCrop(1000).SaveAsPng("black.png");
-            
+            */
 
 //            Serializer.Save("data.bin", DDSMImages);
 //            foreach (DdsmImage ddsmImage in DDSMImages)
