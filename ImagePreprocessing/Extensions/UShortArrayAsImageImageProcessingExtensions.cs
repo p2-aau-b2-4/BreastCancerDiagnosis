@@ -4,76 +4,53 @@ using System.Text;
 
 namespace ImagePreprocessing
 {
-    static class UShortArrayAsImageImageProcessingExtensions
+    public static class UShortArrayAsImageImageProcessingExtensions
     {
-        public static void ApplyContrastEnhancement(this UshortArrayAsImage img)
+        public static void ApplyContrastEnhancement(this UshortArrayAsImage img, double threshold)
         {
-            double threshold = 50;
 
             ushort[,] image = img.PixelArray;
 
-            double pixBit = UInt16.MaxValue;
+            double maxUInt16Value = UInt16.MaxValue;
             // Copying image to int array 
             //int[] pixels = new int[image2.Height * image2.Width];
             ushort[,] pixels = new ushort[image.GetLength(0), image.GetLength(1)];
             ushort[,] end_pixels = new ushort[image.GetLength(0), image.GetLength(1)];
 
-
-
-            for (int y = 0; y < image.GetLength(1); y++)
-            {
-                for (int x = 0; x < image.GetLength(0); x++)
-                {
-                    pixels[x, y] = image[x, y];
-
-
-
-
-                }
-            }
-
-
-
-
-
-
-
-
+            pixels = (ushort[,]) image.Clone();
 
             //double threshold = 50.0;
             double contrastLevel = Math.Pow((100.0 + threshold) / 100.0, 2);
-            double grey = 0.0;
-
-
-
-
+            double pixelToInsert = 0.0;
 
 
             for (int y = 0; y < image.GetLength(1); y++)
             {
                 for (int x = 0; x < image.GetLength(0); x++)
                 {
-                    grey = ((((pixels[x, y] / pixBit) - 0.5) * contrastLevel) + 0.5) * pixBit;
+                    pixelToInsert = ApplyContrastToPixel(pixels[x, y], maxUInt16Value, contrastLevel);
 
-                    if (grey > pixBit)
+                    if (pixelToInsert > maxUInt16Value)
                     {
-                        grey = pixBit;
+                        pixelToInsert = maxUInt16Value;
                     }
-                    else if (grey < 0)
+                    else if (pixelToInsert < 0)
                     {
-                        grey = 0;
+                        pixelToInsert = 0;
                     }
 
-                    end_pixels[x, y] = Convert.ToUInt16(grey);
+                    end_pixels[x, y] = Convert.ToUInt16(pixelToInsert);
                 }
             }
-
             img.PixelArray = end_pixels;
-
-
-
         }
-        public static long calulateAverage(this UshortArrayAsImage img)
+
+        private static double ApplyContrastToPixel(ushort pixelToTransform, double maxValue, double contrastLevel)
+        {
+            return ((((pixelToTransform / maxValue) - 0.5) * contrastLevel) + 0.5) * maxValue;
+        }
+
+        public static long CalulateAverage(this UshortArrayAsImage img)
         {
             // Calculate average
 

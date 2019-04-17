@@ -32,12 +32,16 @@ namespace ImagePreprocessing
             //                Console.WriteLine($"{ddsmImage.PatientId} | {ddsmImage.ImageView} | {ddsmImage.BreastSide} | {ddsmImage.GetDcomCroppedImage().Width}x{ddsmImage.GetDcomCroppedImage().Height}");
             //            }
             List<DdsmImage> DDSMImages =
-                DdsmImage.GetAllImagesFromCsvFile(@"E:\BrystTest\mass_case_description_train_set.csv");
+                DdsmImage.GetAllImagesFromCsvFile(@"C:\Bryster\mass_case_description_test_set.csv");
             Console.WriteLine($"Found {DDSMImages.Count}");
 
             var x = DDSMImages.First();
-            x.GetDcomCroppedImage().PixelArray = x.GetDcomCroppedImage().PixelArray;
-            x.GetNormalizedSizedCrop(1000).SaveAsPng("black.png");
+            UshortArrayAsImage image = x.GetDcomCroppedImage();
+            image.ApplyContrastEnhancement(50);
+            image.SaveAsPng("THEPictureWereWorkingOn.png");
+
+
+            
             
 
 //            Serializer.Save("data.bin", DDSMImages);
