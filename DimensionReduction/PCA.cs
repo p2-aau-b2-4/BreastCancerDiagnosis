@@ -4,6 +4,8 @@ using System.Numerics;
 using BitMiracle.LibJpeg.Classic;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra.Double;
+using MathNet.Numerics.LinearAlgebra.Storage;
+
 
 namespace DimensionReduction
 {
@@ -11,6 +13,55 @@ namespace DimensionReduction
     {
         public PCA()
         {
+        }
+
+        public void LoadModelFromFile(string path)
+        {
+            
+        }
+
+        public void SaveModelToFile(string path)
+        {
+            
+        }
+
+        public void GetComponentsFromImage(int count, int image)
+        {
+            
+        }
+
+        public void Train(List<UShortArrayAsImage> images)
+        {
+            double[,] allImages = new double[images[0].ColumCount*images[0].RowCount,images.Count];
+            int i = 0;
+            foreach (var image in images)
+            {
+                double[] dImage = new double[image.ColumCount*image.RowCount];
+                for (int y = 0; y < image.ColumCount; y++)
+                {
+                    for (int x = 0; x < image.RowCount; x++)
+                    {
+                        dImage = image.Pixel[x, y];
+                    }
+                }
+
+                for (int y = 0; y < image.ColumCount; y++)
+                {
+                    for (int x = 0; x < image.RowCount; x++)
+                    {
+                        allImages[i, x] = dImage[y * image.RowCount + x];
+                    }
+                }
+                
+                i++;
+            }
+            
+            SparseMatrix matrix = SparseMatrix.OfArray(allImages);
+                
+            MeanSubtraction(matrix);
+            matrix = CovarianceMatrix(matrix);
+            SolveEigenValues(matrix);
+            SolveEigenVectors(matrix);
         }
 
         ///<summary>
@@ -89,16 +140,21 @@ namespace DimensionReduction
 
             var evd = matrix.Evd(MathNet.Numerics.LinearAlgebra.Symmetricity.Asymmetric);
             var eigen = matrix.Evd();
-            Console.WriteLine("Her kommer the d");
+            Console.WriteLine("Her kommer the EigenValues");
             Console.WriteLine(eigen.EigenValues);
-            Console.WriteLine(eigen.EigenVectors);
             Console.WriteLine(evd.EigenValues);
-            Console.WriteLine(evd.EigenVectors);
         }
 
         public void SolveEigenVectors(SparseMatrix matrix)
         {
-            
+            if (matrix.RowCount != matrix.ColumnCount)
+                throw new ArgumentException();
+
+            var evd = matrix.Evd(MathNet.Numerics.LinearAlgebra.Symmetricity.Asymmetric);
+            var eigen = matrix.Evd();
+            Console.WriteLine("Her kommer the EigenVectors");
+            Console.WriteLine(eigen.EigenVectors);
+            Console.WriteLine(evd.EigenVectors);
         }
     }
 }
