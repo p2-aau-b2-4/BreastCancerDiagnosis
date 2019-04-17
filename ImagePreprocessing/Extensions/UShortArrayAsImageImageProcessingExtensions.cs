@@ -17,11 +17,35 @@ namespace ImagePreprocessing
             ushort[,] pixels = new ushort[image.GetLength(0), image.GetLength(1)];
             ushort[,] end_pixels = new ushort[image.GetLength(0), image.GetLength(1)];
 
-            pixels = (ushort[,]) image.Clone();
+
+
+            for (int y = 0; y < image.GetLength(1); y++)
+            {
+                for (int x = 0; x < image.GetLength(0); x++)
+                {
+                    pixels[x, y] = image[x, y];
+
+
+
+
+                }
+            }
+
+
+
+
+
+
+
+
 
             //double threshold = 50.0;
             double contrastLevel = Math.Pow((100.0 + threshold) / 100.0, 2);
             double pixelToInsert = 0.0;
+
+
+
+
 
 
             for (int y = 0; y < image.GetLength(1); y++)
