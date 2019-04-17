@@ -40,11 +40,12 @@ namespace ImagePreprocessing
             }
             
 
-            // normalize.TumorDimensions(imageOverlay);
+
             //Console.WriteLine(imageOverlay[(imageOverlay.GetLength(0)-1)/2,imageOverlay.GetLength(1)/2]);
             var x = new UshortArrayAsImage(new byte[ushortImg.Width * ushortImg.Height * 2], ushortImg.Width,
                 ushortImg.Height);
             x.PixelArray = GetBiggestSector(imageOverlay);
+            TumorDimensions(imageOverlay);
             return x;
         }
 
@@ -145,17 +146,22 @@ namespace ImagePreprocessing
 
         private static void TumorDimensions(ushort[,] imageOverlay)
         {
-            int p1 = 10, p2 = 10, q1 = 5, q2 = 10;
+            int p1 = 0, p2 = 0, q1 = 0, q2 = 0;
 
-            while (imageOverlay[p1, q1] < 40000)
+            while (imageOverlay[p1, q1] != UInt16.MaxValue)
             {
                 q1++;
-                if (imageOverlay.GetLength(1) - 20 == q1)
+                if (imageOverlay.GetLength(1) == q1)
                 {
-                    q1 = 10;
+                    q1 = 0;
                     p1++;
                 }
             }
+
+            Console.WriteLine(imageOverlay[p1, q1]);
+            Console.WriteLine(q1);
+            Console.WriteLine(p1);
+            
         }
 
         private class Sector
