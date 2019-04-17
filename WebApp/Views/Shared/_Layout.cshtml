@@ -34,13 +34,13 @@
                             <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Hjem</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Om projektet</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="About">Om projektet</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Statistik</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Statistics">Statistik</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Kontakt os</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Contact">Kontakt os</a>
                         </li>
                     </ul>
                 </div>
@@ -48,7 +48,6 @@
         </nav>
     </header>
     <div class="container">
-        <partial name="_CookieConsentPartial" />
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
@@ -56,7 +55,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2019 - AutoMammo - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2019 - AutoMammo
         </div>
     </footer>
 
