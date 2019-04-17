@@ -23,20 +23,22 @@ namespace BrysterAsp.Controllers
         {
             long size = files.Sum(f => f.Length);
 
+            String filePath = Guid.NewGuid().ToString();
+            
             // full path to file in temp location
-            var filePath = Path.GetTempFileName();
+            //var filePath = Path.GetTempFileName();
 
             var formFile = files.First();
             if (formFile.Length > 0)
             {
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                using (var stream = new FileStream(Path.GetTempPath()+filePath, FileMode.Create))
                 {
                     await formFile.CopyToAsync(stream);
                 }
             }
+            
 
-
-            return Redirect("analyze/selectregion/" +filePath.Split("/")[2].Split(".")[0]);
+            return Redirect("analyze/selectregion/" +filePath);
 
 
             //return Ok(new {count = files.Count, size, filePath, name = files.First().FileName});
