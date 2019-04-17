@@ -5,6 +5,7 @@ using BitMiracle.LibJpeg.Classic;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Numerics.LinearAlgebra.Storage;
+using ImagePreprocessing;
 
 
 namespace DimensionReduction
@@ -30,26 +31,26 @@ namespace DimensionReduction
             //TBD option 1: weighted solution. option 2: other solution.
         }
 
-        public void Train(List<UShortArrayAsImage> images)
+        public void Train(List<UshortArrayAsImage> images)
         {
-            double[,] allImages = new double[images[0].ColumCount*images[0].RowCount,images.Count];
+            double[,] allImages = new double[images[0].PixelCount, images.Count];
             int i = 0;
             foreach (var image in images)
             {
-                double[] dImage = new double[image.ColumCount*image.RowCount];
-                for (int y = 0; y < image.ColumCount; y++)
+                double[] dImage = new double[image.PixelCount];
+                for (int y = 0; y < image.Height; y++)
                 {
-                    for (int x = 0; x < image.RowCount; x++)
+                    for (int x = 0; x < image.Width; x++)
                     {
-                        dImage = image.Pixel[x, y];
+                        dImage[y * image.Height + x] = image.PixelArray[x,y];
                     }
                 }
 
-                for (int y = 0; y < image.ColumCount; y++)
+                for (int y = 0; y < image.Height; y++)
                 {
-                    for (int x = 0; x < image.RowCount; x++)
+                    for (int x = 0; x < image.Width; x++)
                     {
-                        allImages[i, x] = dImage[y * image.RowCount + x];
+                        allImages[i, x] = dImage[y * image.Width + x];
                     }
                 }
                 
@@ -71,27 +72,17 @@ namespace DimensionReduction
         ///<param name=matrix>a SparseMatrix to perform MeanSubtraction on</param>
         public void MeanSubtraction(SparseMatrix matrix)
         {
-            double sum = 0;
-            double xI = 0;
-
-            for (int i = 0; i < matrix.ColumnCount; i++)
+            var sums = matrix.ColumnSums();
+            int index = 0;
+            foreach (var sum in sums)
             {
-                for (int x = 0; x < matrix.RowCount; x++)
-                {
-                    sum += matrix.Storage[x, i];
-                }
-
                 if (Double.IsNegativeInfinity(sum) || Double.IsInfinity(sum))
                   throw new NotFiniteNumberException(sum);
-                xI = sum / matrix.RowCount;
-                sum = 0;
+                double xI = sum / matrix.RowCount;
+                
+                matrix.SetColumn(index, matrix.Column(index).Subtract(xI));
 
-                for (int x = 0; x < matrix.RowCount; x++)
-                {
-                    matrix.Storage[x, i] -= xI;
-                }
-
-                xI = 0;
+                index++;
             }
         }
         
