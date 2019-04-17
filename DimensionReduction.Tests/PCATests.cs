@@ -77,7 +77,7 @@ namespace DimensionReduction.Tests
       SparseMatrix matrix = SparseMatrix.OfArray(matrixArray);
       Assert.Throws<NotFiniteNumberException>(() => p.MeanSubtraction(matrix));
     }
-    
+
     [Test, Description("Tests a normal case for CovarianceMatrix")]
     public void CovarianceMatrixNormalCaseTest()
     {
@@ -95,7 +95,34 @@ namespace DimensionReduction.Tests
       };
 
       double[,] expectation = new double[2,2] {
-          {0.6165555556, 0.6154444444},
+        {0.6165555556, 0.6154444444},
+        {0.6154444444, 0.7165555556}
+      };
+
+      SparseMatrix matrix = SparseMatrix.OfArray(matrixArr);
+      SparseMatrix expectationMatrix = SparseMatrix.OfArray(expectation);
+      matrix = p.CovarianceMatrix(matrix);
+      CollectionAssert.AreEqual(expectationMatrix.ToArray(),
+          matrix.ToArray(),
+          new Comparer(floatingPointTolerance));
+    }
+    [Test, Description("Tests another normal case for CovarianceMatrix")]
+    public void CovarianceMatrixNormalCaseTwoTest()
+    {
+      double[,] matrixArr = new double[9, 9] {
+        {-3617,7121,-1770,-3850,-5723,8288,1787,5367,-1375},
+        {-1733,722,946,5770,-399,-5187,-4681,9403,3872},
+        {-3925,-1839,6520,2019,6463,-8250,-6075,-1832,2983},
+        {6100,-3915,-1382,-9308,-4979,8051,-533,5281,9673},
+        {1243,-919,9893,-3647,-2795,1933,4824,33,8109},
+        {-6118,-9715,8984,-1367,4956,6600,-4139,-2693,4956},
+        {4136,-664,5962,4935,-6293,8180,-5666,-7926,9214},
+        {2202,8521,-4741,5402,9037,4987,-4376,-7846,4644},
+        {-3823,-1998,-3350,570,-7444,8243,7435,2623,6424}
+      };
+
+      double[,] expectation = new double[2,2] {
+        {0.6165555556, 0.6154444444},
           {0.6154444444, 0.7165555556}
       };
 
