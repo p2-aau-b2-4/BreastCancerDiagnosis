@@ -27,6 +27,12 @@ namespace ImagePreprocessing
                 PixelData = result;
             }
         }
+        public int PixelCount
+        {
+          get {
+            return PixelArray.Length;
+          }
+        }
 
         /*public void ApplyNoiseFilter(int radius)
         {
