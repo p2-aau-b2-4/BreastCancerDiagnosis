@@ -71,27 +71,17 @@ namespace DimensionReduction
         ///<param name=matrix>a SparseMatrix to perform MeanSubtraction on</param>
         public void MeanSubtraction(SparseMatrix matrix)
         {
-            double sum = 0;
-            double xI = 0;
-
-            for (int i = 0; i < matrix.ColumnCount; i++)
+            var sums = matrix.ColumnSums();
+            int index = 0;
+            foreach (var sum in sums)
             {
-                for (int x = 0; x < matrix.RowCount; x++)
-                {
-                    sum += matrix.Storage[x, i];
-                }
-
                 if (Double.IsNegativeInfinity(sum) || Double.IsInfinity(sum))
                   throw new NotFiniteNumberException(sum);
                 xI = sum / matrix.RowCount;
-                sum = 0;
+                
+                matrix.SetColumn(index, matrix.Column(index).Subtract(xI));
 
-                for (int x = 0; x < matrix.RowCount; x++)
-                {
-                    matrix.Storage[x, i] -= xI;
-                }
-
-                xI = 0;
+                index++;
             }
         }
         
