@@ -32,11 +32,11 @@ namespace DimensionReduction
 
         public void Train(List<UShortArrayAsImage> images)
         {
-            double[,] allImages = new double[images[0].ColumCount*images[0].RowCount,images.Count];
+            double[,] allImages = new double[images[0].Length, images.Count];
             int i = 0;
             foreach (var image in images)
             {
-                double[] dImage = new double[image.ColumCount*image.RowCount];
+                double[] dImage = new double[image.Length];
                 for (int y = 0; y < image.ColumCount; y++)
                 {
                     for (int x = 0; x < image.RowCount; x++)
