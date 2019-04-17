@@ -5,6 +5,7 @@ using BitMiracle.LibJpeg.Classic;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Numerics.LinearAlgebra.Storage;
+using ImagePreprocessing;
 
 
 namespace DimensionReduction
@@ -30,26 +31,26 @@ namespace DimensionReduction
             
         }
 
-        public void Train(List<UShortArrayAsImage> images)
+        public void Train(List<UshortArrayAsImage> images)
         {
-            double[,] allImages = new double[images[0].Length, images.Count];
+            double[,] allImages = new double[images[0].PixelCount, images.Count];
             int i = 0;
             foreach (var image in images)
             {
-                double[] dImage = new double[image.Length];
-                for (int y = 0; y < image.ColumCount; y++)
+                double[] dImage = new double[image.PixelCount];
+                for (int y = 0; y < image.Height; y++)
                 {
-                    for (int x = 0; x < image.RowCount; x++)
+                    for (int x = 0; x < image.Width; x++)
                     {
-                        dImage = image.Pixel[x, y];
+                        dImage[y * image.Height + x] = image.PixelArray[x,y];
                     }
                 }
 
-                for (int y = 0; y < image.ColumCount; y++)
+                for (int y = 0; y < image.Height; y++)
                 {
-                    for (int x = 0; x < image.RowCount; x++)
+                    for (int x = 0; x < image.Width; x++)
                     {
-                        allImages[i, x] = dImage[y * image.RowCount + x];
+                        allImages[i, x] = dImage[y * image.Width + x];
                     }
                 }
                 
@@ -77,7 +78,7 @@ namespace DimensionReduction
             {
                 if (Double.IsNegativeInfinity(sum) || Double.IsInfinity(sum))
                   throw new NotFiniteNumberException(sum);
-                xI = sum / matrix.RowCount;
+                double xI = sum / matrix.RowCount;
                 
                 matrix.SetColumn(index, matrix.Column(index).Subtract(xI));
 
