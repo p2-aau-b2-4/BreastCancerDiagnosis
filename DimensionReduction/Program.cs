@@ -62,11 +62,18 @@ namespace DicomDisplayTest
                 {73,600,55}
             };
             
+            double[,] matrix5 = new double[,]
+            {
+                
+                {1,2,3,4,5,6},
+                {1,2,3,4,5,6}
+            };
+            
             SparseMatrix sM1 = SparseMatrix.OfArray(matrix1);
             SparseMatrix sM2 = SparseMatrix.OfArray(matrix2);
             SparseMatrix sM3 = SparseMatrix.OfArray(matrix3);
             SparseMatrix sM4 = SparseMatrix.OfArray(arr);
-            
+            SparseMatrix sM5 = SparseMatrix.OfArray(matrix5);
             
             PCA pca = new PCA();
 
@@ -81,7 +88,34 @@ namespace DicomDisplayTest
 
                 Console.WriteLine();
             }
+
+            sM1 = pca.CovarianceMatrix(sM1);
+
+            for (int i = 0; i < 2; i++)
+            {
+                for (int j = 0; j < 2; j++)
+                {
+                    Console.Write(sM1[i,j].ToString());
+                }
+
+                Console.WriteLine();
+            }
             
+            pca.MeanSubtraction(sM5);
+            sM5 = pca.CovarianceMatrix(sM5);
+
+            for (int i = 0; i < 2; i++)
+            {
+                for (int j = 0; j < 2; j++)
+                {
+                    Console.Write(sM5[i,j].ToString());
+                }
+
+                Console.WriteLine();
+            }
+
+            //Console.WriteLine(sM3.Rank());
+
             /*pca.SolveEigenValues(sM1);
             pca.SolveEigenValues(sM2);
             pca.SolveEigenValues(sM4);*/
