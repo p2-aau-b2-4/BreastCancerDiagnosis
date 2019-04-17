@@ -65,12 +65,12 @@ namespace WebApp
                     "SelectRegion",
                     "/analyze/selectregion/{FileName}",
                     new {controller = "Analyze", action = "SelectRegion"},
-                    new {FileName = @"\w+"});
+                    new {FileName = @"[\w-]+"});
                 routes.MapRoute(
                     "ShowPng",
                     "/analyze/showPng/{path}",
                     new {controller = "Analyze", action = "GetPngFromTempPath"},
-                    new {path = @"\w+"});
+                    new {path = @"[\w-]+"});
                 routes.MapRoute(
                     "StartAnalyzing",
                     "/analyze/startAnalyze",
