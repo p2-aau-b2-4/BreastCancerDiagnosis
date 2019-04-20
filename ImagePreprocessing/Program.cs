@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Text;
 using System.Windows;
 using System.Drawing;
@@ -17,6 +18,7 @@ namespace ImagePreprocessing
     {
         static void Main(string[] args)
         {
+            Console.WriteLine(ConfigurationManager.AppSettings["myKey"]);
             var img = DicomFile.Open(@"e.dcm");
             UshortArrayAsImage imgInfo = img.GetUshortImageInfo();
             imgInfo.SaveAsPng("eINFO.PNG");

@@ -12,4 +12,10 @@
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="2.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="..\Training\App.config">
+      <Link>App.config</Link>
+    </Content>
+  </ItemGroup>
+
 </Project>
