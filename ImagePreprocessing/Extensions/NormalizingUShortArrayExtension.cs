@@ -6,6 +6,45 @@ namespace ImagePreprocessing
 {
     public static class NormalizingUShortArrayExtension
     {
+        public static UshortArrayAsImage GetNormalizedSizedCrop(this UshortArrayAsImage cropped, int size)
+        {
+            byte[] orgPixelData = cropped.PixelData;
+            int currentByteInOrgPixelData = 0;
+            
+            // lets find how many black lines we should add on each side
+            int linesToAddVertical = (size - cropped.Width) / 2;
+            int linesToAddHorizontal = (size - cropped.Height) / 2;
+            
+            
+            
+            // lets add the lines;
+            byte[] pixelData = new byte[size*size*2];
+
+            int currentByte = 0;
+            // add horizontal first, as they are the first bytes
+            for (int i = 0; i < linesToAddHorizontal; i++)
+            {
+                for (int u = 0; u < size * 2; u++) pixelData[currentByte++] = 0;
+            }
+
+            for (int i = 0; i < cropped.Height; i++)
+            {
+                // for every horizontal line of img
+                // add the black lines first
+                for (int u = 0; u < linesToAddVertical*2; u++) pixelData[currentByte++] = 0;
+                // then add the pixeldata for the next width*2 bytes;
+                for (int u = 0; u < cropped.Width*2; u++) pixelData[currentByte++] = orgPixelData[currentByteInOrgPixelData++];
+                
+                // lets add the rest of vertical lines
+                for (int u = 0; u < (size-linesToAddVertical-cropped.Width)*2; u++) pixelData[currentByte++] = 0;
+            }
+            
+            return new UshortArrayAsImage(pixelData,size, size);
+        }
+        public static void Normalize(this UshortArrayAsImage ushortImg)
+        {
+            throw new NotImplementedException();
+        }
         public static UshortArrayAsImage Edge(this UshortArrayAsImage ushortImg, int threshold)
         {
             var image = ushortImg.PixelArray;
@@ -25,7 +64,7 @@ namespace ImagePreprocessing
                     ushort clu = image[i - 1, j - 1];
                     ushort crd = image[i + 1, j + 1];
                     ushort cru = image[i + 1, j - 1];
-                    int power = getMaxD(cr, cl, cu, cd, cld, clu, cru, crd);
+                    int power = GetMaxD(cr, cl, cu, cd, cld, clu, cru, crd);
 
                     if (power > threshold)
                     {
@@ -49,19 +88,19 @@ namespace ImagePreprocessing
             return x;
         }
 
-        private static int getD(int cr, int cl, int cu, int cd, int cld, int clu, int cru, int crd, int[,] matrix)
+        private static int GetD(int cr, int cl, int cu, int cd, int cld, int clu, int cru, int crd, int[,] matrix)
         {
             return Math.Abs(matrix[0, 0] * clu + matrix[0, 1] * cu + matrix[0, 2] * cru
                             + matrix[1, 0] * cl + matrix[1, 2] * cr
                             + matrix[2, 0] * cld + matrix[2, 1] * cd + matrix[2, 2] * crd);
         }
 
-        private static int getMaxD(int cr, int cl, int cu, int cd, int cld, int clu, int cru, int crd)
+        private static int GetMaxD(int cr, int cl, int cu, int cd, int cld, int clu, int cru, int crd)
         {
             int max = int.MinValue;
             for (int i = 0; i < templates.Count; i++)
             {
-                int newVal = getD(cr, cl, cu, cd, cld, clu, cru, crd, templates[i]);
+                int newVal = GetD(cr, cl, cu, cd, cld, clu, cru, crd, templates[i]);
                 if (newVal > max)
                     max = newVal;
             }

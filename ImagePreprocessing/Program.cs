@@ -1,16 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Text;
-using System.Windows;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
 using Dicom;
-using Dicom.Imaging;
-using Microsoft.Win32;
 
 namespace ImagePreprocessing
 {
@@ -24,7 +14,6 @@ namespace ImagePreprocessing
             imgInfo.SaveAsPng("eINFO.PNG");
 
             
-            imgInfo.PixelArray = Contrast.Equalization(imgInfo.PixelArray, 25);
             imgInfo.SaveAsPng("eINFOContrast.png");    //REMOVE
             var imgOverlay = imgInfo.Edge(1000);
             imgOverlay.SaveAsPng("OliverErEnNar.png");
