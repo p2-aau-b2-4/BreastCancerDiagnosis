@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-
 using BitMiracle.LibJpeg.Classic;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra.Double;
