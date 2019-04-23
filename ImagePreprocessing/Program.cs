@@ -20,7 +20,8 @@ namespace ImagePreprocessing
             var img = DicomFile.Open(@"e.dcm");
             UshortArrayAsImage imgInfo = img.GetUshortImageInfo();
             imgInfo.SaveAsPng("eINFO.PNG");
-
+            imgInfo.ApplyHistogramEqualization();
+            imgInfo.SaveAsPng("LarsLavedeDetHer");
             
             imgInfo.PixelArray = Contrast.Equalization(imgInfo.PixelArray, 25);
             imgInfo.SaveAsPng("eINFOContrast.png");    //REMOVE
