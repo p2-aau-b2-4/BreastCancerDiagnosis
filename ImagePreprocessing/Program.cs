@@ -11,16 +11,10 @@ namespace ImagePreprocessing
             Console.WriteLine(ConfigurationManager.AppSettings["myKey"]);
             var img = DicomFile.Open(@"000000.dcm");
             UshortArrayAsImage imgInfo = img.GetUshortImageInfo();
-            imgInfo.SaveAsPng("eINFO.PNG");
 
             imgInfo.SaveAsPng("LarsLavedeDetHerFør.png");
             imgInfo.ApplyHistogramEqualization();
             imgInfo.SaveAsPng("LarsLavedeDetHerEfter.png");
-
-            imgInfo.ApplyContrastEnhancement(100);
-
-            
-            imgInfo.SaveAsPng("eINFOContrast.png");    //REMOVE
             //var imgOverlay = imgInfo.Edge(1000);
             //imgOverlay.SaveAsPng("OliverErEnNar.png");
             
