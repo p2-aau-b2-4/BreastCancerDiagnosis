@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using Accord.Imaging.Filters;
-using Dicom.Imaging.Render;
 
 namespace ImagePreprocessing
 {
