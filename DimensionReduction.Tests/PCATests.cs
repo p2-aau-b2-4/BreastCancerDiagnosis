@@ -82,7 +82,7 @@ namespace DimensionReduction.Tests
         public void CovarianceMatrixNormalCaseNonSquareMoreRowsTest()
         {
             double[,] matrixArr = new double[10,2] {
-                {0.69, 0.49},
+                    {0.69, 0.49},
                     {-1.31, -1.21},
                     {0.39, 0.99},
                     {0.09, 0.29},
@@ -95,7 +95,7 @@ namespace DimensionReduction.Tests
             };
 
             double[,] expectation = new double[2,2] {
-                {0.6165555556, 0.6154444444},
+                    {0.6165555556, 0.6154444444},
                     {0.6154444444, 0.7165555556}
             };
 
@@ -111,7 +111,7 @@ namespace DimensionReduction.Tests
         public void CovarianceMatrixNormalCaseNonSquareMoreColumnsTest()
         {
             double[,] matrixArr = new double[2,10] {
-                {0.69, 0.49, -1.31, -1.21, 0.39, 0.99, 0.09, 0.29, 1.29, 1.09},
+                    {0.69, 0.49, -1.31, -1.21, 0.39, 0.99, 0.09, 0.29, 1.29, 1.09},
                     {0.49, 0.79, 0.19, -0.31, -0.81, -0.81, -0.31, -0.31, -0.71, -1.01}
             };
 
@@ -220,7 +220,7 @@ namespace DimensionReduction.Tests
 
             SparseMatrix matrix = SparseMatrix.OfArray(matrixArr);
             SparseMatrix expectationMatrix = SparseMatrix.OfArray(expectation);
-            p.MeanSubtraction(matrix);
+            matrix = p.MeanSubtraction(matrix);
             matrix = p.CovarianceMatrix(matrix);
             CollectionAssert.AreEqual(expectationMatrix.ToArray(),
                     matrix.ToArray(),
@@ -230,7 +230,7 @@ namespace DimensionReduction.Tests
         public void CovarianceMatrixNormalCaseSquareTest()
         {
             double[,] matrixArr = new double[9, 9] {
-                {-3617,7121,-1770,-3850,-5723,8288,1787,5367,-1375},
+                    {-3617,7121,-1770,-3850,-5723,8288,1787,5367,-1375},
                     {-1733,722,946,5770,-399,-5187,-4681,9403,3872},
                     {-3925,-1839,6520,2019,6463,-8250,-6075,-1832,2983},
                     {6100,-3915,-1382,-9308,-4979,8051,-533,5281,9673},
@@ -330,7 +330,7 @@ namespace DimensionReduction.Tests
             SparseMatrix matrix = SparseMatrix.OfArray(matrixArr);
             SparseMatrix expectationMatrix = SparseMatrix.OfArray(expectation);
 
-            p.MeanSubtraction(matrix);
+            matrix = p.MeanSubtraction(matrix);
             matrix = p.CovarianceMatrix(matrix);
             CollectionAssert.AreEqual(expectationMatrix.ToArray(),
                     matrix.ToArray(),
@@ -340,7 +340,7 @@ namespace DimensionReduction.Tests
         public void CovarianceMatrixMaxValuesTest()
         {
             double[,] matrixArr = new double[10,2] {
-                {Double.MaxValue, Double.MaxValue},
+                    {Double.MaxValue, Double.MaxValue},
                     {-Double.MaxValue, -Double.MaxValue},
                     {Double.MaxValue, Double.MaxValue},
                     {Double.MaxValue, Double.MaxValue},
