@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+using Accord.Imaging.Filters;
+using Dicom.Imaging.Render;
 
 namespace ImagePreprocessing
 {
@@ -6,7 +10,6 @@ namespace ImagePreprocessing
     {
         public static void ApplyContrastEnhancement(this UshortArrayAsImage img, double threshold)
         {
-
             ushort[,] image = img.PixelArray;
 
             double maxUInt16Value = UInt16.MaxValue;
@@ -16,34 +19,17 @@ namespace ImagePreprocessing
             ushort[,] endPixels = new ushort[image.GetLength(0), image.GetLength(1)];
 
 
-
             for (int y = 0; y < image.GetLength(1); y++)
             {
                 for (int x = 0; x < image.GetLength(0); x++)
                 {
                     pixels[x, y] = image[x, y];
-
-
-
-
                 }
             }
-
-
-
-
-
-
-
-
 
             //double threshold = 50.0;
             double contrastLevel = Math.Pow((100.0 + threshold) / 100.0, 2);
             double pixelToInsert = 0.0;
-
-
-
-
 
 
             for (int y = 0; y < image.GetLength(1); y++)
@@ -64,6 +50,7 @@ namespace ImagePreprocessing
                     endPixels[x, y] = Convert.ToUInt16(pixelToInsert);
                 }
             }
+
             img.PixelArray = endPixels;
         }
 
@@ -123,24 +110,38 @@ namespace ImagePreprocessing
             {
                 normalizedHistogram[i] = histogram[i] / (double)nPixels;
             }
+            
 
-            double[] accumulativeHistogram = new double[UInt16ValuesInTotal];
-            for (int i = 0; i < UInt16ValuesInTotal; i++)
+            double[] accumulativeHistogram = MakeAccumulativeHistogram(normalizedHistogram);
+
+            img.PixelArray = CalculateResult(img.PixelArray, accumulativeHistogram);
+        }
+
+        private static ushort[,] CalculateResult(ushort[,] origin, double[] accumulativeHistogram)
+        {
+            ushort[,] result = origin.Clone() as ushort[,];
+            for (int i = 0; i < origin.GetLength(0); i++)
             {
-                for (int j = 0; j < i; j++)
+                for (int j = 0; j < origin.GetLength(1); j++)
                 {
-                    accumulativeHistogram[i] += normalizedHistogram[j];
+                    result[i, j] = (ushort)(accumulativeHistogram[origin[i, j]] * (double)UInt16.MaxValue);
                 }
             }
 
-            ushort[,] result = img.PixelArray.Clone() as ushort[,];
-            for (int i = 0; i < img.Height; i++)
+            return result;
+        }
+
+        private static double[] MakeAccumulativeHistogram(double[] normalizedHistogram)
+        {
+            double[] accumulativeHistogram = new double[UInt16.MaxValue+1];
+            double accumulated = 0;
+            for (int i = 0; i < UInt16.MaxValue+1; i++)
             {
-                for (int j = 0; j < img.Width; j++)
-                {
-                    result[i, j] = (ushort)(accumulativeHistogram[pixelArray[i, j]] * (double)UInt16.MaxValue);
-                }
+                accumulated += normalizedHistogram[i];
+                accumulativeHistogram[i] = accumulated;
             }
+
+            return accumulativeHistogram;
         }
     }
 }
