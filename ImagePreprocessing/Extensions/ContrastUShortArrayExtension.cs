@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ImagePreprocessing
 {
@@ -15,7 +13,7 @@ namespace ImagePreprocessing
             // Copying image to int array 
             //int[] pixels = new int[image2.Height * image2.Width];
             ushort[,] pixels = new ushort[image.GetLength(0), image.GetLength(1)];
-            ushort[,] end_pixels = new ushort[image.GetLength(0), image.GetLength(1)];
+            ushort[,] endPixels = new ushort[image.GetLength(0), image.GetLength(1)];
 
 
 
@@ -63,10 +61,10 @@ namespace ImagePreprocessing
                         pixelToInsert = 0;
                     }
 
-                    end_pixels[x, y] = Convert.ToUInt16(pixelToInsert);
+                    endPixels[x, y] = Convert.ToUInt16(pixelToInsert);
                 }
             }
-            img.PixelArray = end_pixels;
+            img.PixelArray = endPixels;
         }
 
         private static double ApplyContrastToPixel(ushort pixelToTransform, double maxValue, double contrastLevel)

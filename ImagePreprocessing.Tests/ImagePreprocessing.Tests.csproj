@@ -16,4 +16,10 @@
     <ProjectReference Include="..\ImagePreprocessing\ImagePreprocessing.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="..\Training\App.config">
+      <Link>App.config</Link>
+    </Content>
+  </ItemGroup>
+
 </Project>
