@@ -89,9 +89,8 @@ namespace DimensionReduction
 
                 double xI = sum / matrix.RowCount;
 
-                int i = 0;
                 var tmpVector = matrix.Column(index);
-                tmpVector.Subtract(xI);
+                tmpVector = tmpVector.Subtract(xI);
                 
                 vectors.Add(tmpVector);
                 
