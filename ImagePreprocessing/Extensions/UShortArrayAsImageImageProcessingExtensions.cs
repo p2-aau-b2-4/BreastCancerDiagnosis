@@ -25,26 +25,13 @@ namespace ImagePreprocessing
                 {
                     pixels[x, y] = image[x, y];
 
-
-
-
                 }
             }
-
-
-
-
-
-
-
 
 
             //double threshold = 50.0;
             double contrastLevel = Math.Pow((100.0 + threshold) / 100.0, 2);
             double pixelToInsert = 0.0;
-
-
-
 
 
 
