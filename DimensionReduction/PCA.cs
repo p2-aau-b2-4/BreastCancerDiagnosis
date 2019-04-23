@@ -91,7 +91,6 @@ namespace DimensionReduction
 
                 var tmpVector = matrix.Column(index);
                 tmpVector = tmpVector.Subtract(xI);
-                
                 vectors.Add(tmpVector);
                 
                 index += 1;
