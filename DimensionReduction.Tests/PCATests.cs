@@ -8,7 +8,7 @@ using DimensionReduction;
 namespace DimensionReduction.Tests
 {
   [TestFixture, Description("Tests for the PCA Class")]
-  public class VectorTests
+  public class PCATests
   {
     double floatingPointTolerance = 0.00000001;
     PCA p = new PCA();
@@ -220,6 +220,7 @@ namespace DimensionReduction.Tests
 
       SparseMatrix matrix = SparseMatrix.OfArray(matrixArr);
       SparseMatrix expectationMatrix = SparseMatrix.OfArray(expectation);
+      p.MeanSubtraction(matrix);
       matrix = p.CovarianceMatrix(matrix);
       CollectionAssert.AreEqual(expectationMatrix.ToArray(),
           matrix.ToArray(),
