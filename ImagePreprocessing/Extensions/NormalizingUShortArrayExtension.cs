@@ -84,7 +84,7 @@ namespace ImagePreprocessing
             var x = new UshortArrayAsImage(new byte[ushortImg.Width * ushortImg.Height * 2], ushortImg.Width,
                 ushortImg.Height);
             x.PixelArray = GetBiggestSector(imageOverlay, image);
-            //TumorDimensions(imageOverlay);
+            TumorDimensions(x.PixelArray);
             return x;
         }
 
@@ -204,21 +204,62 @@ namespace ImagePreprocessing
 
         private static void TumorDimensions(ushort[,] imageOverlay)
         {
-            int p1 = 0, p2 = 0, q1 = 0, q2 = 0;
-
-            while (imageOverlay[p1, q1] != UInt16.MaxValue)
+            int oX = 0, oY = 0, uX = 0, uY = 0, hX = 0, hY = 0, vX = 0, vY = 0 ;
+            
+            //Den øverste pixel
+            while (imageOverlay[oY, oX] != UInt16.MaxValue)
             {
-                q1++;
-                if (imageOverlay.GetLength(1) == q1)
+                oX++;
+                if (imageOverlay.GetLength(1) == oX)
                 {
-                    q1 = 0;
-                    p1++;
+                    oX = 0;
+                    oY++;
                 }
             }
+            
+            //Den Nederste pixel
+            uY = imageOverlay.GetLength(1);
+            while (imageOverlay[uY, uX] != UInt16.MaxValue)
+            {
+                uX++;
+                if (imageOverlay.GetLength(1) == uX)
+                {
+                    uX = 0;
+                    uY--;
+                }
+            }
+            
+            //Den yderste pixel til venstre
+            while (imageOverlay[vY, vX] != UInt16.MaxValue)
+            {
+                vY++;
+                if (imageOverlay.GetLength(0) == vY)
+                {
+                    vY = 0;
+                    vX++;
+                }
+            }
+               
+            //Den yderste pixel til højre
+            hX = imageOverlay.GetLength(1)-1;
+            while (imageOverlay[hY, hX] != UInt16.MaxValue)
+            {
+                hY++;
+                if (imageOverlay.GetLength(0) == hY)
+                {
+                    hY = 0;
+                    hX--;
+                }
 
-            Console.WriteLine(imageOverlay[p1, q1]);
-            Console.WriteLine(q1);
-            Console.WriteLine(p1);
+            }
+            
+            //Center af knuden
+            int centerX = (hX - vX)/2 + vX;
+            int centerY = (uY - oY)/2 + oY;
+            
+            //Gennemsnitlig radius af knuden
+            int radius = (hX - vX) > (uY - oY) ? (hX - vX) : (uY - oY);
+
         }
 
         private class Sector
