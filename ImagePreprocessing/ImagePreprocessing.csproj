@@ -6,6 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Accord" Version="3.8.0" />
+    <PackageReference Include="Accord.Imaging" Version="3.8.0" />
+    <PackageReference Include="Accord.Imaging.Noncommercial" Version="3.8.0" />
     <PackageReference Include="fo-dicom.Drawing" Version="4.0.0" />
     <PackageReference Include="fo-dicom.NetCore" Version="4.0.0" />
     <PackageReference Include="MathNet.Numerics" Version="4.7.0" />

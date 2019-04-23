@@ -52,12 +52,12 @@ namespace WebApp.Controllers
             image.SaveAsPng(Path.GetTempPath()+croppedImgSrc);
             
             // lets first apply the contrast:
-            image.ApplyContrastEnhancement(100);
+            image.ApplyHistogramEqualization();
             string contrastImgSrc = filePath + "-contrast";
             image.SaveAsPng(Path.GetTempPath()+contrastImgSrc);
 
             string edgeImgSrc = filePath + "-edged";
-            image.Edge(1000).SaveAsPng(Path.GetTempPath()+edgeImgSrc);
+            image.Edge(3000).SaveAsPng(Path.GetTempPath()+edgeImgSrc);
             // then apply the algorithm
 
             ViewBag.CroppedImgSrc = croppedImgSrc;
@@ -68,7 +68,7 @@ namespace WebApp.Controllers
             // 2. Classification and probability
 
             ViewBag.Classification = DdsmImage.Pathologies.Benign;
-            ViewBag.Probability = 99.5;
+            ViewBag.Probability = (new Random().Next()%1000)/10.0;
             
             return View();
         }
