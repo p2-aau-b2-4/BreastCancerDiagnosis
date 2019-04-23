@@ -1,15 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
+using System.Configuration;
 using Dicom;
-using Dicom.Imaging;
-using Microsoft.Win32;
 
 namespace ImagePreprocessing
 {
@@ -17,9 +8,21 @@ namespace ImagePreprocessing
     {
         static void Main(string[] args)
         {
-            var img = DicomFile.Open(@"e.dcm");
+            Console.WriteLine(ConfigurationManager.AppSettings["myKey"]);
+            var img = DicomFile.Open(@"000000.dcm");
             UshortArrayAsImage imgInfo = img.GetUshortImageInfo();
             imgInfo.SaveAsPng("eINFO.PNG");
+
+            imgInfo.SaveAsPng("LarsLavedeDetHerFør.png");
+            imgInfo.ApplyHistogramEqualization();
+            imgInfo.SaveAsPng("LarsLavedeDetHerEfter.png");
+
+            imgInfo.ApplyContrastEnhancement(100);
+
+            
+            imgInfo.SaveAsPng("eINFOContrast.png");    //REMOVE
+            //var imgOverlay = imgInfo.Edge(1000);
+            //imgOverlay.SaveAsPng("OliverErEnNar.png");
             
             //list<ddsmimage> ddsmimages =
             //    ddsmimage.getallimagesfromcsvfile(@"e:\brysttest\mass_case_description_train_set.csv");
@@ -31,6 +34,7 @@ namespace ImagePreprocessing
             //            {
             //                Console.WriteLine($"{ddsmImage.PatientId} | {ddsmImage.ImageView} | {ddsmImage.BreastSide} | {ddsmImage.GetDcomCroppedImage().Width}x{ddsmImage.GetDcomCroppedImage().Height}");
             //            }
+<<<<<<< HEAD
             List<DdsmImage> DDSMImages =
                 DdsmImage.GetAllImagesFromCsvFile(@"D:\Bryster\mass_case_description_test_set.csv");
             Console.WriteLine($"Found {DDSMImages.Count}");
@@ -38,6 +42,16 @@ namespace ImagePreprocessing
 
             imgInfo.ApplyContrastEnhancement(20);
             imgInfo.SaveAsPng("test.png");
+=======
+           /* List<DdsmImage> DDSMImages =
+                DdsmImage.GetAllImagesFromCsvFile(@"E:\BrystTest\mass_case_description_train_set.csv");
+            Console.WriteLine($"Found {DDSMImages.Count}");
+
+            var x = DDSMImages.First();
+            x.GetDcomCroppedImage().PixelArray = x.GetDcomCroppedImage().PixelArray;
+            x.GetNormalizedSizedCrop(1000).SaveAsPng("black.png");
+            */
+>>>>>>> dev
 
 //            Serializer.Save("data.bin", DDSMImages);
 //            foreach (DdsmImage ddsmImage in DDSMImages)

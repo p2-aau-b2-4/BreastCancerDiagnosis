@@ -16,13 +16,9 @@ namespace BrysterAsp.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        public IActionResult Index(bool error)
         {
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
+            ViewBag.error = error;
             return View();
         }
 
@@ -32,25 +28,22 @@ namespace BrysterAsp.Controllers
             return View(new ErrorViewModel {RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
         }
 
-        public IActionResult Png()
+        public IActionResult About()
         {
-            HttpContext context = HttpContext;
-
-            Bitmap image = new Bitmap(1000, 1000);
-            image.SetPixel(500,500,Color.Red);
-            MemoryStream ms = new MemoryStream();
-
-            image.Save(ms, ImageFormat.Png);
-            ms.Seek(0, SeekOrigin.Begin);
-            //ms.WriteTo(context.Response.);
-
-
-            return new FileStreamResult(ms, "image/png");
+            return View();
+            throw new NotImplementedException();
         }
 
-        public IActionResult SelectRegion()
+        public IActionResult Statistics()
         {
-            return null;
+            return View();
+            throw new NotImplementedException();
+        }
+
+        public IActionResult Contact()
+        {
+            return View();
+            throw new NotImplementedException();
         }
     }
 }

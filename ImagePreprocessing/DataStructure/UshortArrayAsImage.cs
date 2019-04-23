@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -10,7 +8,6 @@ namespace ImagePreprocessing
 {
     public class UshortArrayAsImage : ArrayAsImageAbstract
     {
-//        private ushort[,] _pixelArray;
 
         public ushort[,] PixelArray
         {
@@ -28,34 +25,6 @@ namespace ImagePreprocessing
                 PixelData = result;
             }
         }
-
-        /*public void ApplyNoiseFilter(int radius)
-        {
-            ushort[,] tempMatrix = new ushort[PixelArray.GetLength(0), PixelArray.GetLength(1)];
-            for (int x = 0; x < tempMatrix.GetLength(0); x++)
-            {
-                for (int y = 0; y < tempMatrix.GetLength(1); y++)
-                {
-                    //lets add all pixels and average them
-                    int count = 0;
-                    int total = 0;
-                    for (int xin = x - radius; xin < x + radius; xin++)
-                    {
-                        if (xin < 0 || xin >= tempMatrix.GetLength(0)) continue;
-                        for (int yin = y - radius; yin < y + radius; yin++)
-                        {
-                            if (yin < 0 || yin >= tempMatrix.GetLength(1)) continue;
-                            count++;
-                            total += PixelArray[xin, yin];
-                        }
-                    }
-
-                    tempMatrix[x, y] = Convert.ToUInt16(total * 1.0 / count);
-                }
-            }
-
-            PixelArray = tempMatrix;
-        }*/
 
         public override void SaveAsPng(string saveLoc)
         {
@@ -112,6 +81,48 @@ namespace ImagePreprocessing
             imgBitmap.Save(ms, ImageFormat.Png);
             ms.Seek(0, SeekOrigin.Begin);
             return ms;
+        }
+
+        public UshortArrayAsImage Crop((int, int, int, int) rectangle)
+        {
+            //todo
+            int x1 = rectangle.Item1 < rectangle.Item3 ? rectangle.Item1 : rectangle.Item3;
+            int x2 = rectangle.Item1 > rectangle.Item3 ? rectangle.Item1 : rectangle.Item3;
+            int y1 = rectangle.Item2 < rectangle.Item4 ? rectangle.Item2 : rectangle.Item4;
+            int y2 = rectangle.Item2 > rectangle.Item4 ? rectangle.Item2 : rectangle.Item4;
+            Console.WriteLine($"{rectangle.Item1},{rectangle.Item2},{rectangle.Item3},{rectangle.Item4}");
+            Console.WriteLine($"{x1},{y1},{x2},{y2}");
+            
+            int sizeX = x2 - x1;
+            int sizeY = y2 - y1;
+
+            Console.WriteLine($"SIZE: {sizeX}X{sizeY}");
+            Console.WriteLine($"SIZEOriginal: {Width}X{Height}");
+            
+            
+            ushort[,] result = new ushort[sizeY,sizeX];
+            
+
+            ushort[,] current = PixelArray; // set here - lazy evaluation
+            
+            for (int x = 0; x < sizeX; x++)
+            {
+                for (int y = 0; y < sizeY; y++)
+
+                {
+                    result[y, x] = current[y + y1,x + x1];
+                }
+            }
+            
+            byte[] resultBytes = new byte[sizeX*sizeY * 2];
+            Buffer.BlockCopy(result, 0, resultBytes, 0, resultBytes.Length);
+            var finalResult = new UshortArrayAsImage(resultBytes,sizeX,sizeY);
+            return finalResult;
+        }
+
+        public void CropFromMask(UByteArrayAsImage getDcomMaskImage, string appSetting)
+        {
+            throw new NotImplementedException();
         }
     }
 }

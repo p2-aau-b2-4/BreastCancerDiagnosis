@@ -1,45 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using BrysterAsp.Models;
 using Dicom;
-using ImagePreprocessing;
+using Dicom.Imaging;
+using Dicom.IO.Reader;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore.Scaffolding;
+using Microsoft.AspNetCore.Mvc;
 
-namespace BrysterAsp.Controllers
+namespace WebApp.Controllers
 {
     public class OperationsController : Controller
     {
         [HttpPost("UploadFiles")]
         public async Task<IActionResult> UploadFile(List<IFormFile> files)
         {
-            long size = files.Sum(f => f.Length);
-
-            // full path to file in temp location
-            var filePath = Path.GetTempFileName();
-
+            if(files.Count == 0) return RedirectToAction("Index","Home", new {error=true});
             var formFile = files.First();
-            if (formFile.Length > 0)
+            
+            if (formFile.Length <= 0 || !formFile.FileName.EndsWith(".dcm") || !IsDcomFileValid(formFile.OpenReadStream()))
             {
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await formFile.CopyToAsync(stream);
-                }
+                return RedirectToAction("Index","Home", new {error=true});
             }
 
+            // use a unique id as filename/id
+            String filePath = Guid.NewGuid().ToString();
+            using (var stream = new FileStream(Path.GetTempPath() + filePath, FileMode.Create))
+            {
+                await formFile.CopyToAsync(stream);
+            }
 
-            return Redirect("analyze/selectregion/" +filePath.Split("/")[2].Split(".")[0]);
+            return Redirect("analyze/selectregion/" + filePath);
+        }
 
-
-            return Ok(new {count = files.Count, size, filePath, name = files.First().FileName});
+        private Boolean IsDcomFileValid(Stream dcomStream)
+        {
+            DicomFile f;
+            try
+            {
+                f = DicomFile.Open(dcomStream);
+            }
+            catch (DicomFileException e)
+            {
+                return false;
+            }
+            catch (DicomReaderException e)
+            {
+                return false;
+            }
+            if (f == null) return false;
+            if (!f.Dataset.GetString(DicomTag.PhotometricInterpretation).Contains("MONOCHROME")) return false;
+            if (DicomPixelData.Create(f.Dataset).BitDepth.BitsStored != 16) return false;
+            return true;
         }
     }
 }
