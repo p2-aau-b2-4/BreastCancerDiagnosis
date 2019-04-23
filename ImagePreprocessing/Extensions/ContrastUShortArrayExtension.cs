@@ -141,6 +141,8 @@ namespace ImagePreprocessing
                     result[i, j] = (ushort)(accumulativeHistogram[pixelArray[i, j]] * (double)UInt16.MaxValue);
                 }
             }
+
+            img.PixelArray = result;
         }
     }
 }
