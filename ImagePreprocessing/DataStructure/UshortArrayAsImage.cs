@@ -39,14 +39,16 @@ namespace ImagePreprocessing
                 }
             }
 
+            imgBitmap.GetHashCode();
+
             // lets add all bitmaps:
-            Graphics g = Graphics.FromImage(imgBitmap);
-            g.CompositingMode = CompositingMode.SourceOver;
-            foreach (Bitmap bitmap in Overlays)
-            {
-                bitmap.MakeTransparent();
-                g.DrawImage(bitmap, new Point(0, 0));
-            }
+            //Graphics g = Graphics.FromImage(imgBitmap);
+            //g.CompositingMode = CompositingMode.SourceOver;
+            //foreach (Bitmap bitmap in Overlays)
+            //{
+            //    bitmap.MakeTransparent();
+            //    g.DrawImage(bitmap, new Point(0, 0));
+            //}
 
             imgBitmap.Save(saveLoc, ImageFormat.Png);
         }
