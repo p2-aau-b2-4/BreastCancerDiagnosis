@@ -34,15 +34,7 @@ namespace ImagePreprocessing
             //            {
             //                Console.WriteLine($"{ddsmImage.PatientId} | {ddsmImage.ImageView} | {ddsmImage.BreastSide} | {ddsmImage.GetDcomCroppedImage().Width}x{ddsmImage.GetDcomCroppedImage().Height}");
             //            }
-<<<<<<< HEAD
-            List<DdsmImage> DDSMImages =
-                DdsmImage.GetAllImagesFromCsvFile(@"D:\Bryster\mass_case_description_test_set.csv");
-            Console.WriteLine($"Found {DDSMImages.Count}");
 
-
-            imgInfo.ApplyContrastEnhancement(20);
-            imgInfo.SaveAsPng("test.png");
-=======
            /* List<DdsmImage> DDSMImages =
                 DdsmImage.GetAllImagesFromCsvFile(@"E:\BrystTest\mass_case_description_train_set.csv");
             Console.WriteLine($"Found {DDSMImages.Count}");
@@ -51,7 +43,7 @@ namespace ImagePreprocessing
             x.GetDcomCroppedImage().PixelArray = x.GetDcomCroppedImage().PixelArray;
             x.GetNormalizedSizedCrop(1000).SaveAsPng("black.png");
             */
->>>>>>> dev
+
 
 //            Serializer.Save("data.bin", DDSMImages);
 //            foreach (DdsmImage ddsmImage in DDSMImages)
@@ -63,8 +55,8 @@ namespace ImagePreprocessing
             //            Console.WriteLine(DDSMImages[10].DcomMaskFilePath);
 
             //DDSMImages.First().GetDcomOriginalImage().SaveAsPng("original.png");
-            DDSMImages.First().GetDcomMaskImage().SaveAsPng("mask.png");
-            DDSMImages.First().GetDcomCroppedImage().SaveAsPng("cropped.png");
+            //DDSMImages.First().GetDcomMaskImage().SaveAsPng("mask.png");
+            //DDSMImages.First().GetDcomCroppedImage().SaveAsPng("cropped.png");
 
             //            var xImg = DDSMImages.First().GetDcomOriginalImage();
             //            var yImg = DDSMImages.First().GetDcomMaskImage();
