@@ -53,12 +53,12 @@ namespace DimensionReduction
                         allImages[i, x] = dImage[y * image.Width + x];
                     }
                 }
-                
+
                 i++;
             }
-            
+
             SparseMatrix matrix = SparseMatrix.OfArray(allImages);
-                
+
             MeanSubtraction(matrix);
             matrix = CovarianceMatrix(matrix);
             SolveEigenValues(matrix);
@@ -77,7 +77,7 @@ namespace DimensionReduction
             foreach (var sum in sums)
             {
                 if (Double.IsNegativeInfinity(sum) || Double.IsInfinity(sum))
-                  throw new NotFiniteNumberException(sum);
+                    throw new NotFiniteNumberException(sum);
 
                 double xI = sum / matrix.RowCount;
                 matrix.SetColumn(index, matrix.Column(index).Subtract(xI));
@@ -85,7 +85,7 @@ namespace DimensionReduction
                 index += 1;
             }
         }
-        
+
         ///<summary>
         ///Finds covariance for two doubles
         ///</summary>
@@ -111,15 +111,20 @@ namespace DimensionReduction
                 {
                     for (int i = 0; i < matrix.RowCount; i++)
                     {
-                        cMatrix[x, y] += Covariance(matrix.Storage[i, x], matrix.Storage[i, y],
-                            matrix.RowCount);
+                        double val = Covariance(matrix.Storage[i, x], matrix.Storage[i, y],
+                                matrix.RowCount);
+
+                        if (Double.IsNegativeInfinity(val) || Double.IsInfinity(val))
+                            throw new NotFiniteNumberException(val);
+
+                        cMatrix[x, y] += val;
                     }
                 }
             }
 
             return SparseMatrix.OfArray(cMatrix);
         }
-        
+
         ///<summary>
         ///Finds the eigen values of a matrix.
         ///</summary>
@@ -127,7 +132,7 @@ namespace DimensionReduction
         public void SolveEigenValues(SparseMatrix matrix)
         {
             if (matrix.RowCount != matrix.ColumnCount)
-              throw new ArgumentException();
+                throw new ArgumentException();
 
             var evd = matrix.Evd(MathNet.Numerics.LinearAlgebra.Symmetricity.Asymmetric);
             var eigen = matrix.Evd();
