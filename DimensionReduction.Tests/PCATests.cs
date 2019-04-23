@@ -78,8 +78,8 @@ namespace DimensionReduction.Tests
       Assert.Throws<NotFiniteNumberException>(() => p.MeanSubtraction(matrix));
     }
 
-    [Test, Description("Tests a normal case for CovarianceMatrix")]
-    public void CovarianceMatrixNormalCaseTest()
+    [Test, Description("Tests a normal case non-square matrix with more rows than columns for CovarianceMatrix")]
+    public void CovarianceMatrixNormalCaseNonSquareMoreRowsTest()
     {
       double[,] matrixArr = new double[10,2] {
         {0.69, 0.49},
@@ -106,8 +106,127 @@ namespace DimensionReduction.Tests
           matrix.ToArray(),
           new Comparer(floatingPointTolerance));
     }
-    [Test, Description("Tests another normal case for CovarianceMatrix")]
-    public void CovarianceMatrixNormalCaseTwoTest()
+
+    [Test, Description("Tests a normal case non-square matrix with more columns than rows for CovarianceMatrix")]
+    public void CovarianceMatrixNormalCaseNonSquareMoreColumnsTest()
+    {
+      double[,] matrixArr = new double[2,10] {
+        {0.69, 0.49, -1.31, -1.21, 0.39, 0.99, 0.09, 0.29, 1.29, 1.09},
+        {0.49, 0.79, 0.19, -0.31, -0.81, -0.81, -0.31, -0.31, -0.71, -1.01}
+      };
+
+      double[,] expectation = new double[10,10];
+
+      expectation[0,0] = 0.199999999999999900e-1;
+      expectation[0,1] = -0.299999999999999989e-1;
+      expectation[0,2] = -0.149999999999999967e0;
+      expectation[0,3] = -0.899999999999999689e-1;
+      expectation[0,4] = 0.119999999999999996e0;
+      expectation[0,5] = 0.179999999999999966e0;
+      expectation[0,6] = 0.399999999999999939e-1;
+      expectation[0,7] = 0.599999999999999839e-1;
+      expectation[0,8] = 0.199999999999999956e0;
+      expectation[0,9] = 0.209999999999999964e0;
+      expectation[1,0] = -0.299999999999999989e-1;
+      expectation[1,1] = 0.450000000000000122e-1;
+      expectation[1,2] = 0.225000000000000033e0;
+      expectation[1,3] = 0.135000000000000009e0;
+      expectation[1,4] = -0.180000000000000049e0;
+      expectation[1,5] = -0.270000000000000073e0;
+      expectation[1,6] = -0.600000000000000117e-1;
+      expectation[1,7] = -0.900000000000000105e-1;
+      expectation[1,8] = -0.300000000000000044e0;
+      expectation[1,9] = -0.315000000000000058e0;
+      expectation[2,0] = -0.149999999999999967e0;
+      expectation[2,1] = 0.225000000000000033e0;
+      expectation[2,2] = 0.112500000000000000e1;
+      expectation[2,3] = 0.675000000000000044e0;
+      expectation[2,4] = -0.900000000000000133e0;
+      expectation[2,5] = -0.135000000000000009e1;
+      expectation[2,6] = -0.300000000000000044e0;
+      expectation[2,7] = -0.449999999999999956e0;
+      expectation[2,8] = -0.150000000000000000e1;
+      expectation[2,9] = -0.157500000000000018e1;
+      expectation[3,0] = -0.899999999999999689e-1;
+      expectation[3,1] = 0.135000000000000009e0;
+      expectation[3,2] = 0.675000000000000044e0;
+      expectation[3,3] = 0.404999999999999971e0;
+      expectation[3,4] = -0.540000000000000036e0;
+      expectation[3,5] = -0.810000000000000053e0;
+      expectation[3,6] = -0.179999999999999993e0;
+      expectation[3,7] = -0.270000000000000018e0;
+      expectation[3,8] = -0.899999999999999911e0;
+      expectation[3,9] = -0.945000000000000062e0;
+      expectation[4,0] = 0.119999999999999996e0;
+      expectation[4,1] = -0.180000000000000049e0;
+      expectation[4,2] = -0.900000000000000133e0;
+      expectation[4,3] = -0.540000000000000036e0;
+      expectation[4,4] = 0.720000000000000195e0;
+      expectation[4,5] = 0.108000000000000029e1;
+      expectation[4,6] = 0.240000000000000047e0;
+      expectation[4,7] = 0.360000000000000042e0;
+      expectation[4,8] = 0.120000000000000018e1;
+      expectation[4,9] = 0.126000000000000023e1;
+      expectation[5,0] = 0.179999999999999966e0;
+      expectation[5,1] = -0.270000000000000073e0;
+      expectation[5,2] = -0.135000000000000009e1;
+      expectation[5,3] = -0.810000000000000053e0;
+      expectation[5,4] = 0.108000000000000029e1;
+      expectation[5,5] = 0.162000000000000011e1;
+      expectation[5,6] = 0.360000000000000042e0;
+      expectation[5,7] = 0.540000000000000036e0;
+      expectation[5,8] = 0.180000000000000004e1;
+      expectation[5,9] = 0.189000000000000012e1;
+      expectation[6,0] = 0.399999999999999939e-1;
+      expectation[6,1] = -0.600000000000000117e-1;
+      expectation[6,2] = -0.300000000000000044e0;
+      expectation[6,3] = -0.179999999999999993e0;
+      expectation[6,4] = 0.240000000000000047e0;
+      expectation[6,5] = 0.360000000000000042e0;
+      expectation[6,6] = 0.800000000000000155e-1;
+      expectation[6,7] = 0.119999999999999996e0;
+      expectation[6,8] = 0.400000000000000022e0;
+      expectation[6,9] = 0.420000000000000040e0;
+      expectation[7,0] = 0.599999999999999839e-1;
+      expectation[7,1] = -0.900000000000000105e-1;
+      expectation[7,2] = -0.449999999999999956e0;
+      expectation[7,3] = -0.270000000000000018e0;
+      expectation[7,4] = 0.360000000000000042e0;
+      expectation[7,5] = 0.540000000000000036e0;
+      expectation[7,6] = 0.119999999999999996e0;
+      expectation[7,7] = 0.179999999999999993e0;
+      expectation[7,8] = 0.599999999999999978e0;
+      expectation[7,9] = 0.630000000000000004e0;
+      expectation[8,0] = 0.199999999999999956e0;
+      expectation[8,1] = -0.300000000000000044e0;
+      expectation[8,2] = -0.150000000000000000e1;
+      expectation[8,3] = -0.899999999999999911e0;
+      expectation[8,4] = 0.120000000000000018e1;
+      expectation[8,5] = 0.180000000000000004e1;
+      expectation[8,6] = 0.400000000000000022e0;
+      expectation[8,7] = 0.599999999999999978e0;
+      expectation[8,8] = 0.2e1;
+      expectation[8,9] = 0.210000000000000009e1;
+      expectation[9,0] = 0.209999999999999964e0;
+      expectation[9,1] = -0.315000000000000058e0;
+      expectation[9,2] = -0.157500000000000018e1;
+      expectation[9,3] = -0.945000000000000062e0;
+      expectation[9,4] = 0.126000000000000023e1;
+      expectation[9,5] = 0.189000000000000012e1;
+      expectation[9,6] = 0.420000000000000040e0;
+      expectation[9,7] = 0.630000000000000004e0;
+      expectation[9,8] = 0.210000000000000009e1;
+      expectation[9,9] = 0.220500000000000007e1;
+
+      SparseMatrix matrix = SparseMatrix.OfArray(matrixArr);
+      SparseMatrix expectationMatrix = SparseMatrix.OfArray(expectation);
+      matrix = p.CovarianceMatrix(matrix);
+      CollectionAssert.AreEqual(expectationMatrix.ToArray(),
+          matrix.ToArray(),
+          new Comparer(floatingPointTolerance));
+    }
+    [Test, Description("Tests another normal square case for CovarianceMatrix")]
+    public void CovarianceMatrixNormalCaseSquareTest()
     {
       double[,] matrixArr = new double[9, 9] {
         {-3617,7121,-1770,-3850,-5723,8288,1787,5367,-1375},
