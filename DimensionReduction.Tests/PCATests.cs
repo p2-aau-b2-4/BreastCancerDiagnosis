@@ -17,7 +17,7 @@ namespace DimensionReduction.Tests
         public void MeanSubtractionNormalCaseTest()
         {
             double[,] matrixArray = new double[5,5] {
-                {2.0, 3.4, 0.0, 2.9, 5.1},
+                    {2.0, 3.4, 0.0, 2.9, 5.1},
                     {3.1, 9.2, 7.9, -2.3, 1.0},
                     {-6.1, -5.7, 1.0, -8.3, 3.3},
                     {9.9, -0.3, 4.0, -4.0, 2.8},
@@ -34,7 +34,7 @@ namespace DimensionReduction.Tests
 
             SparseMatrix matrix = SparseMatrix.OfArray(matrixArray);
             SparseMatrix res = SparseMatrix.OfArray(resArray);
-            p.MeanSubtraction(matrix);
+            matrix = p.MeanSubtraction(matrix);
             CollectionAssert.AreEqual(res.ToArray(),
                     matrix.ToArray(),
                     new Comparer(floatingPointTolerance));
