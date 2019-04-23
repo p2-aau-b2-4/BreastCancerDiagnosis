@@ -8,10 +8,24 @@
             <div class="col-8" style="width: 70%">
                 <h1 class="display-4">Velkommen</h1>
                 <h4>Træk dit billede ind på denne skærm, eller tryk "Gennemse" for at komme igang.</h4>
+                
                 <div style="width: auto; margin-left: auto; margin-right: auto; margin-top: 10%">
                     <form method="post" enctype="multipart/form-data" asp-controller="Operations" asp-action="UploadFile">
+                        @{
+                            if (ViewBag.error == true)
+                            {
+                                <div class="alert alert-warning">
+                                    <strong>Fejl!</strong> Der skete en fejl ved indlæsning af din DCM-fil..
+                                    <ol>
+                                        <li>Tjek at din DCM-fil ikke er korrupt</li>
+                                        <li>Tjek at din DCM-fil bruger 16-bit gråtoner</li>
+                                    </ol>
+                                    Hvis dette er tjekket, og det stadig ikke virker, venligst kontakt os for fejlfinding.
+                                </div>
+                            }
+                        }
                         <div class="file-upload-wrapper">
-                            <input data-height="500" type="file" name="files" multiple>
+                            <input data-height="500" type="file" name="files" accept=".dcm">
                         </div>
                         <br></br>
                         <button type="submit" class="btn btn-primary btn-lg btn-block">Videre: Marker knuden</button>

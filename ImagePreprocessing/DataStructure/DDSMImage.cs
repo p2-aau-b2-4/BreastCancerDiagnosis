@@ -1,11 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using System.IO.Enumeration;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Dicom;
 
 namespace ImagePreprocessing
@@ -331,43 +328,6 @@ namespace ImagePreprocessing
         public UshortArrayAsImage GetDcomCroppedImage()
         {
             return DicomFile.Open(DcomCroppedFilePath).GetUshortImageInfo();
-        }
-
-        public UshortArrayAsImage GetNormalizedSizedCrop(int size)
-        {
-            UshortArrayAsImage cropped = GetDcomCroppedImage();
-            byte[] orgPixelData = cropped.PixelData;
-            int currentByteInOrgPixelData = 0;
-            
-            // lets find how many black lines we should add on each side
-            int linesToAddVertical = (size - cropped.Width) / 2;
-            int linesToAddHorizontal = (size - cropped.Height) / 2;
-            
-            
-            
-            // lets add the lines;
-            byte[] pixelData = new byte[size*size*2];
-
-            int currentByte = 0;
-            // add horizontal first, as they are the first bytes
-            for (int i = 0; i < linesToAddHorizontal; i++)
-            {
-                for (int u = 0; u < size * 2; u++) pixelData[currentByte++] = 0;
-            }
-
-            for (int i = 0; i < cropped.Height; i++)
-            {
-                // for every horizontal line of img
-                // add the black lines first
-                for (int u = 0; u < linesToAddVertical*2; u++) pixelData[currentByte++] = 0;
-                // then add the pixeldata for the next width*2 bytes;
-                for (int u = 0; u < cropped.Width*2; u++) pixelData[currentByte++] = orgPixelData[currentByteInOrgPixelData++];
-                
-                // lets add the rest of vertical lines
-                for (int u = 0; u < (size-linesToAddVertical-cropped.Width)*2; u++) pixelData[currentByte++] = 0;
-            }
-            
-            return new UshortArrayAsImage(pixelData,size, size);
         }
     }
 }

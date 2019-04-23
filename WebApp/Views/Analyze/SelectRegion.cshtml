@@ -1,111 +1,25 @@
 @model object
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Vælg knude";
     Layout = "_Layout";
 }
-<style>
-    .center {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-        width: 50%;
-    }
-</style>
-
-<style>
-    #canvas{border:1px solid red;}
-</style>
-
-<script>
-    $(function(){
-
-        var canvas=document.getElementById("canvas");
-        var ctx=canvas.getContext("2d");
-        ctx.lineWidth=2;
-
-
-
-        var img=new Image();
-        img.onload=function(){
-            canvas.width=img.width;
-            canvas.height=img.height;
-            ctx.drawImage(img,0,0);
-
-        }
-        
-        img.src="/analyze/showPng/@ViewBag.FileName";
-
-        var x1 = 0;
-        var y1 = 0;
-        var x2 = 0;
-        var y2 = 0;
-
-        var mousePressed = false;
-
-        function handleMouseMove(e){
-            var canvasOffset=$("#canvas").offset();
-            var offsetX=canvasOffset.left;
-            var offsetY = canvasOffset.top- window.scrollY;
-            var mouseXLoc = parseInt(e.clientX-offsetX);
-            var mouseYLoc = parseInt(e.clientY-offsetY);
-
-            ctx.clearRect(0,0,canvas.width,canvas.height);
-            ctx.drawImage(img,0,0);
-            ctx.beginPath();
-            ctx.moveTo(mouseXLoc,0);
-            ctx.lineTo(mouseXLoc,canvas.height);
-            ctx.moveTo(0,mouseYLoc);
-            ctx.lineTo(canvas.width,mouseYLoc);
-            
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = "#000000";
-            ctx.stroke();
-            ctx.closePath();
-            ctx.beginPath();
-            ctx.lineWidth = 5;
-            ctx.strokeStyle = "#FF0000";
-
-            if (mousePressed) {
-                x2 = mouseXLoc;
-                y2 = mouseYLoc;
-            }
-            ctx.rect(x1, y1, x2-x1,y2-y1);
-            ctx.stroke();
-            ctx.closePath();
-
-        }
-        function handleMouseDown(e){
-            var canvasOffset=$("#canvas").offset();
-            var offsetX=canvasOffset.left;
-            var offsetY = canvasOffset.top- window.scrollY;
-            var mouseXLoc = parseInt(e.clientX-offsetX);
-            var mouseYLoc = parseInt(e.clientY-offsetY);
-
-            x1 = x2 = mouseXLoc;
-            y1 = y2 = mouseYLoc;
-            mousePressed = true;
-        }
-        function handleMouseUp(e){
-            var canvasOffset=$("#canvas").offset();
-            var offsetX=canvasOffset.left;
-            var offsetY = canvasOffset.top- window.scrollY;
-            var mouseXLoc = parseInt(e.clientX-offsetX);
-            var mouseYLoc = parseInt(e.clientY-offsetY);
-
-            x2 = mouseXLoc;
-            y2 = mouseYLoc;
-            mousePressed = false;
-        }
-
-        $("#canvas").mousemove(function(e){handleMouseMove(e);});
-        $("#canvas").mousedown(function(e){handleMouseDown(e);});
-        $("#canvas").mouseup(function(e){handleMouseUp(e);});
-
-
-    }); // end $(function(){});
+<script type="text/javascript">
+    var imgSrc = "/analyze/showPng/@ViewBag.FileName";
 </script>
+<script src="~/js/selectRegion.js"></script>
 
 <h2>Vælg et område med knuden, som algoritmen skal analysere</h2>
-<canvas id="canvas" class="2center" width=300 height=300></canvas>
-@*<img class="center" src="/analyze/showPng/@ViewBag.FileName" onmousemove="MoveImage()" onmousedown="ClickImage()">*@
+<canvas id="canvas" style="width: 100%" class="2center"></canvas>
+
+<h1 style="text-align: center"class="center">Koordinater:</h1>
+<h3 style="text-align: center"class="center"id="CoordinatesH3">Ikke defineret, vælg et område</h3>
+<form method="post" enctype="multipart/form-data" asp-controller="Analyze" asp-action="ShowAnalysis">
+    <input type="hidden" name="x1" id="x1Input"/>
+    <input type="hidden" name="y1" id="y1Input"/>
+    <input type="hidden" name="x2" id="x2Input"/>
+    <input type="hidden" name="y2" id="y2Input"/>
+    <input type="hidden" name="filePath" value="@ViewBag.FileName"/>
+    <br></br>
+    <button type="submit" class="btn btn-primary btn-lg btn-block" id="submitInput" disabled>Videre: Foretag analyse</button>
+</form>
