@@ -39,7 +39,7 @@ namespace ImagePreprocessing
                 }
             }
 
-            imgBitmap.GetHashCode();
+            
 
             // lets add all bitmaps:
             //Graphics g = Graphics.FromImage(imgBitmap);
