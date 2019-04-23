@@ -256,7 +256,8 @@ namespace ImagePreprocessing
             // 1. First explode the originalPathString, and navigate into first folder.
             // 2. If there is 2 folders there, then one contains "mask", the other "cropped" as a part of the name in a subfolder.
             // 2a. Then in each of those folder is the corresponding dcom file
-            // 3. else, there is only one folder. Go down as far as you can go, and then find two files at the end. Look at originalPath filename, that should be the filepath of the cropped image, the other image is the mask.
+            // 3. else, there is only one folder. Go down as far as you can go, and then find two files at the end.
+            // Look at originalPath filename, that should be the filepath of the cropped image, the other image is the mask.
             // lets implement
             int lastIndexOf = csvFilePath.LastIndexOf(@"\", StringComparison.Ordinal) >
                               csvFilePath.LastIndexOf(@"/", StringComparison.Ordinal)
