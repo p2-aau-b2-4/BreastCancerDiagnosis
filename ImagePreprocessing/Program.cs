@@ -12,7 +12,7 @@ namespace ImagePreprocessing
             var img = DicomFile.Open(@"000000.dcm");
             UshortArrayAsImage imgInfo = img.GetUshortImageInfo();
             imgInfo.SaveAsPng("eINFO.PNG");
-            imgInfo.ApplyContrastEnhancement(100);
+            imgInfo.ApplyContrastEnhancement(25);
             
             imgInfo.SaveAsPng("eINFOContrast.png");    //REMOVE
             var imgOverlay = imgInfo.Edge(1000);
