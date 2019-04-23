@@ -35,9 +35,6 @@ namespace ImagePreprocessing
                 DdsmImage.GetAllImagesFromCsvFile(@"D:\Bryster\mass_case_description_test_set.csv");
             Console.WriteLine($"Found {DDSMImages.Count}");
 
-            var x = DDSMImages.First();
-            x.GetDcomCroppedImage().PixelArray = x.GetDcomCroppedImage().PixelArray;
-            x.GetNormalizedSizedCrop(1000).SaveAsPng("black.png");
 
             imgInfo.ApplyContrastEnhancement(20);
             imgInfo.SaveAsPng("test.png");
@@ -52,8 +49,8 @@ namespace ImagePreprocessing
             //            Console.WriteLine(DDSMImages[10].DcomMaskFilePath);
 
             //DDSMImages.First().GetDcomOriginalImage().SaveAsPng("original.png");
-            //DDSMImages.First().GetDcomMaskImage().SaveAsPng("mask.png");
-            //DDSMImages.First().GetDcomCroppedImage().SaveAsPng("cropped.png");
+            DDSMImages.First().GetDcomMaskImage().SaveAsPng("mask.png");
+            DDSMImages.First().GetDcomCroppedImage().SaveAsPng("cropped.png");
 
             //            var xImg = DDSMImages.First().GetDcomOriginalImage();
             //            var yImg = DDSMImages.First().GetDcomMaskImage();
