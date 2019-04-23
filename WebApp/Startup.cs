@@ -66,6 +66,11 @@ namespace WebApp
                     new {controller = "Analyze", action = "GetPngFromTempPath"},
                     new {path = @"[\w-]+"});
                 routes.MapRoute(
+                    "ShowSavedPng",
+                    "/analyze/showSavedPng/{path}",
+                    new {controller = "Analyze", action = "GetPngFromSavedTempPath"},
+                    new {path = @"[\w-]+"});
+                routes.MapRoute(
                     "StartAnalyzing",
                     "/analyze/startAnalyze",
                     new {controller = "Analyze", action = "StartAnalyzing"});

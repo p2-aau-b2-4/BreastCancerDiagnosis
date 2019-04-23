@@ -9,10 +9,10 @@ namespace ImagePreprocessing
         static void Main(string[] args)
         {
             Console.WriteLine(ConfigurationManager.AppSettings["myKey"]);
-            var img = DicomFile.Open(@"e.dcm");
+            var img = DicomFile.Open(@"000000.dcm");
             UshortArrayAsImage imgInfo = img.GetUshortImageInfo();
             imgInfo.SaveAsPng("eINFO.PNG");
-
+            imgInfo.ApplyContrastEnhancement(100);
             
             imgInfo.SaveAsPng("eINFOContrast.png");    //REMOVE
             var imgOverlay = imgInfo.Edge(1000);
