@@ -18,17 +18,17 @@ namespace DimensionReduction
 
         public void LoadModelFromFile(string path)
         {
-            
+            //Load database
         }
 
         public void SaveModelToFile(string path)
         {
-            
+            //Save to database
         }
 
         public void GetComponentsFromImage(int count, int image)
         {
-            
+            //TBD option 1: weighted solution. option 2: other solution.
         }
 
         public void Train(List<UshortArrayAsImage> images)
