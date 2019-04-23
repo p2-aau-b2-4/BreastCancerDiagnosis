@@ -78,11 +78,11 @@ namespace DimensionReduction
             {
                 if (Double.IsNegativeInfinity(sum) || Double.IsInfinity(sum))
                   throw new NotFiniteNumberException(sum);
+
                 double xI = sum / matrix.RowCount;
-                
                 matrix.SetColumn(index, matrix.Column(index).Subtract(xI));
 
-                index++;
+                index += 1;
             }
         }
         
