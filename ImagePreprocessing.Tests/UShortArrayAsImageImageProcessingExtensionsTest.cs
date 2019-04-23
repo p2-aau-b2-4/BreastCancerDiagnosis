@@ -15,7 +15,7 @@ namespace ImagePreprocessing.Tests
 
             double threshold = 10;
             var img = DicomFile.Open("e.dcm");
-            UshortArrayAsImage image = new UshortArrayAsImage(new byte[2*2*2], 2, 2);
+            UshortArrayAsImageTest image = new UshortArrayAsImageTest(new byte[2*2*2], 2, 2);
             image.PixelArray = pixelArray;
             
             image.ApplyContrastEnhancement(threshold);
@@ -32,7 +32,7 @@ namespace ImagePreprocessing.Tests
 
             double threshold = 400;
             var img = DicomFile.Open("e.dcm");
-            UshortArrayAsImage image = new UshortArrayAsImage(new byte[2 * 2 * 2], 2, 2);
+            UshortArrayAsImageTest image = new UshortArrayAsImageTest(new byte[2 * 2 * 2], 2, 2);
             image.PixelArray = pixelArray;
 
             image.ApplyContrastEnhancement(threshold);
