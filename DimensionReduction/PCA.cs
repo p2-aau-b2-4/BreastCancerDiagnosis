@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Numerics;
+
 using BitMiracle.LibJpeg.Classic;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Numerics.LinearAlgebra.Storage;
 using ImagePreprocessing;
+using MathNet.Numerics.LinearAlgebra;
+using Microsoft.Win32.SafeHandles;
+using Vector = MathNet.Numerics.LinearAlgebra.Double.Vector;
 
 
 namespace DimensionReduction
@@ -29,6 +32,8 @@ namespace DimensionReduction
         public void GetComponentsFromImage(int count, int image)
         {
             //TBD option 1: weighted solution. option 2: other solution.
+            //Select 1
+            
         }
 
         public void Train(List<UshortArrayAsImage> images)
@@ -37,12 +42,14 @@ namespace DimensionReduction
             int i = 0;
             foreach (var image in images)
             {
+                double[,] tempI = new double[image.Width,image.Height]; 
+                Array.Copy(image.PixelArray,tempI,image.PixelCount); 
                 double[] dImage = new double[image.PixelCount];
                 for (int y = 0; y < image.Height; y++)
                 {
                     for (int x = 0; x < image.Width; x++)
                     {
-                        dImage[y * image.Height + x] = image.PixelArray[x,y];
+                        dImage[y * image.Width + x] = tempI[x,y];
                     }
                 }
 
@@ -50,7 +57,7 @@ namespace DimensionReduction
                 {
                     for (int x = 0; x < image.Width; x++)
                     {
-                        allImages[i, x] = dImage[y * image.Width + x];
+                        allImages[x, i] = dImage[y * image.Width + x];
                     }
                 }
                 
@@ -59,7 +66,7 @@ namespace DimensionReduction
             
             SparseMatrix matrix = SparseMatrix.OfArray(allImages);
                 
-            MeanSubtraction(matrix);
+            matrix = MeanSubtraction(matrix);
             matrix = CovarianceMatrix(matrix);
             SolveEigenValues(matrix);
             SolveEigenVectors(matrix);
@@ -70,20 +77,30 @@ namespace DimensionReduction
         ///each column from all its values
         ///</summary>
         ///<param name=matrix>a SparseMatrix to perform MeanSubtraction on</param>
-        public void MeanSubtraction(SparseMatrix matrix)
+        public SparseMatrix MeanSubtraction(SparseMatrix matrix)
         {
             var sums = matrix.ColumnSums();
             int index = 0;
+            SparseMatrix tmpMatrix = new SparseMatrix(matrix.RowCount,matrix.ColumnCount);
+            List<Vector<double>> vectors = new List<Vector<double>>();
+            matrix.CopyTo(tmpMatrix);
             foreach (var sum in sums)
             {
                 if (Double.IsNegativeInfinity(sum) || Double.IsInfinity(sum))
                   throw new NotFiniteNumberException(sum);
                 double xI = sum / matrix.RowCount;
-                
-                matrix.SetColumn(index, matrix.Column(index).Subtract(xI));
 
+                int i = 0;
+                var tmpVector = matrix.Column(index);
+                tmpVector.Subtract(xI);
+                
+                vectors.Add(tmpVector);
+                
                 index++;
             }
+
+            SparseMatrix sMatrix = SparseMatrix.OfColumnVectors(vectors);
+            return sMatrix;
         }
         
         ///<summary>
