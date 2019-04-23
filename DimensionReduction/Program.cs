@@ -11,6 +11,7 @@ using System.Net.Mime;
 using Dicom;
 using Dicom.Imaging;
 using DimensionReduction;
+using ImagePreprocessing;
 using Microsoft.Win32;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra.Double;
@@ -51,9 +52,22 @@ namespace DicomDisplayTest
             SparseMatrix sM4 = SparseMatrix.OfArray(arr);
             
             PCA pca = new PCA();
+            //List<DdsmImage> DDSMImages =
+            //    DdsmImage.GetAllImagesFromCsvFile(@"E:\BrystTest\mass_case_description_train_set.csv");
+            //Console.WriteLine($"Found {DDSMImages.Count}");
+            List<UshortArrayAsImage> list = new List<UshortArrayAsImage>();
+            UshortArrayAsImage image1 = DicomFile.Open("/home/yogi/Documents/Uni/2_semester/P2/data/Calc-Training_P_01847_LEFT_CC/08-07-2016-DDSM-15869/1-full mammogram images-70974/000000.dcm").GetUshortImageInfo();
+            UshortArrayAsImage image2 = DicomFile.Open("/home/yogi/Documents/Uni/2_semester/P2/data/Calc-Training_P_01847_LEFT_CC/08-07-2016-DDSM-15869/1-full mammogram images-70974/000000.dcm").GetUshortImageInfo();
+            
+            
+            
+            list.Add(image1);
+            list.Add(image2);
 
-            pca.SolveEigenValues(sM1);
-            pca.SolveEigenValues(sM4);
+            pca.Train(list);
+            ;
+            /*pca.SolveEigenValues(sM1);
+            pca.SolveEigenValues(sM4);*/
         }
     }
 }
