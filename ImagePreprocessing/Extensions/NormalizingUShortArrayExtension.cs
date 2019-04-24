@@ -144,8 +144,10 @@ namespace ImagePreprocessing
                     if (imageOverlay[i, j] == UInt16.MaxValue)
                     {
                         // mby check here if the original image is black at this sector position, then refuse?
-                        if (origin[i, j] > 1000) // todo hardcode
-                            sectors.Add(GetSector(imageOverlay, i, j));
+                        //if (origin[i, j] > 10000) // todo hardcode
+                        Sector sectorToAdd = GetSector(imageOverlay, i, j, origin);
+                        if(sectorToAdd != null)
+                            sectors.Add(sectorToAdd);
                     }
                 }
             }
@@ -156,14 +158,16 @@ namespace ImagePreprocessing
             return sectors.First(x => x.SectorSize == sectors.Max(y => y.SectorSize)).GetImgArray(imageOverlayIn);
         }
 
-        private static Sector GetSector(ushort[,] imageOverlay, int i, int j)
+        private static Sector GetSector(ushort[,] imageOverlay, int i, int j, ushort[,] origin)
         {
             Sector result = new Sector();
             result.Point = new Point(j, i);
             //result.ImgArray = imageOverlay.Clone() as ushort[,]; // this wastes memory
 
 
-            result.SectorSize = GetSizeOfSector(imageOverlay, i, j);
+            result.SectorSize = GetSizeOfSector(imageOverlay, i, j, origin, out var averageColor);
+            Console.WriteLine(averageColor);
+            if (double.IsNaN(averageColor) || averageColor < 500) return null; //todo hardcode
 
             /*for (int k = 0; k < result.ImgArray.GetLength(0); k++)
             {
@@ -177,12 +181,14 @@ namespace ImagePreprocessing
             return result;
         }
 
-        private static int GetSizeOfSector(ushort[,] resultImgArray, int i, int j)
+        private static int GetSizeOfSector(ushort[,] resultImgArray, int i, int j, ushort[,] origin,
+            out double averageColor)
         {
             // recursion was more intuitive than queue, however we got stackoverflow
             Queue<Point> queue = new Queue<Point>();
             queue.Enqueue(new Point(i, j));
             int result = 0;
+            int total = 0;
             while (queue.Count > 0)
             {
                 // run as long as points to explore
@@ -192,12 +198,15 @@ namespace ImagePreprocessing
                 {
                     resultImgArray[p.X, p.Y] = UInt16.MaxValue - 1;
                     result++;
+                    total += origin[p.X, p.Y];
                     queue.Enqueue(new Point(p.X - 1, p.Y));
                     queue.Enqueue(new Point(p.X + 1, p.Y));
                     queue.Enqueue(new Point(p.X, p.Y - 1));
                     queue.Enqueue(new Point(p.X, p.Y + 1));
                 }
             }
+
+            averageColor = total / (double) result;
 
             return result;
         }
@@ -231,7 +240,7 @@ namespace ImagePreprocessing
             public ushort[,] GetImgArray(ushort[,] imageOverlayIn)
             {
                 ushort[,] imageOverlay = imageOverlayIn.Clone() as ushort[,];
-                GetSizeOfSector(imageOverlay, Point.Y, Point.X);
+                GetSizeOfSector(imageOverlay, Point.Y, Point.X,imageOverlayIn, out var average);
 
                 for (int k = 0; k < imageOverlay.GetLength(0); k++)
                 {
