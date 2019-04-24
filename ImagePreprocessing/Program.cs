@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
+using Accord.IO;
 using Dicom;
 
 namespace ImagePreprocessing
@@ -13,9 +15,13 @@ namespace ImagePreprocessing
             List<DdsmImage> ddsmImages = DdsmImage.GetAllImagesFromCsvFile(@"e:\brysttest\mass_case_description_train_set.csv");
             foreach (var x in ddsmImages)
             {
-                x.GetNormalizedSizedCrop(100,100);
+                using (FileStream file = new FileStream("test2.png", FileMode.Create)) {
+                    x.GetDcomOriginalImage().GetPngAsMemoryStream().CopyTo(file);
+                }
+                
+                break;
             }
-            ddsmImages[14].GetNormalizedSizedCrop(100,100);
+            //ddsmImages[14].GetNormalizedSizedCrop(100,100);
             //console.writeline($"found {ddsmimages.count}");
             //ddsmimages.first().getnormalizedsizedcrop(1000).saveaspng("black.png");
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 
 namespace ImagePreprocessing
 {
@@ -25,7 +26,14 @@ namespace ImagePreprocessing
             _overlays.Add(overlay);
         }
 
-        public abstract void SaveAsPng(String saveLoc);
+        public void SaveAsPng(String saveLoc)
+        {
+            using (FileStream file = new FileStream(saveLoc, FileMode.Create))
+            {
+                GetPngAsMemoryStream().CopyTo(file);
+            }
+        }
+        public abstract Stream GetPngAsMemoryStream();
 
         protected static float Map(float s, float a1, float a2, float b1, float b2)
             // lånt fra https://forum.unity.com/threads/re-map-a-number-from-one-range-to-another.119437/
