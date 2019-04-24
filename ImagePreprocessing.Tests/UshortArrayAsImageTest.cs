@@ -29,8 +29,7 @@ namespace ImagePreprocessing.Tests
         [TestCase]
         public void SaveAsPNGTest()
         {
-            var testImg = DicomFile.Open("e.dcm");
-           // Stream testResult = testImg.
+            var testImg = DicomFile.Open("000000.dcm");
             UshortArrayAsImage imgInfo = testImg.GetUshortImageInfo();
             Stream imgStream = imgInfo.GetPngAsMemoryStream();
             imgInfo.SaveAsPng("test.png");
@@ -38,13 +37,11 @@ namespace ImagePreprocessing.Tests
 
             Bitmap finalImg = new Bitmap(imgStream);
 
-            Image testimg2 = Image.FromFile("test.png");
+            Image testimg2 = Image.FromFile("000000.png");
 
             Bitmap result = new Bitmap(testimg2);
 
 
-           // byte[] byteImage = imgStream.ToArray();
-            var resultString = (imgStream);
 
             byte[] image1Bytes;
             byte[] image2Bytes;
@@ -67,8 +64,6 @@ namespace ImagePreprocessing.Tests
 
             Assert.AreEqual(image2, image1);
 
-
-            //tror at jeg skal konvertere til bitmap før jeg bruger gethashcode
         }
     }
 }
