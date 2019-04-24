@@ -56,7 +56,25 @@ namespace ImagePreprocessing.Tests
         }
 
 
+        [TestCase]
+        public void ApplyHistogramEqualizationTestWithTwoNumbersThatAreTheSame()
+        {
+            pixelArrayTestValuesResult = new ushort[,] { { 16383, 49151 }, { 49151, 65535 } };
+            image.PixelArray = new ushort[,] { { 0, 20001 }, { 20001, 65535 } };
+            image.ApplyHistogramEqualization();
 
+            CollectionAssert.AreEqual(pixelArrayTestValuesResult, image.PixelArray);
+        }
+
+        [TestCase]
+        public void ApplyHistogramEqualizationTestNumbersNotSequential()
+        {
+            pixelArrayTestValuesResult = new ushort[,] { { 65535, 16383 }, { 49151, 32767 } };
+            image.PixelArray = new ushort[,] { { 65535, 0 }, { 40001, 20001 } };
+            image.ApplyHistogramEqualization();
+
+            CollectionAssert.AreEqual(pixelArrayTestValuesResult, image.PixelArray);
+        }
 
 
 
