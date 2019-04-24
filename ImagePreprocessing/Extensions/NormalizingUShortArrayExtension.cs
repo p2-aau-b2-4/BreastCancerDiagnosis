@@ -2,11 +2,82 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using Accord.IO;
+using Accord.Math;
 
 namespace ImagePreprocessing
 {
     public static class NormalizingUShortArrayExtension
     {
+        public static UshortArrayAsImage GetNormalizedCrop(this UshortArrayAsImage image, Rectangle tumour, int size, int tumourSize)
+        {
+            // Rectangle = det markerede område med knuden (kan godt være ikke kvadratisk, men så lav det kvadratisk)
+            // tumoursize = hvor stor knuden skal være i output (kvadratisk)
+            // size = hvor stort billedet skal være (kvadratisk)
+            // returns a ushortarrayasimage, with black boxes around the resized tumour.
+            throw new NotImplementedException();
+        }
+        public static void GetNormalizedSizedCrop(this DdsmImage ddsmImage, Rectangle tumour, int size, int tumourSize)
+        {
+            // use mask to find rectangle around crop
+            var maskUbyte = ddsmImage.GetDcomMaskImage();
+            var mask = ddsmImage.GetDcomMaskImage().PixelArray;
+            int left = -1, right = -1, top = -1, bottom = -1;
+            // finding the 4 edges of a rectangle, going from left, top, right and bottom.
+            for (int y = 0; y < mask.GetLength(0); y++)
+            {
+                bool containsMask = false;
+                for (int x = 0; x < mask.GetLength(1); x++)
+                {
+                    if (mask[y, x] != 0)
+                    {
+                        containsMask = true;
+                        break;
+                    }
+                }
+
+                if (top == -1 && containsMask) top = y;
+                if (top != -1 && bottom == -1 && !containsMask) bottom = y;
+            }
+
+            for (int x = 0; x < mask.GetLength(1); x++)
+            {
+                bool containsMask = false;
+                for (int y = 0; y < mask.GetLength(0); y++)
+                {
+                    if (mask[y, x] != 0)
+                    {
+                        containsMask = true;
+                        break;
+                    }
+                }
+
+                if (left == -1 && containsMask) left = x;
+                if (left != -1 && right == -1 && !containsMask) right = x;
+            }
+
+            Point center = new Point(top + (int) ((bottom - top) / 2.0), left + (int) ((right - left) / 2.0));
+            var sideLength = right - left;
+            if (bottom - top > sideLength) sideLength = bottom - top;
+
+            Console.WriteLine($"Size: {sideLength}");
+            /*var bmp = new Bitmap(maskUbyte.Width, maskUbyte.Height);
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                g.DrawRectangle(new Pen(Color.Red), top, left, bottom - top, right - left);
+                g.DrawRectangle(new Pen(Color.Cyan), center.X - sideLength / 2, center.Y - sideLength / 2, sideLength,
+                    sideLength);
+            }
+
+            var f = ddsmImage.GetDcomOriginalImage().Crop((center.X - sideLength / 2-50, center.Y - sideLength / 2-50,
+                center.X + sideLength / 2+50, center.Y + sideLength / 2+50));
+            f.ApplyHistogramEqualization();
+            f.SaveAsPng("SpadeOliver.png");*/
+
+            //maskUbyte.AddOverlay(bmp);
+            //maskUbyte.SaveAsPng("testMask.png");
+        }
+
         public static UshortArrayAsImage GetNormalizedSizedCrop(this UshortArrayAsImage cropped, int size)
         {
             byte[] orgPixelData = cropped.PixelData;
@@ -16,13 +87,14 @@ namespace ImagePreprocessing
             int linesToAddVertical = (size - cropped.Width) / 2;
             int linesToAddHorizontal = (size - cropped.Height) / 2;
 
-
             // lets add the lines;
             byte[] pixelData = new byte[size * size * 2];
 
             int currentByte = 0;
             // add horizontal first, as they are the first bytes
-            for (int i = 0; i < linesToAddHorizontal; i++)
+            for (int i = 0;
+                i < linesToAddHorizontal;
+                i++)
             {
                 for (int u = 0; u < size * 2; u++) pixelData[currentByte++] = 0;
             }
@@ -40,20 +112,34 @@ namespace ImagePreprocessing
                 for (int u = 0; u < (size - linesToAddVertical - cropped.Width) * 2; u++) pixelData[currentByte++] = 0;
             }
 
-            return new UshortArrayAsImage(pixelData, size, size);
+            return
+                new UshortArrayAsImage(pixelData, size, size);
         }
 
         public static void Normalize(this UshortArrayAsImage ushortImg)
         {
             throw new NotImplementedException();
         }
-        
+
         public static UshortArrayAsImage Edge(this UshortArrayAsImage ushortImg, int threshold)
         {
             var image = ushortImg.PixelArray;
             ushort[,] imageOverlay = image.Clone() as ushort[,];
+//https://haishibai.blogspot.com/2009/09/image-processing-c-tutorial-3-edge.html
+            long total = 0;
+            int count = 0;
+            for (int i = 0; i < image.GetLength(0); i++)
+            {
+                for (int j = 0; j < image.GetLength(1); j++)
+                {
+                    total += image[i, j];
+                    count++;
+                }
+            }
 
-
+            threshold = (int) (total / (double) count);
+            threshold *= 1;
+            Console.WriteLine($"THRESHOLD{threshold}");
             for (int i = 1; i < image.GetLength(0) - 1; i++)
             {
                 for (int j = 1; j < image.GetLength(1) - 1; j++)
@@ -67,7 +153,6 @@ namespace ImagePreprocessing
                     ushort crd = image[i + 1, j + 1];
                     ushort cru = image[i + 1, j - 1];
                     int power = GetMaxD(cr, cl, cu, cd, cld, clu, cru, crd);
-
                     if (power > threshold)
                     {
                         imageOverlay[i, j] = 0;
@@ -79,12 +164,11 @@ namespace ImagePreprocessing
                 }
             }
 
-
-            //Console.WriteLine(imageOverlay[(imageOverlay.GetLength(0)-1)/2,imageOverlay.GetLength(1)/2]);
+//Console.WriteLine(imageOverlay[(imageOverlay.GetLength(0)-1)/2,imageOverlay.GetLength(1)/2]);
             var x = new UshortArrayAsImage(new byte[ushortImg.Width * ushortImg.Height * 2], ushortImg.Width,
                 ushortImg.Height);
             x.PixelArray = GetBiggestSector(imageOverlay, image);
-            TumorDimensions(x.PixelArray);
+//TumorDimensions(imageOverlay);
             return x;
         }
 
@@ -130,23 +214,21 @@ namespace ImagePreprocessing
         {
             List<Sector> sectors = new List<Sector>();
             ushort[,] imageOverlay = imageOverlayIn.Clone() as ushort[,];
-
             for (int i = 0; i < imageOverlay.GetLength(0); i++)
             {
                 for (int j = 0; j < imageOverlay.GetLength(1); j++)
                 {
-                    /*bool isSearched = false;
-                    foreach (Sector x in sectors)
-                    {
-                        if (x.ImgArray[i, j] == UInt16.MaxValue) isSearched = true;
-                    }*/
-
+/*bool isSearched = false;
+foreach (Sector x in sectors)
+{
+    if (x.ImgArray[i, j] == UInt16.MaxValue) isSearched = true;
+}*/
                     if (imageOverlay[i, j] == UInt16.MaxValue)
                     {
-                        // mby check here if the original image is black at this sector position, then refuse?
-                        //if (origin[i, j] > 10000) // todo hardcode
+// mby check here if the original image is black at this sector position, then refuse?
+//if (origin[i, j] > 10000) // todo hardcode
                         Sector sectorToAdd = GetSector(imageOverlay, i, j, origin);
-                        if(sectorToAdd != null)
+                        if (sectorToAdd != null)
                             sectors.Add(sectorToAdd);
                     }
                 }
@@ -162,36 +244,31 @@ namespace ImagePreprocessing
         {
             Sector result = new Sector();
             result.Point = new Point(j, i);
-            //result.ImgArray = imageOverlay.Clone() as ushort[,]; // this wastes memory
-
-
+//result.ImgArray = imageOverlay.Clone() as ushort[,]; // this wastes memory
             result.SectorSize = GetSizeOfSector(imageOverlay, i, j, origin, out var averageColor);
-            Console.WriteLine(averageColor);
-            if (double.IsNaN(averageColor) || averageColor < 500) return null; //todo hardcode
-
-            /*for (int k = 0; k < result.ImgArray.GetLength(0); k++)
-            {
-                for (int l = 0; l < result.ImgArray.GetLength(1); l++)
-                {
-                    if (result.ImgArray[k, l] == UInt16.MaxValue) result.ImgArray[k, l] = 0;
-                    if (result.ImgArray[k, l] == UInt16.MaxValue - 1) result.ImgArray[k, l] = UInt16.MaxValue;
-                }
-            }*/
-
+            if (double.IsNaN(averageColor) || averageColor < 20000) return null; //todo hardcode
+/*for (int k = 0; k < result.ImgArray.GetLength(0); k++)
+{
+    for (int l = 0; l < result.ImgArray.GetLength(1); l++)
+    {
+        if (result.ImgArray[k, l] == UInt16.MaxValue) result.ImgArray[k, l] = 0;
+        if (result.ImgArray[k, l] == UInt16.MaxValue - 1) result.ImgArray[k, l] = UInt16.MaxValue;
+    }
+}*/
             return result;
         }
 
         private static int GetSizeOfSector(ushort[,] resultImgArray, int i, int j, ushort[,] origin,
             out double averageColor)
         {
-            // recursion was more intuitive than queue, however we got stackoverflow
+// recursion was more intuitive than queue, however we got stackoverflow
             Queue<Point> queue = new Queue<Point>();
             queue.Enqueue(new Point(i, j));
             int result = 0;
             int total = 0;
             while (queue.Count > 0)
             {
-                // run as long as points to explore
+// run as long as points to explore
                 Point p = queue.Dequeue();
                 if (p.X > 0 && p.Y > 0 && p.X < resultImgArray.GetLength(0) &&
                     p.Y < resultImgArray.GetLength(1) && resultImgArray[p.X, p.Y] == UInt16.MaxValue)
@@ -207,82 +284,38 @@ namespace ImagePreprocessing
             }
 
             averageColor = total / (double) result;
-
             return result;
         }
 
         private static void TumorDimensions(ushort[,] imageOverlay)
         {
-            int oX = 0, oY = 0, uX = 0, uY = 0, hX = 0, hY = 0, vX = 0, vY = 0 ;
-            
-            //Den øverste pixel
-            while (imageOverlay[oY, oX] != UInt16.MaxValue)
+            int p1 = 0, p2 = 0, q1 = 0, q2 = 0;
+            while (imageOverlay[p1, q1] != UInt16.MaxValue)
             {
-                oX++;
-                if (imageOverlay.GetLength(1) == oX)
+                q1++;
+                if (imageOverlay.GetLength(1) == q1)
                 {
-                    oX = 0;
-                    oY++;
+                    q1 = 0;
+                    p1++;
                 }
             }
-            
-            //Den Nederste pixel
-            uY = imageOverlay.GetLength(1);
-            while (imageOverlay[uY, uX] != UInt16.MaxValue)
-            {
-                uX++;
-                if (imageOverlay.GetLength(1) == uX)
-                {
-                    uX = 0;
-                    uY--;
-                }
-            }
-            
-            //Den yderste pixel til venstre
-            while (imageOverlay[vY, vX] != UInt16.MaxValue)
-            {
-                vY++;
-                if (imageOverlay.GetLength(0) == vY)
-                {
-                    vY = 0;
-                    vX++;
-                }
-            }
-               
-            //Den yderste pixel til højre
-            hX = imageOverlay.GetLength(1)-1;
-            while (imageOverlay[hY, hX] != UInt16.MaxValue)
-            {
-                hY++;
-                if (imageOverlay.GetLength(0) == hY)
-                {
-                    hY = 0;
-                    hX--;
-                }
 
-            }
-            
-            //Center af knuden
-            int centerX = (hX - vX)/2 + vX;
-            int centerY = (uY - oY)/2 + oY;
-            
-            //Gennemsnitlig radius af knuden
-            int radius = (hX - vX) > (uY - oY) ? (hX - vX) : (uY - oY);
-
+            Console.WriteLine(imageOverlay[p1, q1]);
+            Console.WriteLine(q1);
+            Console.WriteLine(p1);
         }
 
         private class Sector
         {
             public Point Point { get; set; }
 
-            //public ushort[,] ImgArray { get; set; }
+//public ushort[,] ImgArray { get; set; }
             public int SectorSize { get; set; }
 
             public ushort[,] GetImgArray(ushort[,] imageOverlayIn)
             {
                 ushort[,] imageOverlay = imageOverlayIn.Clone() as ushort[,];
-                GetSizeOfSector(imageOverlay, Point.Y, Point.X,imageOverlayIn, out var average);
-
+                GetSizeOfSector(imageOverlay, Point.Y, Point.X, imageOverlayIn, out var average);
                 for (int k = 0; k < imageOverlay.GetLength(0); k++)
                 {
                     for (int l = 0; l < imageOverlay.GetLength(1); l++)
