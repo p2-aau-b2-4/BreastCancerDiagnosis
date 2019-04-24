@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using Accord.IO;
 using Dicom;
 
 namespace ImagePreprocessing
