@@ -15,8 +15,8 @@ namespace ImagePreprocessing
             imgInfo.SaveAsPng("LarsLavedeDetHerFør.png");
             imgInfo.ApplyHistogramEqualization();
             imgInfo.SaveAsPng("LarsLavedeDetHerEfter.png");
-            //var imgOverlay = imgInfo.Edge(1000);
-            //imgOverlay.SaveAsPng("OliverErEnNar.png");
+            var imgOverlay = imgInfo.Edge(10000);
+            imgOverlay.SaveAsPng("OliverErEnNar.png");
             
             //list<ddsmimage> ddsmimages =
             //    ddsmimage.getallimagesfromcsvfile(@"e:\brysttest\mass_case_description_train_set.csv");
