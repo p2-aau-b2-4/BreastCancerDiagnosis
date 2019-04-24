@@ -57,15 +57,25 @@ namespace DicomDisplayTest
             //Console.WriteLine($"Found {DDSMImages.Count}");
             List<UshortArrayAsImage> list = new List<UshortArrayAsImage>();
             UshortArrayAsImage image1 = DicomFile.Open("/home/yogi/Documents/Uni/2_semester/P2/data/Calc-Training_P_01847_LEFT_CC/08-07-2016-DDSM-15869/1-full mammogram images-70974/000000.dcm").GetUshortImageInfo();
-            UshortArrayAsImage image2 = DicomFile.Open("/home/yogi/Documents/Uni/2_semester/P2/data/Calc-Training_P_01847_LEFT_CC/08-07-2016-DDSM-15869/1-full mammogram images-70974/000000.dcm").GetUshortImageInfo();
-            
+            //UshortArrayAsImage image2 = DicomFile.Open("/home/yogi/Documents/Uni/2_semester/P2/data/Calc-Training_P_01847_LEFT_CC/08-07-2016-DDSM-15869/1-full mammogram images-70974/000000.dcm").GetUshortImageInfo();
+            //UshortArrayAsImage image3 = DicomFile.Open("/home/yogi/Documents/Uni/2_semester/P2/data/Calc-Training_P_01847_LEFT_CC/08-07-2016-DDSM-15869/1-full mammogram images-70974/000000.dcm").GetUshortImageInfo();
+            //UshortArrayAsImage image4 = DicomFile.Open("/home/yogi/Documents/Uni/2_semester/P2/data/Calc-Training_P_01847_LEFT_CC/08-07-2016-DDSM-15869/1-full mammogram images-70974/000000.dcm").GetUshortImageInfo();
             
             
             list.Add(image1);
-            list.Add(image2);
+            list.Add(image1);
+            list.Add(image1);
+            list.Add(image1);
+            
+            SparseMatrix sparseMatrix = SparseMatrix.OfArray(arr);
 
-            pca.Train(list);
-            ;
+            sparseMatrix = pca.MeanSubtraction(sparseMatrix);
+            sparseMatrix = pca.CovarianceMatrix(sparseMatrix);
+            pca.SolveEigenValues(sparseMatrix);
+            pca.SolveEigenVectors(sparseMatrix);
+            
+            //pca.Train(list);
+            
             /*pca.SolveEigenValues(sM1);
             pca.SolveEigenValues(sM4);*/
         }
