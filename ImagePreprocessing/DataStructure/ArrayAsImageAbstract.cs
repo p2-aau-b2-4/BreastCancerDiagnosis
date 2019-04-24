@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 
 namespace ImagePreprocessing
@@ -32,6 +33,19 @@ namespace ImagePreprocessing
             {
                 GetPngAsMemoryStream().CopyTo(file);
             }
+        }
+
+        protected Bitmap ApplyOverlays(Bitmap bitmapIn)
+        {
+            Graphics g = Graphics.FromImage(bitmapIn);
+            g.CompositingMode = CompositingMode.SourceOver;
+            foreach (Bitmap bitmap in Overlays)
+            {
+                bitmap.MakeTransparent();
+                g.DrawImage(bitmap, new Point(0, 0));
+            }
+
+            return bitmapIn;
         }
         public abstract Stream GetPngAsMemoryStream();
 

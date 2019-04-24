@@ -28,7 +28,7 @@ namespace ImagePreprocessing
                 return _pixelArray;
             }
         }
-        
+
         public UByteArrayAsImage(byte[] pixelData, int width, int height) : base(pixelData, width, height)
         {
         }
@@ -45,17 +45,8 @@ namespace ImagePreprocessing
                 }
             }
 
-            // lets add all bitmaps:
-            Graphics g = Graphics.FromImage(imgBitmap);
-            g.CompositingMode = CompositingMode.SourceOver;
-            foreach (Bitmap bitmap in Overlays)
-            {
-                bitmap.MakeTransparent();
-                g.DrawImage(bitmap, new Point(0, 0));
-            }
-
             MemoryStream ms = new MemoryStream();
-            imgBitmap.Save(ms, ImageFormat.Png);
+            ApplyOverlays(imgBitmap).Save(ms, ImageFormat.Png);
             ms.Seek(0, SeekOrigin.Begin);
             return ms;
         }

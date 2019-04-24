@@ -61,7 +61,7 @@ namespace WebApp.Controllers
             image.SaveAsPng(Path.GetTempPath()+contrastImgSrc);
 
             string edgeImgSrc = filePath + "-edged";
-            image.Edge(3000).SaveAsPng(Path.GetTempPath()+edgeImgSrc);
+            //image.Edge(3000).SaveAsPng(Path.GetTempPath()+edgeImgSrc);
             // then apply the algorithm
 
             ViewBag.CroppedImgSrc = croppedImgSrc;

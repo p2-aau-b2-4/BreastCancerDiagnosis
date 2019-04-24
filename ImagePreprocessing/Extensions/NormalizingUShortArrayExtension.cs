@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using Accord.IO;
-using Accord.Math;
 
 namespace ImagePreprocessing
 {
