@@ -101,32 +101,57 @@ namespace ImagePreprocessing
             return average;
         }
 
+
+        // We found formula for making the histogram equalization here: https://epochabuse.com/histogram-equalization/
         public static void ApplyHistogramEqualization(this UshortArrayAsImage img)
         {
-
-            int UInt16ValuesInTotal = UInt16.MaxValue + 1;
-            int[] histogram = new int[UInt16ValuesInTotal];
-            var pixelArray = img.PixelArray;
-            for (int i = 0; i < img.Height; i++)
-            {
-                for (int j = 0; j < img.Width; j++)
-                {
-                    
-                    histogram[pixelArray[i, j]]++;
-                }
-            }
-
-            var nPixels = img.PixelArray.Length;
-            double[] normalizedHistogram = new double[UInt16ValuesInTotal];
-            for (int i = 0; i < UInt16ValuesInTotal; i++)
-            {
-                normalizedHistogram[i] = histogram[i] / (double)nPixels;
-            }
+            int[] histogram = MakeHistogram(img);
             
+            double[] normalizedHistogram = MakeNormalizedHistogram(histogram, img.PixelArray.Length);
 
             double[] accumulativeHistogram = MakeAccumulativeHistogram(normalizedHistogram);
 
             img.PixelArray = CalculateResult(img.PixelArray, accumulativeHistogram);
+        }
+
+        private static int[] MakeHistogram(UshortArrayAsImage img)
+        {
+            int[] Histogram = new int[UInt16.MaxValue + 1];
+            var pixelArray = img.PixelArray;
+
+            for (int i = 0; i < img.Height; i++)
+            {
+                for (int j = 0; j < img.Width; j++)
+                {
+                    Histogram[pixelArray[i, j]]++;
+                }
+            }
+            return Histogram;
+        }
+
+        private static double[] MakeNormalizedHistogram(int[] histogram, int nPixels)
+        {
+            double[] normalizedHistogram = new double[UInt16.MaxValue + 1];
+
+            for (int i = 0; i < UInt16.MaxValue + 1; i++)
+            {
+                normalizedHistogram[i] = histogram[i] / (double)nPixels;
+            }
+            return normalizedHistogram;
+        }
+
+
+        private static double[] MakeAccumulativeHistogram(double[] normalizedHistogram)
+        {
+            double[] accumulativeHistogram = new double[UInt16.MaxValue+1];
+            double accumulated = 0;
+            for (int i = 0; i < UInt16.MaxValue+1; i++)
+            {
+                accumulated += normalizedHistogram[i];
+                accumulativeHistogram[i] = accumulated;
+            }
+
+            return accumulativeHistogram;
         }
 
         private static ushort[,] CalculateResult(ushort[,] origin, double[] accumulativeHistogram)
@@ -141,19 +166,6 @@ namespace ImagePreprocessing
             }
 
             return result;
-        }
-
-        private static double[] MakeAccumulativeHistogram(double[] normalizedHistogram)
-        {
-            double[] accumulativeHistogram = new double[UInt16.MaxValue+1];
-            double accumulated = 0;
-            for (int i = 0; i < UInt16.MaxValue+1; i++)
-            {
-                accumulated += normalizedHistogram[i];
-                accumulativeHistogram[i] = accumulated;
-            }
-
-            return accumulativeHistogram;
         }
     }
 }
