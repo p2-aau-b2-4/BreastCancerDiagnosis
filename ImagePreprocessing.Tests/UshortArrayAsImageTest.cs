@@ -1,10 +1,13 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using System.Drawing.Imaging;
 using NUnit.Framework;
 using Dicom;
+
 
 namespace ImagePreprocessing.Tests
 {
@@ -26,16 +29,44 @@ namespace ImagePreprocessing.Tests
         [TestCase]
         public void SaveAsPNGTest()
         {
-            var testimg = DicomFile.Open("e.dcm");
-            var testResult = testimg.GetHashCode();
-            UshortArrayAsImage imgInfo = testimg.GetUshortImageInfo();
+            var testImg = DicomFile.Open("e.dcm");
+           // Stream testResult = testImg.
+            UshortArrayAsImage imgInfo = testImg.GetUshortImageInfo();
+            Stream imgStream = imgInfo.GetPngAsMemoryStream();
             imgInfo.SaveAsPng("test.png");
-            var result2 = imgInfo.GetHashCode();
 
-            var testimg2 = Image.FromFile("test.png");
-            var result = testimg2.GetHashCode();
 
-            Assert.AreEqual(result, result2);
+            Bitmap finalImg = new Bitmap(imgStream);
+
+            Image testimg2 = Image.FromFile("test.png");
+
+            Bitmap result = new Bitmap(testimg2);
+
+
+           // byte[] byteImage = imgStream.ToArray();
+            var resultString = (imgStream);
+
+            byte[] image1Bytes;
+            byte[] image2Bytes;
+
+            using (var mstream = new MemoryStream())
+            {
+                finalImg.Save(mstream, ImageFormat.Bmp);
+                image1Bytes = mstream.ToArray();
+            }
+
+            using (var mstream = new MemoryStream())
+            {
+                result.Save(mstream, ImageFormat.Bmp);
+                image2Bytes = mstream.ToArray();
+            }
+
+            string image1 = Convert.ToString(image1Bytes);
+            string image2 = Convert.ToString(image2Bytes);
+
+
+            Assert.AreEqual(image2, image1);
+
 
             //tror at jeg skal konvertere til bitmap før jeg bruger gethashcode
         }
