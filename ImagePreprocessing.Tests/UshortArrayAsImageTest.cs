@@ -29,13 +29,13 @@ namespace ImagePreprocessing.Tests
             var testimg = DicomFile.Open("e.dcm");
             var testResult = testimg.GetHashCode();
             UshortArrayAsImage imgInfo = testimg.GetUshortImageInfo();
-            imgInfo.SaveAsPng("test.PNG");
-            // var result = imgInfo.GetHashCode();
+            imgInfo.SaveAsPng("test.png");
+            var result2 = imgInfo.GetHashCode();
 
             var testimg2 = Image.FromFile("test.png");
             var result = testimg2.GetHashCode();
 
-            Assert.AreEqual(result, testResult);
+            Assert.AreEqual(result, result2);
 
             //tror at jeg skal konvertere til bitmap før jeg bruger gethashcode
         }
