@@ -11,13 +11,12 @@ namespace ImagePreprocessing
     {
         static void Main(string[] args)
         {
-            List<DdsmImage> ddsmImages = DdsmImage.GetAllImagesFromCsvFile(@"e:\brysttest\mass_case_description_train_set.csv");
+            List<DdsmImage> ddsmImages =
+                DdsmImage.GetAllImagesFromCsvFile(@"e:\brysttest\mass_case_description_train_set.csv");
             foreach (var x in ddsmImages)
             {
-                using (FileStream file = new FileStream("test2.png", FileMode.Create)) {
-                    x.GetDcomOriginalImage().GetPngAsMemoryStream().CopyTo(file);
-                }
-                
+                x.GetDcomOriginalImage().SaveAsPng("testest.png");
+
                 break;
             }
             //ddsmImages[14].GetNormalizedSizedCrop(100,100);

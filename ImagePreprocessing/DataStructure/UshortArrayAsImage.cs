@@ -3,12 +3,12 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace ImagePreprocessing
 {
     public class UshortArrayAsImage : ArrayAsImageAbstract
     {
-
         public ushort[,] PixelArray
         {
             get
@@ -34,14 +34,28 @@ namespace ImagePreprocessing
         {
             var pixelArray = PixelArray;
             Bitmap imgBitmap = new Bitmap(pixelArray.GetLength(1), pixelArray.GetLength(0));
-            for (int x = 0; x < pixelArray.GetLength(1); x++)
+            BitmapData imgBitmapData = imgBitmap.LockBits(new Rectangle(0, 0, imgBitmap.Width, imgBitmap.Height),
+                ImageLockMode.ReadWrite, imgBitmap.PixelFormat);
+            IntPtr scan0 = imgBitmapData.Scan0;
+
+            int bytes = imgBitmapData.Height * Math.Abs(imgBitmapData.Stride);
+            byte[] byteArray = new byte[bytes];
+            Marshal.Copy(scan0, byteArray, 0, bytes);
+
+            int position = 0;
+            for (int y = 0; y < pixelArray.GetLength(0); y++)
             {
-                for (int y = 0; y < pixelArray.GetLength(0); y++)
+                for (int x = 0; x < pixelArray.GetLength(1); x++)
                 {
-                    int greyColor = (int) Map(pixelArray[y, x], 0, UInt16.MaxValue, 0, 255);
-                    imgBitmap.SetPixel(x, y, Color.FromArgb(greyColor, greyColor, greyColor));
+                    byte greyColor = (byte) Map(pixelArray[y, x], 0, UInt16.MaxValue, 0, 255);
+                    byteArray[position++] = greyColor;
+                    byteArray[position++] = greyColor;
+                    byteArray[position++] = greyColor;
+                    byteArray[position++] = 255;
                 }
             }
+
+            Marshal.Copy(byteArray, 0, scan0, bytes);
 
             MemoryStream ms = new MemoryStream();
             ApplyOverlays(imgBitmap).Save(ms, ImageFormat.Png);
