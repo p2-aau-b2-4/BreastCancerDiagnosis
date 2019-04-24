@@ -47,7 +47,7 @@ namespace ImagePreprocessing
         {
             throw new NotImplementedException();
         }
-
+        
         public static UshortArrayAsImage Edge(this UshortArrayAsImage ushortImg, int threshold)
         {
             var image = ushortImg.PixelArray;
