@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -43,10 +44,13 @@ namespace WebApp.Controllers
 
         public IActionResult ShowAnalysis()
         {
-            (int, int, int, int) rectangle = (int.Parse(Request.Form["x1"]),int.Parse(Request.Form["y1"]),int.Parse(Request.Form["x2"]),int.Parse(Request.Form["y2"]));
+            Point a = new Point(int.Parse(Request.Form["x1"]),int.Parse(Request.Form["y1"]));
+            Point b = new Point(int.Parse(Request.Form["x2"]),int.Parse(Request.Form["y2"]));
+            Rectangle rectangle = new Rectangle(a,new Size(b.X-a.X,b.Y-a.Y));
+            
             string filePath = Request.Form["filePath"];
             string path = Path.GetTempPath() + filePath;
-            UshortArrayAsImage image = DicomFile.Open(path).GetUshortImageInfo().Crop(rectangle);
+            UshortArrayAsImage image = DicomFile.Open(path).GetUshortImageInfo().GetNormalizedCrop(rectangle,Convert.ToInt32(ConfigurationManager.AppSettings["CroppedImageSize"]),Convert.ToInt32(ConfigurationManager.AppSettings["CroppedImageTumourSize"]));
             //save the crop:
             string croppedImgSrc = filePath + "-cropped";
             image.SaveAsPng(Path.GetTempPath()+croppedImgSrc);

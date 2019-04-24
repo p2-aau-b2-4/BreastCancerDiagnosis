@@ -26,7 +26,7 @@ namespace Training
                     img.RemoveBreastMuscle();
                 
                 // now lets resize it, according to the dataset mask
-                img.CropFromMask(ddsmImage.GetDcomMaskImage(),ConfigurationManager.AppSettings["safeDistanceCropFromMask"]);
+                //img.CropFromMask(ddsmImage.GetDcomMaskImage(),ConfigurationManager.AppSettings["safeDistanceCropFromMask"]);
 
                 if (Convert.ToBoolean(ConfigurationManager.AppSettings["doNormalizing"]))
                     img.Normalize();

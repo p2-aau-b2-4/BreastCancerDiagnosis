@@ -1,6 +1,7 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.IO;
 
 namespace ImagePreprocessing
 {
@@ -32,7 +33,7 @@ namespace ImagePreprocessing
         {
         }
 
-        public override void SaveAsPng(string saveLoc)
+        public override Stream GetPngAsMemoryStream()
         {
             Bitmap imgBitmap = new Bitmap(PixelArray.GetLength(0), PixelArray.GetLength(1));
             for (int x = 0; x < PixelArray.GetLength(0); x++)
@@ -53,7 +54,10 @@ namespace ImagePreprocessing
                 g.DrawImage(bitmap, new Point(0, 0));
             }
 
-            imgBitmap.Save(saveLoc, ImageFormat.Png);
+            MemoryStream ms = new MemoryStream();
+            imgBitmap.Save(ms, ImageFormat.Png);
+            ms.Seek(0, SeekOrigin.Begin);
+            return ms;
         }
     }
 }

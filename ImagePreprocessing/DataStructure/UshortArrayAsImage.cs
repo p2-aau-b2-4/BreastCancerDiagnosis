@@ -26,36 +26,11 @@ namespace ImagePreprocessing
             }
         }
 
-        public override void SaveAsPng(string saveLoc)
-        {
-            var pixelArray = PixelArray;
-            Bitmap imgBitmap = new Bitmap(pixelArray.GetLength(1), pixelArray.GetLength(0));
-            for (int x = 0; x < pixelArray.GetLength(1); x++)
-            {
-                for (int y = 0; y < pixelArray.GetLength(0); y++)
-                {
-                    int greyColor = (int) Map(pixelArray[y, x], 0, 65535, 0, 255);
-                    imgBitmap.SetPixel(x, y, Color.FromArgb(greyColor, greyColor, greyColor));
-                }
-            }
-
-            // lets add all bitmaps:
-            Graphics g = Graphics.FromImage(imgBitmap);
-            g.CompositingMode = CompositingMode.SourceOver;
-            foreach (Bitmap bitmap in Overlays)
-            {
-                bitmap.MakeTransparent();
-                g.DrawImage(bitmap, new Point(0, 0));
-            }
-
-            imgBitmap.Save(saveLoc, ImageFormat.Png);
-        }
-
         public UshortArrayAsImage(byte[] pixelData, int width, int height) : base(pixelData, width, height)
         {
         }
 
-        public Stream GetPngAsMemoryStream()
+        public override Stream GetPngAsMemoryStream()
         {
             var pixelArray = PixelArray;
             Bitmap imgBitmap = new Bitmap(pixelArray.GetLength(1), pixelArray.GetLength(0));
@@ -63,7 +38,7 @@ namespace ImagePreprocessing
             {
                 for (int y = 0; y < pixelArray.GetLength(0); y++)
                 {
-                    int greyColor = (int) Map(pixelArray[y, x], 0, 65535, 0, 255);
+                    int greyColor = (int) Map(pixelArray[y, x], 0, UInt16.MaxValue, 0, 255);
                     imgBitmap.SetPixel(x, y, Color.FromArgb(greyColor, greyColor, greyColor));
                 }
             }
@@ -83,7 +58,7 @@ namespace ImagePreprocessing
             return ms;
         }
 
-        public UshortArrayAsImage Crop((int, int, int, int) rectangle)
+        /*public UshortArrayAsImage Crop((int, int, int, int) rectangle)
         {
             //todo
             int x1 = rectangle.Item1 < rectangle.Item3 ? rectangle.Item1 : rectangle.Item3;
@@ -122,7 +97,6 @@ namespace ImagePreprocessing
 
         public void CropFromMask(UByteArrayAsImage getDcomMaskImage, string appSetting)
         {
-            throw new NotImplementedException();
-        }
+         }*/
     }
 }
