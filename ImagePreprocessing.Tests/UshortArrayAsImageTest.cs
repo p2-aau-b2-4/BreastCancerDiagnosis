@@ -1,43 +1,50 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using System.Drawing.Imaging;
 using NUnit.Framework;
 using Dicom;
+
 
 namespace ImagePreprocessing.Tests
 {
     [TestFixture]
     class UshortArrayAsImageTest
     {
-        UshortArrayAsImage image;
-
-       // UshortArrayAsImage testImage = { 0, 3, 6, 9 };
-
-        [SetUp]
-        public void Setup()
-        {
-
-            
-
-        }
-
         [TestCase]
-        public void SaveAsPNGTest()
+        public void GetPngAsMemoryStreamTest()
         {
-            var testimg = DicomFile.Open("e.dcm");
-            var testResult = testimg.GetHashCode();
-            UshortArrayAsImage imgInfo = testimg.GetUshortImageInfo();
-            imgInfo.SaveAsPng("test.png");
-            var result2 = imgInfo.GetHashCode();
+            var testImg = DicomFile.Open("000000.dcm");
+            UshortArrayAsImage testImgInfo = testImg.GetUshortImageInfo();
+            Stream testImgStream = testImgInfo.GetPngAsMemoryStream();
 
-            var testimg2 = Image.FromFile("test.png");
-            var result = testimg2.GetHashCode();
 
-            Assert.AreEqual(result, result2);
+            Bitmap finalImg = new Bitmap(testImgStream);
 
-            //tror at jeg skal konvertere til bitmap før jeg bruger gethashcode
+            Image resultImage = Image.FromFile("000000.png");
+
+            Bitmap resultImageBitmap = new Bitmap(resultImage);
+
+
+
+            byte[] testImgByteArr;
+            byte[] resultImgByteArr;
+
+            var mstreamTest = new MemoryStream();
+            var mstreamResult = new MemoryStream();
+
+            testImgByteArr = mstreamTest.ToArray();
+            resultImgByteArr = mstreamResult.ToArray();
+
+            string testImgString = Convert.ToString(testImgByteArr);
+            string resultImgString = Convert.ToString(resultImgByteArr);
+
+
+            Assert.AreEqual(resultImgString, testImgString);
+
         }
     }
 }
