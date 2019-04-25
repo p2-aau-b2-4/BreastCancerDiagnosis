@@ -48,8 +48,17 @@ namespace DicomDisplayTest
                 {1.1,0.9}
             };
             
+            double[,] matrix2 = new double[,]
+            {
+                {0,0,0,0},
+                {0,0,0,0},
+                {0,0,0,0},
+                {0,0,0,0}
+            };
+            
             SparseMatrix sM1 = SparseMatrix.OfArray(matrix1);
             SparseMatrix sM4 = SparseMatrix.OfArray(arr);
+            SparseMatrix sM5 = SparseMatrix.OfArray(matrix2);
             
             PCA pca = new PCA();
             //List<DdsmImage> DDSMImages =
@@ -65,19 +74,59 @@ namespace DicomDisplayTest
             list.Add(image1);
             list.Add(image1);
             list.Add(image1);
-            list.Add(image1);
+            /*list.Add(image1);*/
             
-            SparseMatrix sparseMatrix = SparseMatrix.OfArray(arr);
+            /*SparseMatrix sparseMatrix = SparseMatrix.OfArray(arr);
 
             sparseMatrix = pca.MeanSubtraction(sparseMatrix);
             sparseMatrix = pca.CovarianceMatrix(sparseMatrix);
             pca.SolveEigenValues(sparseMatrix);
-            pca.SolveEigenVectors(sparseMatrix);
+            pca.SolveEigenVectors(sparseMatrix);*/
             
+            //PCA2 pca2 = new PCA2();
+            
+            PCA3 pca3 = new PCA3();
+            
+            List<Bitmap> bitmaps = new List<Bitmap>();
+
+            int ii = 0;
+            foreach (string img in Directory.GetFiles("mnist2"))
+            {
+                /*if(ii > 99)
+                    break;
+                ii++;*/
+                bitmaps.Add(new Bitmap(img));
+            }
+            
+            pca3.Train(bitmaps);
+            
+            //pca2.Train(bitmaps);
+
             //pca.Train(list);
+
+            /*sM5 = pca.MeanSubtraction(sM5);
+            sM5 = pca.CovarianceMatrix(sM5);
+
+            for (int xIndex = 0; xIndex < 4; xIndex++)
+            {
+                for (int yIndex = 0; yIndex < 4; yIndex++)
+                {
+                    Console.Write(sM5[xIndex, yIndex]);
+                }
+
+                Console.WriteLine();
+            }
+
+            pca.SolveEigenValues(sM5);
+            pca.SolveEigenValues(sM5);*/
             
-            /*pca.SolveEigenValues(sM1);
-            pca.SolveEigenValues(sM4);*/
+            // Example #3: Write only some strings in an array to a file.
+            // The using statement automatically flushes AND CLOSES the stream and calls 
+            // IDisposable.Dispose on the stream object.
+            // NOTE: do not use FileStream for text files because it writes bytes, but StreamWriter
+            // encodes the output as text.
+            
+            
         }
     }
 }
