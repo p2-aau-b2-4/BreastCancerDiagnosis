@@ -33,11 +33,11 @@ namespace ImagePreprocessing.Tests
             byte[] testImgByteArr;
             byte[] resultImgByteArr;
 
-            var mstream = new MemoryStream();
-            var mstream2 = new MemoryStream();
+            var mstreamTest = new MemoryStream();
+            var mstreamResult = new MemoryStream();
 
-            testImgByteArr = mstream.ToArray();
-            resultImgByteArr = mstream.ToArray();
+            testImgByteArr = mstreamTest.ToArray();
+            resultImgByteArr = mstreamResult.ToArray();
 
             string testImgString = Convert.ToString(testImgByteArr);
             string resultImgString = Convert.ToString(resultImgByteArr);
