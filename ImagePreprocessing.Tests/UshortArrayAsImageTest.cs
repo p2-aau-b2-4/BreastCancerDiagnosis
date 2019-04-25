@@ -18,32 +18,32 @@ namespace ImagePreprocessing.Tests
         public void GetPngAsMemoryStreamTest()
         {
             var testImg = DicomFile.Open("000000.dcm");
-            UshortArrayAsImage imgInfo = testImg.GetUshortImageInfo();
-            Stream imgStream = imgInfo.GetPngAsMemoryStream();
+            UshortArrayAsImage testImgInfo = testImg.GetUshortImageInfo();
+            Stream testImgStream = testImgInfo.GetPngAsMemoryStream();
 
 
-            Bitmap finalImg = new Bitmap(imgStream);
+            Bitmap finalImg = new Bitmap(testImgStream);
 
-            Image testimg2 = Image.FromFile("000000.png");
+            Image resultImage = Image.FromFile("000000.png");
 
-            Bitmap result = new Bitmap(testimg2);
+            Bitmap resultImageBitmap = new Bitmap(resultImage);
 
 
 
-            byte[] image1Bytes;
-            byte[] image2Bytes;
+            byte[] testImgByteArr;
+            byte[] resultImgByteArr;
 
             var mstream = new MemoryStream();
             var mstream2 = new MemoryStream();
 
-            image1Bytes = mstream.ToArray();
-            image2Bytes = mstream.ToArray();
+            testImgByteArr = mstream.ToArray();
+            resultImgByteArr = mstream.ToArray();
 
-            string image1 = Convert.ToString(image1Bytes);
-            string image2 = Convert.ToString(image2Bytes);
+            string testImgString = Convert.ToString(testImgByteArr);
+            string resultImgString = Convert.ToString(resultImgByteArr);
 
 
-            Assert.AreEqual(image2, image1);
+            Assert.AreEqual(resultImgString, testImgString);
 
         }
     }

@@ -35,7 +35,7 @@ namespace ImagePreprocessing
             var pixelArray = PixelArray;
             Bitmap imgBitmap = new Bitmap(pixelArray.GetLength(1), pixelArray.GetLength(0));
             BitmapData imgBitmapData = imgBitmap.LockBits(new Rectangle(0, 0, imgBitmap.Width, imgBitmap.Height),
-                ImageLockMode.ReadWrite, imgBitmap.PixelFormat);
+            ImageLockMode.ReadWrite, imgBitmap.PixelFormat);
             IntPtr scan0 = imgBitmapData.Scan0;
 
             int bytes = imgBitmapData.Height * Math.Abs(imgBitmapData.Stride);
