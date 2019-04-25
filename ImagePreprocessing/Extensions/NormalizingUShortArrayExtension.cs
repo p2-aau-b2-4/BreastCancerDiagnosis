@@ -88,13 +88,6 @@ namespace ImagePreprocessing
             return x;
         }
 
-        private static int GetD(int cr, int cl, int cu, int cd, int cld, int clu, int cru, int crd, int[,] matrix)
-        {
-            return Math.Abs(matrix[0, 0] * clu + matrix[0, 1] * cu + matrix[0, 2] * cru
-                            + matrix[1, 0] * cl + matrix[1, 2] * cr
-                            + matrix[2, 0] * cld + matrix[2, 1] * cd + matrix[2, 2] * crd);
-        }
-
         private static int GetMaxD(int cr, int cl, int cu, int cd, int cld, int clu, int cru, int crd)
         {
             int max = int.MinValue;
@@ -106,6 +99,13 @@ namespace ImagePreprocessing
             }
 
             return max;
+        }
+
+        private static int GetD(int cr, int cl, int cu, int cd, int cld, int clu, int cru, int crd, int[,] matrix)
+        {
+            return Math.Abs(matrix[0, 0] * clu + matrix[0, 1] * cu + matrix[0, 2] * cru
+                            + matrix[1, 0] * cl + matrix[1, 2] * cr
+                            + matrix[2, 0] * cld + matrix[2, 1] * cd + matrix[2, 2] * crd);
         }
 
         private static List<int[,]> templates = new List<int[,]>

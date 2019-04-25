@@ -75,12 +75,5 @@ namespace ImagePreprocessing.Tests
 
             CollectionAssert.AreEqual(pixelArrayTestValuesResult, image.PixelArray);
         }
-
-
-
-
-
-
-
     }
 }
