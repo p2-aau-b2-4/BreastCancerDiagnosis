@@ -7,78 +7,34 @@ namespace ImagePreprocessing
 {
     public static class NormalizingUShortArrayExtension
     {
-        public static UshortArrayAsImage GetNormalizedSizedCrop(this UshortArrayAsImage cropped, int size)
+        public static UshortArrayAsImage GetNormalizedCrop(this UshortArrayAsImage image, Rectangle tumour, int size,
+            int tumourSize)
         {
-            byte[] orgPixelData = cropped.PixelData;
-            int currentByteInOrgPixelData = 0;
-
-            // lets find how many black lines we should add on each side
-            int linesToAddVertical = (size - cropped.Width) / 2;
-            int linesToAddHorizontal = (size - cropped.Height) / 2;
-
-
-            // lets add the lines;
-            byte[] pixelData = new byte[size * size * 2];
-
-            int currentByte = 0;
-            // add horizontal first, as they are the first bytes
-            for (int i = 0; i < linesToAddHorizontal; i++)
-            {
-                for (int u = 0; u < size * 2; u++) pixelData[currentByte++] = 0;
-            }
-
-            for (int i = 0; i < cropped.Height; i++)
-            {
-                // for every horizontal line of img
-                // add the black lines first
-                for (int u = 0; u < linesToAddVertical * 2; u++) pixelData[currentByte++] = 0;
-                // then add the pixeldata for the next width*2 bytes;
-                for (int u = 0; u < cropped.Width * 2; u++)
-                    pixelData[currentByte++] = orgPixelData[currentByteInOrgPixelData++];
-
-                // lets add the rest of vertical lines
-                for (int u = 0; u < (size - linesToAddVertical - cropped.Width) * 2; u++) pixelData[currentByte++] = 0;
-            }
-
-            return new UshortArrayAsImage(pixelData, size, size);
-        }
-
-        public static void Normalize(this UshortArrayAsImage ushortImg)
-        {
+            // Rectangle = det markerede område med knuden (kan godt være ikke kvadratisk, men så lav det kvadratisk)
+            // tumoursize = hvor stor knuden skal være i output (kvadratisk)
+            // size = hvor stort billedet skal være (kvadratisk)
+            // returns a ushortarrayasimage, with black boxes around the resized tumour.
             throw new NotImplementedException();
         }
 
-        public static UshortArrayAsImage Edge(this UshortArrayAsImage ushortImg, int threshold)
+        public static Rectangle GetTumourPositionFromMask(this UByteArrayAsImage maskUbyte)
         {
-            var image = ushortImg.PixelArray;
-            ushort[,] imageOverlay = image.Clone() as ushort[,];
-
-
-            for (int i = 1; i < image.GetLength(0) - 1; i++)
+            var mask = maskUbyte.PixelArray;
+            int left = -1, right = -1, top = -1, bottom = -1;
+            // finding the 4 edges of a rectangle, going from left, top, right and bottom.
+            for (int y = 0; y < mask.GetLength(0); y++)
             {
-                for (int j = 1; j < image.GetLength(1) - 1; j++)
+                bool containsMask = false;
+                for (int x = 0; x < mask.GetLength(1); x++)
                 {
-                    ushort cr = image[i + 1, j];
-                    ushort cl = image[i - 1, j];
-                    ushort cu = image[i, j - 1];
-                    ushort cd = image[i, j + 1];
-                    ushort cld = image[i - 1, j + 1];
-                    ushort clu = image[i - 1, j - 1];
-                    ushort crd = image[i + 1, j + 1];
-                    ushort cru = image[i + 1, j - 1];
-                    int power = GetMaxD(cr, cl, cu, cd, cld, clu, cru, crd);
-
-                    if (power > threshold)
+                    if (mask[y, x] != 0)
                     {
-                        imageOverlay[i, j] = 0;
-                    }
-                    else
-                    {
-                        imageOverlay[i, j] = UInt16.MaxValue;
+                        containsMask = true;
+                        break;
                     }
                 }
-            }
 
+<<<<<<< HEAD
 
             //Console.WriteLine(imageOverlay[(imageOverlay.GetLength(0)-1)/2,imageOverlay.GetLength(1)/2]);
             var x = new UshortArrayAsImage(new byte[ushortImg.Width * ushortImg.Height * 2], ushortImg.Width,
@@ -132,127 +88,29 @@ namespace ImagePreprocessing
             ushort[,] imageOverlay = imageOverlayIn.Clone() as ushort[,];
 
             for (int i = 0; i < imageOverlay.GetLength(0); i++)
-            {
-                for (int j = 0; j < imageOverlay.GetLength(1); j++)
-                {
-                    /*bool isSearched = false;
-                    foreach (Sector x in sectors)
-                    {
-                        if (x.ImgArray[i, j] == UInt16.MaxValue) isSearched = true;
-                    }*/
-
-                    if (imageOverlay[i, j] == UInt16.MaxValue)
-                    {
-                        // mby check here if the original image is black at this sector position, then refuse?
-                        //if (origin[i, j] > 10000) // todo hardcode
-                        Sector sectorToAdd = GetSector(imageOverlay, i, j, origin);
-                        if(sectorToAdd != null)
-                            sectors.Add(sectorToAdd);
-                    }
-                }
+=======
+                if (top == -1 && containsMask) top = y;
+                if (top != -1 && bottom == -1 && !containsMask) bottom = y;
             }
 
-            if (sectors.Count == 0)
-                return new ushort[origin.GetLength(0),
-                    origin.GetLength(1)]; // return black image if no sectors were found.
-            return sectors.First(x => x.SectorSize == sectors.Max(y => y.SectorSize)).GetImgArray(imageOverlayIn);
-        }
-
-        private static Sector GetSector(ushort[,] imageOverlay, int i, int j, ushort[,] origin)
-        {
-            Sector result = new Sector();
-            result.Point = new Point(j, i);
-            //result.ImgArray = imageOverlay.Clone() as ushort[,]; // this wastes memory
-
-
-            result.SectorSize = GetSizeOfSector(imageOverlay, i, j, origin, out var averageColor);
-            Console.WriteLine(averageColor);
-            if (double.IsNaN(averageColor) || averageColor < 500) return null; //todo hardcode
-
-            /*for (int k = 0; k < result.ImgArray.GetLength(0); k++)
+            for (int x = 0; x < mask.GetLength(1); x++)
+>>>>>>> 82d8424035632281d96f3d262a96ee49c7bd01dc
             {
-                for (int l = 0; l < result.ImgArray.GetLength(1); l++)
+                bool containsMask = false;
+                for (int y = 0; y < mask.GetLength(0); y++)
                 {
-                    if (result.ImgArray[k, l] == UInt16.MaxValue) result.ImgArray[k, l] = 0;
-                    if (result.ImgArray[k, l] == UInt16.MaxValue - 1) result.ImgArray[k, l] = UInt16.MaxValue;
-                }
-            }*/
-
-            return result;
-        }
-
-        private static int GetSizeOfSector(ushort[,] resultImgArray, int i, int j, ushort[,] origin,
-            out double averageColor)
-        {
-            // recursion was more intuitive than queue, however we got stackoverflow
-            Queue<Point> queue = new Queue<Point>();
-            queue.Enqueue(new Point(i, j));
-            int result = 0;
-            int total = 0;
-            while (queue.Count > 0)
-            {
-                // run as long as points to explore
-                Point p = queue.Dequeue();
-                if (p.X > 0 && p.Y > 0 && p.X < resultImgArray.GetLength(0) &&
-                    p.Y < resultImgArray.GetLength(1) && resultImgArray[p.X, p.Y] == UInt16.MaxValue)
-                {
-                    resultImgArray[p.X, p.Y] = UInt16.MaxValue - 1;
-                    result++;
-                    total += origin[p.X, p.Y];
-                    queue.Enqueue(new Point(p.X - 1, p.Y));
-                    queue.Enqueue(new Point(p.X + 1, p.Y));
-                    queue.Enqueue(new Point(p.X, p.Y - 1));
-                    queue.Enqueue(new Point(p.X, p.Y + 1));
-                }
-            }
-
-            averageColor = total / (double) result;
-
-            return result;
-        }
-
-        private static void TumorDimensions(ushort[,] imageOverlay)
-        {
-            int p1 = 0, p2 = 0, q1 = 0, q2 = 0;
-
-            while (imageOverlay[p1, q1] != UInt16.MaxValue)
-            {
-                q1++;
-                if (imageOverlay.GetLength(1) == q1)
-                {
-                    q1 = 0;
-                    p1++;
-                }
-            }
-
-            Console.WriteLine(imageOverlay[p1, q1]);
-            Console.WriteLine(q1);
-            Console.WriteLine(p1);
-        }
-
-        private class Sector
-        {
-            public Point Point { get; set; }
-
-            //public ushort[,] ImgArray { get; set; }
-            public int SectorSize { get; set; }
-
-            public ushort[,] GetImgArray(ushort[,] imageOverlayIn)
-            {
-                ushort[,] imageOverlay = imageOverlayIn.Clone() as ushort[,];
-                GetSizeOfSector(imageOverlay, Point.Y, Point.X,imageOverlayIn, out var average);
-
-                for (int k = 0; k < imageOverlay.GetLength(0); k++)
-                {
-                    for (int l = 0; l < imageOverlay.GetLength(1); l++)
+                    if (mask[y, x] != 0)
                     {
-                        if (imageOverlay[k, l] == UInt16.MaxValue) imageOverlay[k, l] = 0;
-                        if (imageOverlay[k, l] == UInt16.MaxValue - 1) imageOverlay[k, l] = UInt16.MaxValue;
+                        containsMask = true;
+                        break;
                     }
                 }
 
-                return imageOverlay;
+                if (left == -1 && containsMask) left = x;
+                if (left != -1 && right == -1 && !containsMask) right = x;
             }
+
+            return new Rectangle(top, left, bottom - top, right - left);
         }
     }
 }
