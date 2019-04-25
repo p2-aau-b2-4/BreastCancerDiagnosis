@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Linq;
 using Accord.IO;
 using Accord.Math;
@@ -15,8 +17,75 @@ namespace ImagePreprocessing
             // tumoursize = hvor stor knuden skal være i output (kvadratisk)
             // size = hvor stort billedet skal være (kvadratisk)
             // returns a ushortarrayasimage, with black boxes around the resized tumour.
+
+            Bitmap imageBit = UshortToBitmap(Crop(tumour, image).PixelArray);
+            
+            var destRect = new Rectangle(0, 0, tumourSize, tumourSize);
+            var destImage = new Bitmap(size, size);
+
+            destImage.SetResolution(imageBit.HorizontalResolution, imageBit.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(imageBit, destRect, 0, 0, image.Width,image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+            
             throw new NotImplementedException();
         }
+
+        private static Bitmap UshortToBitmap(ushort[,] image)
+        {
+
+            
+            Bitmap imgBitmap = new Bitmap(image.GetLength(1), image.GetLength(0));
+            for (int x = 0; x < image.GetLength(1); x++)
+            {
+                for (int y = 0; y < image.GetLength(0); y++)
+                {
+                    int greyColor = (int) Map(image[y, x], 0, 65535, 0, 255);
+                    imgBitmap.SetPixel(x, y, Color.FromArgb(greyColor, greyColor, greyColor));
+                }
+            }
+
+            return imgBitmap;
+        }
+        
+        private static UshortArrayAsImage Crop(Rectangle rectangle, UshortArrayAsImage image)
+        {
+            ushort[,] result = new ushort[rectangle.Height,rectangle.Width];
+            
+            ushort[,] current = image.PixelArray; // set here - lazy evaluation
+            
+            for (int x = 0; x < rectangle.Width; x++)
+            {
+                for (int y = 0; y < rectangle.Height; y++)
+                {
+                    result[y, x] = current[y + rectangle.Y,x + rectangle.X];
+                }
+            }
+            
+            byte[] resultBytes = new byte[rectangle.Width*rectangle.Height * 2];
+            Buffer.BlockCopy(result, 0, resultBytes, 0, resultBytes.Length);
+            var finalResult = new UshortArrayAsImage(resultBytes,rectangle.Width,rectangle.Height);
+            return finalResult;
+        }
+        
+        private static float Map(float s, float a1, float a2, float b1, float b2)
+            // lånt fra https://forum.unity.com/threads/re-map-a-number-from-one-range-to-another.119437/
+        {
+            return b1 + (s - a1) * (b2 - b1) / (a2 - a1);
+        }
+        
         public static void GetNormalizedSizedCrop(this DdsmImage ddsmImage, Rectangle tumour, int size, int tumourSize)
         {
             // use mask to find rectangle around crop
