@@ -14,25 +14,12 @@ namespace ImagePreprocessing.Tests
     [TestFixture]
     class UshortArrayAsImageTest
     {
-        UshortArrayAsImage image;
-
-       // UshortArrayAsImage testImage = { 0, 3, 6, 9 };
-
-        [SetUp]
-        public void Setup()
-        {
-
-            
-
-        }
-
         [TestCase]
-        public void SaveAsPNGTest()
+        public void GetPngAsMemoryStreamTest()
         {
             var testImg = DicomFile.Open("000000.dcm");
             UshortArrayAsImage imgInfo = testImg.GetUshortImageInfo();
             Stream imgStream = imgInfo.GetPngAsMemoryStream();
-            imgInfo.SaveAsPng("test.png");
 
 
             Bitmap finalImg = new Bitmap(imgStream);
@@ -46,17 +33,11 @@ namespace ImagePreprocessing.Tests
             byte[] image1Bytes;
             byte[] image2Bytes;
 
-            using (var mstream = new MemoryStream())
-            {
-                finalImg.Save(mstream, ImageFormat.Bmp);
-                image1Bytes = mstream.ToArray();
-            }
+            var mstream = new MemoryStream();
+            var mstream2 = new MemoryStream();
 
-            using (var mstream = new MemoryStream())
-            {
-                result.Save(mstream, ImageFormat.Bmp);
-                image2Bytes = mstream.ToArray();
-            }
+            image1Bytes = mstream.ToArray();
+            image2Bytes = mstream.ToArray();
 
             string image1 = Convert.ToString(image1Bytes);
             string image2 = Convert.ToString(image2Bytes);
