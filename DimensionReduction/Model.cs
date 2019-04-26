@@ -20,7 +20,7 @@ namespace DimensionReduction
         public List<(double, Vector<double>)> EigenLumps { get => _eigenLumps; }
         public List<List<double>> Features { get => _features; }
 
-        public void SaveModel(string filePath) 
+        public void SaveModelToFile(string filePath) 
         {
             TextWriter writer = null;
             try
@@ -36,7 +36,7 @@ namespace DimensionReduction
             }
         }
 
-        public void LoadModel(string filePath) 
+        public void LoadModelFromFile(string filePath) 
         {
             TextReader reader = null;
             try
