@@ -7,13 +7,14 @@ using Dicom;
 
 namespace ImagePreprocessing
 {
-    class FileSizeComparer : IComparer<FileInfo> 
+    class FileSizeComparer : IComparer<FileInfo>
     {
         public int Compare(FileInfo x, FileInfo y)
         {
             return Convert.ToInt32(y.Length) - Convert.ToInt32(x.Length);
         }
     }
+
     [Serializable]
     public class DdsmImage
     {
@@ -99,6 +100,21 @@ namespace ImagePreprocessing
         public String DcomMaskFilePath { get; }
         public String DcomCroppedFilePath { get; }
 
+        public UShortArrayAsImage DcomOriginalImage
+        {
+            get { return DicomFile.Open(DcomFilePath).GetUshortImageInfo(); }
+        }
+
+        public UByteArrayAsImage DcomMaskImage
+        {
+            get { return DicomFile.Open(DcomMaskFilePath).GetUByteImageInfo(); }
+        }
+
+        public UShortArrayAsImage DcomCroppedImage
+        {
+            get { return DicomFile.Open(DcomCroppedFilePath).GetUshortImageInfo(); }
+        }
+
         private DdsmImage(String patientId, int breastDensity, BreastSideEnum breastSide, ImageViewEnum imageView,
             int abnormalityId,
             MassShapesEnum massShape,
@@ -124,11 +140,11 @@ namespace ImagePreprocessing
         public static List<DdsmImage> GetAllImagesFromCsvFile(String csvFilePath)
         {
             List<DdsmImage> imagesToReturn = new List<DdsmImage>();
-            
+
             // lets first check if binary file exists:
             String binaryFileLoc = csvFilePath.Replace(".csv", ".bin");
             // if exists, then loda, else find all data, and save to file, to save time in future.
-            
+
             List<String> lines = File.ReadAllLines(csvFilePath).ToList();
             lines.RemoveAt(0);
             foreach (String line in lines)
@@ -164,7 +180,8 @@ namespace ImagePreprocessing
                 if (!int.TryParse(informations[10], out var subtlety)) throw new Exception(); //todo proper exception
                 String dcomFilePath = GetDcomFilePathFromString(csvFilePath, informations[11]);
 
-                var (maskFilePath, croppedFilePath) = GetDcomMaskAndCroppedPathsFromString(csvFilePath, informations[12]);
+                var (maskFilePath, croppedFilePath) =
+                    GetDcomMaskAndCroppedPathsFromString(csvFilePath, informations[12]);
                 imagesToReturn.Add(new DdsmImage(patientId, breastDensity, breastSide, imageView, abnormalityId,
                     massShape,
                     massMargins, assessment, pathology, subtlety, dcomFilePath, maskFilePath,
@@ -181,7 +198,8 @@ namespace ImagePreprocessing
                 case "CIRCUMSCRIBED": return MassMarginsEnum.Circumscribed;
                 case "CIRCUMSCRIBED-ILL_DEFINED": return MassMarginsEnum.CircumscribedIllDefined;
                 case "CIRCUMSCRIBED-MICROLOBULATED": return MassMarginsEnum.CircumscribedMicrolobulated;
-                case "CIRCUMSCRIBED-MICROLOBULATED-ILL_DEFINED": return MassMarginsEnum.CircumscribedMicrolobulatedIllDefined;
+                case "CIRCUMSCRIBED-MICROLOBULATED-ILL_DEFINED":
+                    return MassMarginsEnum.CircumscribedMicrolobulatedIllDefined;
                 case "CIRCUMSCRIBED-OBSCURED": return MassMarginsEnum.CircumscribedObscured;
                 case "CIRCUMSCRIBED-OBSCURED-ILL_DEFINED": return MassMarginsEnum.CircumscribedObscuredIllDefined;
                 case "CIRCUMSCRIBED-SPICULATED": return MassMarginsEnum.CircumscribedSpiculated;
@@ -301,32 +319,18 @@ namespace ImagePreprocessing
                 List<FileInfo> DcmFilesFound = new List<FileInfo>();
                 foreach (String file in files)
                 {
-                    if(file.EndsWith(".dcm")){
+                    if (file.EndsWith(".dcm"))
+                    {
                         DcmFilesFound.Add(new FileInfo(file));
                     }
                 }
+
                 DcmFilesFound.Sort(new FileSizeComparer());
                 maskFilePath = DcmFilesFound[0].FullName;
                 croppedFilePath = DcmFilesFound[1].FullName;
             }
 
             return (maskFilePath, croppedFilePath);
-        }
-
-
-        public UshortArrayAsImage GetDcomOriginalImage()
-        {
-            return DicomFile.Open(DcomFilePath).GetUshortImageInfo();
-        }
-
-        public UByteArrayAsImage GetDcomMaskImage()
-        {
-            return DicomFile.Open(DcomMaskFilePath).GetUByteImageInfo();
-        }
-
-        public UshortArrayAsImage GetDcomCroppedImage()
-        {
-            return DicomFile.Open(DcomCroppedFilePath).GetUshortImageInfo();
         }
     }
 }

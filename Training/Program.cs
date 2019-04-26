@@ -17,10 +17,10 @@ namespace Training
             // lets apply the relevant image preprocessing to every image
             foreach (var ddsmImage in ddsmImages)
             {
-                var img = ddsmImage.GetDcomOriginalImage();
-                if (Convert.ToBoolean(ConfigurationManager.AppSettings["doContrast"]))
-                    img.ApplyContrastEnhancement(
-                        Convert.ToInt32(ConfigurationManager.AppSettings["contrastThreshold"]));
+                var img = ddsmImage.DcomOriginalImage;
+                //if (Convert.ToBoolean(ConfigurationManager.AppSettings["doContrast"]))
+                //    img.ApplyContrastEnhancement(
+                //        Convert.ToInt32(ConfigurationManager.AppSettings["contrastThreshold"]));
 
                 //if (Convert.ToBoolean(ConfigurationManager.AppSettings["doRemoveBreastMuscle"]))
                  //   img.RemoveBreastMuscle();

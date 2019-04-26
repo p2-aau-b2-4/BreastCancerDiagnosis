@@ -9,11 +9,9 @@ using Dicom.IO;
 
 namespace ImagePreprocessing
 {
-    public class UByteArrayAsImage : ArrayAsImageAbstract
+    public class UByteArrayAsImage : ArrayAsImageAbstract<byte[,]>
     {
-        private byte[,] _pixelArray;
-
-        public byte[,] PixelArray
+        public sealed override byte[,] PixelArray
         {
             get
             {
@@ -32,6 +30,10 @@ namespace ImagePreprocessing
 
         public UByteArrayAsImage(byte[] pixelData, int width, int height) : base(pixelData, width, height)
         {
+        }
+        public UByteArrayAsImage(byte[,] arrayIn) : base(null, arrayIn.GetLength(1), arrayIn.GetLength(0))
+        {
+            PixelArray = arrayIn;
         }
 
         public override Stream GetPngAsMemoryStream()
