@@ -9,6 +9,7 @@ using NUnit.Framework;
 using Dicom;
 
 
+
 namespace ImagePreprocessing.Tests
 {
     [TestFixture]
@@ -18,17 +19,27 @@ namespace ImagePreprocessing.Tests
         public void GetPngAsMemoryStreamTest()
         {
             var testImg = DicomFile.Open("000000.dcm");
+            //testImg.RenderImage().AsBitmap().Save(@"test.jpg");
+            
             UshortArrayAsImage testImgInfo = testImg.GetUshortImageInfo();
-            Stream testImgStream = testImgInfo.GetPngAsMemoryStream();
+            //Stream testImgStream = testImgInfo.GetPngAsMemoryStream();
+
+            testImgInfo.SaveAsPng("test.png");
+
+            Image finalImg = Image.FromFile("test.png");
 
 
-            Bitmap finalImg = new Bitmap(testImgStream);
 
-            Image resultImage = Image.FromFile("000000.png");
+            Bitmap finalImgBitmap = new Bitmap(finalImg);
 
-            Bitmap resultImageBitmap = new Bitmap(resultImage);
+            Image resultImg = Image.FromFile("000000.png");
 
+            bool resultBool = Image.Equals(finalImg, resultImg);
 
+            Bitmap resultImageBitmap = new Bitmap(resultImg);
+
+            //string testImgString = finalImg.ToString();
+            //string resultImgString = resultImageBitmap.ToString();
 
             byte[] testImgByteArr;
             byte[] resultImgByteArr;
@@ -36,14 +47,29 @@ namespace ImagePreprocessing.Tests
             var mstreamTest = new MemoryStream();
             var mstreamResult = new MemoryStream();
 
+
+            finalImgBitmap.Save(mstreamTest, ImageFormat.Png);
             testImgByteArr = mstreamTest.ToArray();
+
+            resultImg.Save(mstreamResult, ImageFormat.Png);
             resultImgByteArr = mstreamResult.ToArray();
 
-            string testImgString = Convert.ToString(testImgByteArr);
-            string resultImgString = Convert.ToString(resultImgByteArr);
+
+            // testImgByteArr = mstreamTest.ToArray();
+            //resultImgByteArr = mstreamResult.ToArray();
 
 
-            Assert.AreEqual(resultImgString, testImgString);
+            //string testImgString = Encoding.UTF8.GetString(testImgByteArr, 0, testImgByteArr.Length);
+            //string resultImgString = Encoding.UTF8.GetString(resultImgByteArr, 0, resultImgByteArr.Length);
+
+            string testImgString = BitConverter.ToString(testImgByteArr);
+            string resultImgString = BitConverter.ToString(resultImgByteArr);
+
+            //string testImgString = Convert.ToString(testImgByteArr);
+            //string resultImgString = Convert.ToString(resultImgByteArr);
+
+            //Assert.IsTrue(resultImgByteArr.SequenceEqual(testImgByteArr));
+            Assert.AreEqual(resultImgByteArr.Length, testImgByteArr.Length);
 
         }
     }
