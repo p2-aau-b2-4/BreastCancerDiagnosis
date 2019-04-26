@@ -47,7 +47,7 @@ namespace ImagePreprocessing
             {
                 for (int x = 0; x < pixelArray.GetLength(1); x++)
                 {
-                    byte greyColor = (byte)Map(pixelArray[y, x], 0, UInt16.MaxValue, 0, 255);
+                    byte greyColor = (byte)Math.Round(Map(pixelArray[y, x], 0, UInt16.MaxValue, 0, 255));
                     byteArray[position++] = greyColor;
                     byteArray[position++] = greyColor;
                     byteArray[position++] = greyColor;

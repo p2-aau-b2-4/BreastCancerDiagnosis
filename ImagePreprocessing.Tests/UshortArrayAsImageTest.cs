@@ -5,9 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
+using System.Xml.Linq;
 using NUnit.Framework;
 using Dicom;
-
 
 
 namespace ImagePreprocessing.Tests
@@ -18,71 +19,35 @@ namespace ImagePreprocessing.Tests
         [TestCase]
         public void GetPngAsMemoryStreamTest()
         {
-            var testImg = DicomFile.Open("000000.dcm");
-            //testImg.RenderImage().AsBitmap().Save(@"test.jpg");
-            
-            UshortArrayAsImage testImgInfo = testImg.GetUshortImageInfo();
-            Stream testImgStream = testImgInfo.GetPngAsMemoryStream();
+            DicomFile.Open("000000.dcm").GetUshortImageInfo().SaveAsPng("wtf.png");
+            var testImg =
+                new Bitmap(Image.FromStream(DicomFile.Open("000000.dcm").GetUshortImageInfo().GetPngAsMemoryStream()));
+            var resultImg = new Bitmap(Image.FromFile("000000.png"));
+            var testImgData = testImg.LockBits(new Rectangle(0, 0, testImg.Width, testImg.Height),
+                ImageLockMode.ReadWrite, testImg.PixelFormat);
+            var resultImgData = resultImg.LockBits(new Rectangle(0, 0, resultImg.Width, resultImg.Height),
+                ImageLockMode.ReadWrite, resultImg.PixelFormat);
 
-            testImgInfo.SaveAsPng("test.png");
+            byte[] testData = new byte[testImgData.Height * testImgData.Stride];
+            Marshal.Copy(testImgData.Scan0, testData, 0, testImgData.Height * testImgData.Stride);
 
-            Image finalImg = Image.FromFile("test.png");
+            byte[] resultData = new byte[resultImgData.Height * resultImgData.Stride];
+            Marshal.Copy(resultImgData.Scan0, resultData, 0, resultImgData.Height * resultImgData.Stride);
 
-            Bitmap finalImgBitmap = new Bitmap(testImgStream);
-
-
-
-
-
-            Image resultImg = Image.FromFile("000000.png");
-
-            bool resultBool = Image.Equals(finalImg, resultImg);
-
-            Bitmap resultImageBitmap = new Bitmap(resultImg);
-
-            //string testImgString = finalImg.ToString();
-            //string resultImgString = resultImageBitmap.ToString();
+            bool equals = true;
 
 
+            for (int i = 0; i < testData.Length; i++)
+            {
+                if (testData[i] != resultData[i] && testData[i] + 1 != resultData[i] &&
+                    testData[i] - 1 != resultData[i])
+                {
+                    equals = false;
+                }
+            }
 
 
-
-
-
-
-
-
-
-            byte[] testImgByteArr;
-            byte[] resultImgByteArr;
-
-            var mstreamTest = new MemoryStream();
-            var mstreamResult = new MemoryStream();
-
-
-            finalImgBitmap.Save(mstreamTest, ImageFormat.Png);
-            testImgByteArr = mstreamTest.ToArray();
-
-            resultImg.Save(mstreamResult, ImageFormat.Png);
-            resultImgByteArr = mstreamResult.ToArray();
-
-
-            // testImgByteArr = mstreamTest.ToArray();
-            //resultImgByteArr = mstreamResult.ToArray();
-
-
-            //string testImgString = Encoding.UTF8.GetString(testImgByteArr, 0, testImgByteArr.Length);
-            //string resultImgString = Encoding.UTF8.GetString(resultImgByteArr, 0, resultImgByteArr.Length);
-
-            string testImgString = BitConverter.ToString(testImgByteArr);
-            string resultImgString = BitConverter.ToString(resultImgByteArr);
-
-            //string testImgString = Convert.ToString(testImgByteArr);
-            //string resultImgString = Convert.ToString(resultImgByteArr);
-
-            //Assert.IsTrue(resultImgByteArr.SequenceEqual(testImgByteArr));
-            Assert.AreEqual(resultImgString, testImgString);
-
+            Assert.True(equals);
         }
     }
 }
