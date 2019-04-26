@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 
 namespace ImagePreprocessing
 {
-    public class UshortArrayAsImage : ArrayAsImageAbstract
+    public class UShortArrayAsImage : ArrayAsImageAbstract<ushort[,]>
     {
-        public ushort[,] PixelArray
+        public sealed override ushort[,] PixelArray
         {
             get
             {
@@ -26,8 +26,13 @@ namespace ImagePreprocessing
             }
         }
 
-        public UshortArrayAsImage(byte[] pixelData, int width, int height) : base(pixelData, width, height)
+        public UShortArrayAsImage(byte[] pixelData, int width, int height) : base(pixelData, width, height)
         {
+        }
+
+        public UShortArrayAsImage(ushort[,] arrayIn) : base(null, arrayIn.GetLength(1), arrayIn.GetLength(0))
+        {
+            PixelArray = arrayIn;
         }
 
         public override Stream GetPngAsMemoryStream()
