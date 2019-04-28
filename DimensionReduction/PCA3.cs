@@ -107,7 +107,7 @@ namespace DimensionReduction
             }
             
             using (System.IO.StreamWriter file = 
-                new System.IO.StreamWriter(@"/home/yogi/Documents/Uni/2_semester/P2/github/BreastCancerDiagnosis/DimensionReduction/WriteLines_column_all.txt"))
+                new System.IO.StreamWriter(@"/home/yogi/Documents/Uni/2_semester/P2/github/BreastCancerDiagnosis/DimensionReduction/WriteLines_column.txt"))
             {
                 foreach (string line in lines)
                 {
@@ -138,7 +138,9 @@ namespace DimensionReduction
                     b.SetPixel(x, y, Color.FromArgb(val,val,val));
                 }
             }
-            b.Save("eigen1_all.png");
+            b.Save("eigen1.png");
+            
+            
             /*SolveEigenVectors(matrix);
             Console.WriteLine("6");*/
         }
@@ -170,6 +172,12 @@ namespace DimensionReduction
             }
 
             SparseMatrix sMatrix = SparseMatrix.OfColumnVectors(vectors);
+            /*Model model = new Model(); Ved ikke lige hvordan model skal implementeres om den skal være statisk?
+            foreach (var vectorSum in vectors)
+            {
+                model.MeanSums.Add(vectorSum);                
+            }*/
+            
             return sMatrix;
         }
 
@@ -191,6 +199,8 @@ namespace DimensionReduction
         public SparseMatrix CovarianceMatrix(SparseMatrix matrix)
         {
             double[,] cMatrix = new double[matrix.ColumnCount, matrix.ColumnCount];
+            SparseMatrix tmpMatrix = new SparseMatrix(matrix.RowCount,matrix.ColumnCount);
+            matrix.CopyTo(tmpMatrix);
 
             for (int x = 0; x < matrix.ColumnCount; x++)
             {
@@ -198,7 +208,7 @@ namespace DimensionReduction
                 {
                     for (int i = 0; i < matrix.RowCount; i++)
                     {
-                        double val = Covariance(matrix[i, x], matrix[i, y],
+                        double val = Covariance(tmpMatrix[i, x], tmpMatrix[i, y],
                                 matrix.RowCount);
 
                         if (Double.IsNegativeInfinity(val) || Double.IsInfinity(val))
@@ -216,7 +226,7 @@ namespace DimensionReduction
         ///Finds the eigen values of a matrix.
         ///</summary>
         ///<param name=matrix>input matrix. Must be square</param>
-        public Evd<double> SolveEigenValues(SparseMatrix matrix)
+        public Evd<double> SolveEigenValues(SparseMatrix matrix) //Outdated use SolveForEigen
         {
             if (matrix.RowCount != matrix.ColumnCount)
                 throw new ArgumentException();
@@ -229,7 +239,7 @@ namespace DimensionReduction
             return eigen;
         }
 
-        public void SolveEigenVectors(SparseMatrix matrix)
+        public void SolveEigenVectors(SparseMatrix matrix) //Outdated use SolveForEigen
         {
             if (matrix.RowCount != matrix.ColumnCount)
                 throw new ArgumentException();
@@ -239,6 +249,30 @@ namespace DimensionReduction
             Console.WriteLine("Her kommer the EigenVectors");
             Console.WriteLine(eigen.EigenVectors);
             //Console.WriteLine(evd.EigenVectors);
+        }
+        
+        public void SolveForEigen(SparseMatrix matrix)
+        {
+            if (matrix.RowCount != matrix.ColumnCount)
+                throw new ArgumentException();
+
+            //var evd = matrix.Evd(MathNet.Numerics.LinearAlgebra.Symmetricity.Asymmetric);
+            var eigen = matrix.Evd();
+            Console.WriteLine("Her kommer the EigenVectors");
+            Console.WriteLine(eigen.EigenVectors);
+            //Console.WriteLine(evd.EigenVectors);
+            
+            Model model = new Model();
+
+            foreach (var eigenValue in eigen.EigenValues)
+            {
+                model.EigenValues.Add(eigenValue);
+            }
+
+            for (int i = 0; i < matrix.ColumnCount; i++)
+            {
+                model.EigenVectors.Add(eigen.EigenVectors.Column(i));
+            }
         }
     }
 }
