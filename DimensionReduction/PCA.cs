@@ -127,7 +127,10 @@ namespace DimensionReduction
         ///<param name=matrix>input matrix</param>
         public SparseMatrix CovarianceMatrix(SparseMatrix matrix)
         {
-            double[,] cMatrix = new double[matrix.ColumnCount, matrix.ColumnCount];
+            //double[,] cMatrix = new double[matrix.ColumnCount, matrix.ColumnCount];
+            
+            SparseMatrix scMatrix = new SparseMatrix(matrix.ColumnCount, matrix.ColumnCount);
+            
             SparseMatrix tmpMatrix = new SparseMatrix(matrix.RowCount,matrix.ColumnCount);
             matrix.CopyTo(tmpMatrix);
 
@@ -143,12 +146,12 @@ namespace DimensionReduction
                         if (Double.IsNegativeInfinity(val) || Double.IsInfinity(val))
                             throw new NotFiniteNumberException(val);
 
-                        cMatrix[x, y] += val;
+                        scMatrix[x, y] += val;
                     }
                 }
             }
 
-            return SparseMatrix.OfArray(cMatrix);
+            return scMatrix; //SparseMatrix.OfArray(scMatrix);
         }
 
         ///<summary>
