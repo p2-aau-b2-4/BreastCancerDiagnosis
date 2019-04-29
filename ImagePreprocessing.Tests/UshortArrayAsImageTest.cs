@@ -22,13 +22,11 @@ namespace ImagePreprocessing.Tests
             //testImg.RenderImage().AsBitmap().Save(@"test.jpg");
             
             UshortArrayAsImage testImgInfo = testImg.GetUshortImageInfo();
-            //Stream testImgStream = testImgInfo.GetPngAsMemoryStream();
+            Stream testImgStream = testImgInfo.GetPngAsMemoryStream();
 
             testImgInfo.SaveAsPng("test.png");
 
             Image finalImg = Image.FromFile("test.png");
-
-
 
             Bitmap finalImgBitmap = new Bitmap(finalImg);
 
@@ -69,7 +67,7 @@ namespace ImagePreprocessing.Tests
             //string resultImgString = Convert.ToString(resultImgByteArr);
 
             //Assert.IsTrue(resultImgByteArr.SequenceEqual(testImgByteArr));
-            Assert.AreEqual(resultImgByteArr.Length, testImgByteArr.Length);
+            Assert.AreEqual(resultImgString, testImgString);
 
         }
     }
