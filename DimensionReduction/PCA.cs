@@ -66,8 +66,14 @@ namespace DimensionReduction
             SparseMatrix matrix = SparseMatrix.OfArray(allImages);
             matrix = MeanSubtraction(matrix);
             matrix = CovarianceMatrix(matrix);
-            SolveEigenValues(matrix);
-            SolveEigenVectors(matrix);
+            List<double> eigenValues = SolveEigenValues(matrix);
+            List<Vector<double>> eigenVectors = SolveEigenVectors(matrix);
+
+            List<(double, Vector<double>)> eigenLumps = new List<(double, Vector<double>)>();
+            List<List<double>> features = new List<List<double>>();
+
+            Model model = new Model(eigenValues, eigenVectors, eigenLumps, features);
+            model.SaveModelToFile("t.xml");
         }
 
         ///<summary>
@@ -143,7 +149,7 @@ namespace DimensionReduction
         ///Finds the eigen values of a matrix.
         ///</summary>
         ///<param name=matrix>input matrix. Must be square</param>
-        public void SolveEigenValues(SparseMatrix matrix)
+        public List<double> SolveEigenValues(SparseMatrix matrix)
         {
             if (matrix.RowCount != matrix.ColumnCount)
                 throw new ArgumentException();
@@ -153,9 +159,17 @@ namespace DimensionReduction
             Console.WriteLine("Her kommer the EigenValues");
             Console.WriteLine(eigen.EigenValues);
             Console.WriteLine(evd.EigenValues);
+
+            List<double> eigenValues = new List<double>();
+            for (int i = 0; i < evd.EigenValues.Count; i++)
+            {
+                eigenValues.Add(evd.EigenValues[i].Real);
+            }
+
+            return eigenValues;
         }
 
-        public void SolveEigenVectors(SparseMatrix matrix)
+        public List<Vector<double>> SolveEigenVectors(SparseMatrix matrix)
         {
             if (matrix.RowCount != matrix.ColumnCount)
                 throw new ArgumentException();
@@ -165,6 +179,14 @@ namespace DimensionReduction
             Console.WriteLine("Her kommer the EigenVectors");
             Console.WriteLine(eigen.EigenVectors);
             Console.WriteLine(evd.EigenVectors);
+
+            List<Vector<double>> eigenVectors = new List<Vector<double>>();
+            for (int i = 0; i < evd.EigenVectors.RowCount; i++)
+            {
+                eigenVectors.Add(evd.EigenVectors.Row(i));
+            }
+
+           return eigenVectors;
         }
     }
 }
