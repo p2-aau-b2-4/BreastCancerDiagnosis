@@ -51,7 +51,7 @@ namespace ImagePreprocessing.Tests
         }
 
         [TestCase]
-        public void GetCroppedImages()
+        public void GetMaskImages()
         {
             filePath = DDSMImages.ElementAt(0).DcomMaskFilePath;
             testValueResult = @"D:\Bryster\Mass-Test_P_00016_LEFT_CC_1\10-04-2016-DDSM-09887\1-cropped images-26184\000000.dcm";
@@ -59,10 +59,10 @@ namespace ImagePreprocessing.Tests
         }
 
         [TestCase]
-        public void GetMaskImages()
+        public void GetCroppedImages()
         {
-            filePath = DDSMImages.ElementAt(0).DcomCroppedFilePath;
-            testValueResult = @"D:\Bryster\Mass-Test_P_00016_LEFT_CC_1\10-04-2016-DDSM-09887\1-cropped images-26184\000001.dcm";
+            filePath = DDSMImages.ElementAt(3).DcomCroppedFilePath;
+            testValueResult = @"D:\Bryster\Mass-Test_P_00017_LEFT_MLO_1\10-04-2016-DDSM-27297\1-ROI mask images-18984\000000.dcm";
             Assert.AreEqual(testValueResult, filePath);
         }
 
