@@ -18,7 +18,7 @@ namespace ImagePreprocessing.Tests
             UShortArrayAsImage image = new UShortArrayAsImage(new byte[2*2*2], 2, 2);
             image.PixelArray = pixelArray;
             
-            //image.ApplyContrastEnhancement(threshold);
+           // image.ApplyContrastEnhancement(threshold);
 
             CollectionAssert.AreEqual(pixelArrayTestValuesResult, image.PixelArray);
         }
@@ -35,7 +35,7 @@ namespace ImagePreprocessing.Tests
             UShortArrayAsImage image = new UShortArrayAsImage(new byte[2 * 2 * 2], 2, 2);
             image.PixelArray = pixelArray;
 
-            //image.ApplyContrastEnhancement(threshold);
+           // image.ApplyContrastEnhancement(threshold);
 
             CollectionAssert.AreEqual(pixelArrayTestValuesResult, image.PixelArray);
         }
