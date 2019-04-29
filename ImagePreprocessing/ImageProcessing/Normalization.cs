@@ -7,14 +7,9 @@ namespace ImagePreprocessing
 {
     public static class Normalization
     {
-        public static UShortArrayAsImage GetNormalizedImage(UShortArrayAsImage image, Rectangle tumour, int size,
-            int tumourSize)
+        public static UShortArrayAsImage GetNormalizedImage(UShortArrayAsImage image, Rectangle tumour, int size)
         {
-            // Rectangle = det markerede område med knuden (kan godt være ikke kvadratisk, men så lav det kvadratisk)
-            // tumoursize = hvor stor knuden skal være i output (kvadratisk)
-            // size = hvor stort billedet skal være (kvadratisk)
-            // returns a ushortarrayasimage, with black boxes around the resized tumour.
-            throw new NotImplementedException();
+            return ResizeImage(Crop(tumour, image), size);   
         }
         
         private static ushort FindNearest(double x, double y, ushort[,] image)
@@ -29,17 +24,17 @@ namespace ImagePreprocessing
             return b1 + (s - a1) * (b2 - b1) / (a2 - a1);
         }
 
-        public static UShortArrayAsImage ResizeImage(UShortArrayAsImage uShortArrayAsImageIn, int resizeWidth, int resizeHeight)
+        public static UShortArrayAsImage ResizeImage(UShortArrayAsImage uShortArrayAsImageIn, int size)
         {
-            var newImage = new ushort[ resizeHeight,resizeWidth];
+            var newImage = new ushort[size,size];
             var image = uShortArrayAsImageIn.PixelArray;
 
-            for (int x = 0; x < resizeWidth; x++)
+            for (int x = 0; x < size; x++)
             {
-                for (int y = 0; y < resizeHeight; y++)
+                for (int y = 0; y < size; y++)
                 {
-                    newImage[y, x] = FindNearest(Map(x, 0, resizeWidth, 0, image.GetLength(1)),
-                        Map(y, 0, resizeHeight, 0, image.GetLength(0)), image);
+                    newImage[y, x] = FindNearest(Map(x, 0, size, 0, image.GetLength(1)),
+                        Map(y, 0, size, 0, image.GetLength(0)), image);
                 }
             }
             return new UShortArrayAsImage(newImage);
@@ -83,6 +78,26 @@ namespace ImagePreprocessing
             }
 
             return new Rectangle(top, left, bottom - top, right - left);
+        }
+        
+        private static UShortArrayAsImage Crop(Rectangle rectangle, UShortArrayAsImage image)
+        {
+            ushort[,] result = new ushort[rectangle.Height,rectangle.Width];
+
+            ushort[,] current = image.PixelArray; // set here - lazy evaluation
+
+            for (int x = 0; x < rectangle.Width; x++)
+            {
+                for (int y = 0; y < rectangle.Height; y++)
+                {
+                    result[y, x] = current[y + rectangle.Y,x + rectangle.X];
+                }
+            }
+
+            byte[] resultBytes = new byte[rectangle.Width*rectangle.Height * 2];
+            Buffer.BlockCopy(result, 0, resultBytes, 0, resultBytes.Length);
+            var finalResult = new UShortArrayAsImage(resultBytes,rectangle.Width,rectangle.Height);
+            return finalResult;
         }
     }
 }
