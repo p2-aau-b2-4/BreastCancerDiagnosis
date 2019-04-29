@@ -11,7 +11,7 @@ namespace ImagePreprocessing
 {
     public static class NormalizingUShortArrayExtension
     {
-        public static UshortArrayAsImage GetNormalizedCrop(this UshortArrayAsImage image, Rectangle tumour, int size, int tumourSize)
+        public static void GetNormalizedCrop(this UshortArrayAsImage image, Rectangle tumour, int size)
         {
             // Rectangle = det markerede område med knuden (kan godt være ikke kvadratisk, men så lav det kvadratisk)
             // tumoursize = hvor stor knuden skal være i output (kvadratisk)
@@ -20,6 +20,21 @@ namespace ImagePreprocessing
 
             Bitmap imageBit = UshortToBitmap(Crop(tumour, image).PixelArray);
             
+            Bitmap result = new Bitmap(size,size);
+            using (Graphics g = Graphics.FromImage(result))
+            {
+                g.DrawImage(imageBit, 0,0, size, size);
+            }
+
+            imageBit.Save("imageBit.png");
+            result.Save("result.png");
+            //var billede = Crop(tumour, image);
+            /*billede.SaveAsPng("Billede.png");
+            
+            Bitmap imageBit = new Bitmap("Billede.png");
+            */
+
+            /*
             var destRect = new Rectangle(0, 0, tumourSize, tumourSize);
             var destImage = new Bitmap(size, size);
 
@@ -39,8 +54,9 @@ namespace ImagePreprocessing
                     graphics.DrawImage(imageBit, destRect, 0, 0, image.Width,image.Height, GraphicsUnit.Pixel, wrapMode);
                 }
             }
-            
-            throw new NotImplementedException();
+            */
+
+            //destImage.Save("BitmapCrop.png");
         }
 
         private static Bitmap UshortToBitmap(ushort[,] image)
@@ -56,7 +72,17 @@ namespace ImagePreprocessing
                     imgBitmap.SetPixel(x, y, Color.FromArgb(greyColor, greyColor, greyColor));
                 }
             }
-
+            /*
+            // lets add all bitmaps:
+            Graphics g = Graphics.FromImage(imgBitmap);
+            g.CompositingMode = CompositingMode.SourceOver;
+            foreach (Bitmap bitmap in Overlays)
+            {
+                bitmap.MakeTransparent();
+                g.DrawImage(bitmap, new Point(0, 0));
+            }
+            */
+            imgBitmap.Save("BitTest.png");
             return imgBitmap;
         }
         
