@@ -46,7 +46,6 @@ namespace ImagePreprocessing.Tests
                 }
             }
 
-
             Assert.True(equals);
         }
     }
