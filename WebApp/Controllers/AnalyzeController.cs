@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -10,12 +11,12 @@ using ImagePreprocessing;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using ImagePreprocessing;
 
 namespace WebApp.Controllers
 {
     public class AnalyzeController : Controller
     {
-
         public IActionResult SelectRegion(String FileName)
         {
             ViewBag.FileName = FileName;
@@ -27,6 +28,7 @@ namespace WebApp.Controllers
             path = Path.GetTempPath() + path;
             return new FileStreamResult(DicomFile.Open(path).GetUshortImageInfo().GetPngAsMemoryStream(), "image/png");
         }
+
         public IActionResult GetPngFromSavedTempPath(String path)
         {
             path = Path.GetTempPath() + path;
@@ -43,21 +45,27 @@ namespace WebApp.Controllers
 
         public IActionResult ShowAnalysis()
         {
-            (int, int, int, int) rectangle = (int.Parse(Request.Form["x1"]),int.Parse(Request.Form["y1"]),int.Parse(Request.Form["x2"]),int.Parse(Request.Form["y2"]));
+            Point a = new Point(int.Parse(Request.Form["x1"]), int.Parse(Request.Form["y1"]));
+            Point b = new Point(int.Parse(Request.Form["x2"]), int.Parse(Request.Form["y2"]));
+            Rectangle rectangle = new Rectangle(a, new Size(b.X - a.X, b.Y - a.Y));
+
             string filePath = Request.Form["filePath"];
             string path = Path.GetTempPath() + filePath;
-            UshortArrayAsImage image = DicomFile.Open(path).GetUshortImageInfo().Crop(rectangle);
+            UShortArrayAsImage image = DicomFile.Open(path).GetUshortImageInfo();
+            image = Normalization.GetNormalizedImage(image, rectangle,
+                Convert.ToInt32(ConfigurationManager.AppSettings["CroppedImageSize"]),
+                Convert.ToInt32(ConfigurationManager.AppSettings["CroppedImageTumourSize"]));
             //save the crop:
             string croppedImgSrc = filePath + "-cropped";
-            image.SaveAsPng(Path.GetTempPath()+croppedImgSrc);
-            
+            image.SaveAsPng(Path.GetTempPath() + croppedImgSrc);
+
             // lets first apply the contrast:
-            image.ApplyHistogramEqualization();
+            image = Contrast.ApplyHistogramEqualization(image);
             string contrastImgSrc = filePath + "-contrast";
-            image.SaveAsPng(Path.GetTempPath()+contrastImgSrc);
+            image.SaveAsPng(Path.GetTempPath() + contrastImgSrc);
 
             string edgeImgSrc = filePath + "-edged";
-            image.Edge(3000).SaveAsPng(Path.GetTempPath()+edgeImgSrc);
+            //image.Edge(3000).SaveAsPng(Path.GetTempPath()+edgeImgSrc);
             // then apply the algorithm
 
             ViewBag.CroppedImgSrc = croppedImgSrc;
@@ -68,8 +76,8 @@ namespace WebApp.Controllers
             // 2. Classification and probability
 
             ViewBag.Classification = DdsmImage.Pathologies.Benign;
-            ViewBag.Probability = (new Random().Next()%1000)/10.0;
-            
+            ViewBag.Probability = (new Random().Next() % 1000) / 10.0;
+
             return View();
         }
     }
