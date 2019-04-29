@@ -339,3 +339,4 @@ ASALocalRun/
 # allow 
 !*.Tests/*.dcm
 Training/App.config
+*.config
