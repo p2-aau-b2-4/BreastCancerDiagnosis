@@ -149,7 +149,7 @@ namespace DimensionReduction
         ///Finds the eigen values of a matrix.
         ///</summary>
         ///<param name=matrix>input matrix. Must be square</param>
-        public List<double> SolveEigenValues(SparseMatrix matrix)
+        public List<Complex> SolveEigenValues(SparseMatrix matrix)
         {
             if (matrix.RowCount != matrix.ColumnCount)
                 throw new ArgumentException();
@@ -160,10 +160,12 @@ namespace DimensionReduction
             Console.WriteLine(eigen.EigenValues);
             Console.WriteLine(evd.EigenValues);
 
-            List<double> eigenValues = new List<double>();
+            return evd.EigenValues;
+
+            List<Complex> eigenValues = new List<Complex>();
             for (int i = 0; i < evd.EigenValues.Count; i++)
             {
-                eigenValues.Add(evd.EigenValues[i].Real);
+                eigenValues.Add(evd.EigenValues[i]);
             }
 
             return eigenValues;
