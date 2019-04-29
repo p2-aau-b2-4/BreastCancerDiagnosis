@@ -16,6 +16,34 @@ namespace ImagePreprocessing
             // returns a ushortarrayasimage, with black boxes around the resized tumour.
             throw new NotImplementedException();
         }
+        
+        private static ushort FindNearest(double x, double y, ushort[,] image)
+        {
+            return image[ (int) y,(int)x];
+        }
+
+        private static float Map(float s, float a1, float a2, float b1, float b2)
+            // lånt fra https://forum.unity.com/threads/re-map-a-number-from-one-range-to-another.119437/
+        {
+            //todo denne kode er flere steder
+            return b1 + (s - a1) * (b2 - b1) / (a2 - a1);
+        }
+
+        public static UShortArrayAsImage ResizeImage(UShortArrayAsImage uShortArrayAsImageIn, int resizeWidth, int resizeHeight)
+        {
+            var newImage = new ushort[ resizeHeight,resizeWidth];
+            var image = uShortArrayAsImageIn.PixelArray;
+
+            for (int x = 0; x < resizeWidth; x++)
+            {
+                for (int y = 0; y < resizeHeight; y++)
+                {
+                    newImage[y, x] = FindNearest(Map(x, 0, resizeWidth, 0, image.GetLength(1)),
+                        Map(y, 0, resizeHeight, 0, image.GetLength(0)), image);
+                }
+            }
+            return new UShortArrayAsImage(newImage);
+        }
 
         public static Rectangle GetTumourPositionFromMask(UByteArrayAsImage maskUbyte)
         {
