@@ -22,11 +22,11 @@ namespace ImagePreprocessing.Tests
             DdsmImage.GetAllImagesFromCsvFile(@"D:\Bryster\mass_case_description_test_set.csv");
 
         }
-        
+
         [TestCase]
         public void GetAllImagesFromCsvFileTest1()
         {
-            
+
             filePath = DDSMImages.ElementAt(0).DcomFilePath;
             testValueResult = @"D:\Bryster\Mass-Test_P_00016_LEFT_CC\10-04-2016-DDSM-30104\1-full mammogram images-14172\000000.dcm";
 
@@ -70,4 +70,3 @@ namespace ImagePreprocessing.Tests
 
     }
 }
-
