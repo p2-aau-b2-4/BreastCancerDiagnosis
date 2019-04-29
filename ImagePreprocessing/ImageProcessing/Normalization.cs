@@ -9,6 +9,7 @@ namespace ImagePreprocessing
     {
         public static UShortArrayAsImage GetNormalizedImage(UShortArrayAsImage image, Rectangle tumour, int size)
         {
+            // todo udvid til kvadrat
             return ResizeImage(Crop(tumour, image), size);   
         }
         
@@ -61,7 +62,7 @@ namespace ImagePreprocessing
                 }
 
                 if (top == -1 && containsMask) top = y;
-                else if (top != -1 && bottom == -1 && !containsMask) bottom = y;
+                else if (top != -1 && containsMask) bottom = y;
             }
 
             for (int x = 0; x < mask.GetLength(1); x++)
@@ -77,8 +78,11 @@ namespace ImagePreprocessing
                 }
 
                 if (left == -1 && containsMask) left = x;
-                else if (left != -1 && right == -1 && !containsMask) right = x;
+                else if (left != -1 && containsMask) right = x;
             }
+
+            if (right == -1) right = mask.GetLength(1)-1;
+            if (bottom == -1) bottom = mask.GetLength(0)-1;
 
             return new Rectangle(left, top, right-left, bottom-top);
         }
