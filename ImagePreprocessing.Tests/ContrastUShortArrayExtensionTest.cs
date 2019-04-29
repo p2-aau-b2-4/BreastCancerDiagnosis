@@ -75,5 +75,16 @@ namespace ImagePreprocessing.Tests
 
             CollectionAssert.AreEqual(pixelArrayTestValuesResult, image.PixelArray);
         }
+
+        [TestCase]
+        public void ApplyHistogramEqualizationTestBlackImage()
+        {
+            pixelArrayTestValuesResult = new ushort[,] { { 65535, 65535 }, { 65535, 65535 } };
+            image.PixelArray = new ushort[,] { { 65535, 65535 }, { 65535, 65535 } };
+            image.ApplyHistogramEqualization();
+
+            CollectionAssert.AreEqual(pixelArrayTestValuesResult, image.PixelArray);
+        }
+
     }
 }
