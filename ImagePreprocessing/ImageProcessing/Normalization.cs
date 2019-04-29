@@ -5,9 +5,9 @@ using System.Linq;
 
 namespace ImagePreprocessing
 {
-    public static class NormalizingUShortArrayExtension
+    public static class Normalization
     {
-        public static UshortArrayAsImage GetNormalizedCrop(this UshortArrayAsImage image, Rectangle tumour, int size,
+        public static UShortArrayAsImage GetNormalizedImage(UShortArrayAsImage image, Rectangle tumour, int size,
             int tumourSize)
         {
             // Rectangle = det markerede område med knuden (kan godt være ikke kvadratisk, men så lav det kvadratisk)
@@ -17,7 +17,7 @@ namespace ImagePreprocessing
             throw new NotImplementedException();
         }
 
-        public static Rectangle GetTumourPositionFromMask(this UByteArrayAsImage maskUbyte)
+        public static Rectangle GetTumourPositionFromMask(UByteArrayAsImage maskUbyte)
         {
             var mask = maskUbyte.PixelArray;
             int left = -1, right = -1, top = -1, bottom = -1;
