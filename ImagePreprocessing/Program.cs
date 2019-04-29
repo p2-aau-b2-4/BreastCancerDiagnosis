@@ -13,16 +13,15 @@ namespace ImagePreprocessing
         {
             List<DdsmImage> ddsmImages =
                 DdsmImage.GetAllImagesFromCsvFile(@"e:\brysttest\mass_case_description_train_set.csv");
+            int i = 0;
             foreach (var ddsmImage in ddsmImages)
             {
                 var image = ddsmImage.DcomCroppedImage;
-                image.SaveAsPng("muchOriginal.png");
-                image = Normalization.ResizeImage(image, 100, 1000);
-                image.SaveAsPng("muchResized.png");
-                
+                image = Normalization.GetNormalizedImage(image,
+                    Normalization.GetTumourPositionFromMask(ddsmImage.DcomMaskImage), 500);
+                image.SaveAsPng("images/ready"+i+".png");
 
-
-                break;
+                i++;
             }
         }
 
