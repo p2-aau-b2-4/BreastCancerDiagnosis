@@ -60,9 +60,13 @@ namespace DimensionReduction
             }
         }
 
-        public Model(List<double> eigenValues, List<Vector<double>> eigenVectors,
-                List<(double, Vector<double>)> eigenLumps,
+        public Model(List<double> eigenValues, List<MathNet.Numerics.LinearAlgebra.Vector<double>> eigenVectors,
+                List<(double, MathNet.Numerics.LinearAlgebra.Vector<double>)> eigenLumps,
                 List<List<double>> features) {
+            _eigenValues = eigenValues;
+            _eigenVectors = eigenVectors;
+            _eigenLumps = eigenLumps;
+            _features = features;
 
         }
     }
