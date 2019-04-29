@@ -57,8 +57,10 @@ namespace DimensionReduction
             }
         }
 
-        public Model() {
-            // it don't do nothing
+        public Model(List<double> eigenValues, List<Vector<double>> eigenVectors,
+                List<(double, Vector<double>)> eigenLumps,
+                List<List<double>> features) {
+
         }
     }
 }
