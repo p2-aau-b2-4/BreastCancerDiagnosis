@@ -150,52 +150,10 @@ namespace DimensionReduction
             return SparseMatrix.OfArray(cMatrix);
         }
 
-        /*///<summary>
-        ///Finds the eigen values of a matrix.
+        ///<summary>
+        ///Finds the eigen values and vectors of a matrix.
         ///</summary>
         ///<param name=matrix>input matrix. Must be square</param>
-        public List<Complex> SolveEigenValues(SparseMatrix matrix)
-        {
-            if (matrix.RowCount != matrix.ColumnCount)
-                throw new ArgumentException();
-
-            var evd = matrix.Evd(MathNet.Numerics.LinearAlgebra.Symmetricity.Asymmetric);
-            var eigen = matrix.Evd();
-            Console.WriteLine("Her kommer the EigenValues");
-            Console.WriteLine(eigen.EigenValues);
-            Console.WriteLine(evd.EigenValues);
-
-            return evd.EigenValues;
-
-            List<Complex> eigenValues = new List<Complex>();
-            for (int i = 0; i < evd.EigenValues.Count; i++)
-            {
-                eigenValues.Add(evd.EigenValues[i]);
-            }
-
-            return eigenValues;
-        }*/
-
-        /*public List<MathNet.Numerics.LinearAlgebra.Vector<double>> SolveEigenVectors(SparseMatrix matrix)
-        {
-            if (matrix.RowCount != matrix.ColumnCount)
-                throw new ArgumentException();
-
-            var evd = matrix.Evd(MathNet.Numerics.LinearAlgebra.Symmetricity.Asymmetric);
-            var eigen = matrix.Evd();
-            Console.WriteLine("Her kommer the EigenVectors");
-            Console.WriteLine(eigen.EigenVectors);
-            Console.WriteLine(evd.EigenVectors);
-
-            List<MathNet.Numerics.LinearAlgebra.Vector<double>> eigenVectors = new List<MathNet.Numerics.LinearAlgebra.Vector<double>>();
-            for (int i = 0; i < evd.EigenVectors.RowCount; i++)
-            {
-                eigenVectors.Add(evd.EigenVectors.Row(i));
-            }
-
-           return eigenVectors;
-        }*/
-        
         public Evd<double> SolveForEigen(SparseMatrix matrix)
         {
             if (matrix.RowCount != matrix.ColumnCount)
