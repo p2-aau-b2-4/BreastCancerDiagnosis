@@ -19,7 +19,7 @@ namespace ImagePreprocessing.Tests
         [SetUp]
         public void Setup()
         {
-            //pixelArray = new ushort[,] { { 0, 20001 }, { 40001, 65535 } };
+            pixelArray = new ushort[,] { { 0, 20001 }, { 40001, 65535 } };
            // image = new UShortArrayAsImage(new byte[2 * 2 * 2], 2, 2);
         }
 
