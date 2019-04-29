@@ -13,14 +13,14 @@ namespace ImagePreprocessing.Tests
         ushort[,] pixelArray;
         ushort[,] pixelArrayTestValuesResult;
         double threshold;
-        UshortArrayAsImage image;
+        UShortArrayAsImage image;
 
 
         [SetUp]
         public void Setup()
         {
             pixelArray = new ushort[,] { { 0, 20001 }, { 40001, 65535 } };
-            image = new UshortArrayAsImage(new byte[2 * 2 * 2], 2, 2);
+            image = new UShortArrayAsImage(new byte[2 * 2 * 2], 2, 2);
         }
 
         [TestCase]
