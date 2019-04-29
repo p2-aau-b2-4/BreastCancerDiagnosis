@@ -14,4 +14,8 @@
     <ProjectReference Include="..\ImagePreprocessing\ImagePreprocessing.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="PCA2.cs" />
+  </ItemGroup>
+
 </Project>

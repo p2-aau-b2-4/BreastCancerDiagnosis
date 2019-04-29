@@ -2,23 +2,25 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 using MathNet.Numerics;
-using MathNet.Numerics.LinearAlgebra;
 using System.Xml.Serialization;
 using System.IO;
+using System.Numerics;
 
 namespace DimensionReduction
 {
     public class Model
     {
-        private List<double> _eigenValues = new List<double>();
-        private List<Vector<double>> _eigenVectors = new List<Vector<double>>();
-        private List<(double, Vector<double>)> _eigenLumps = new List<(double, Vector<double>)>();
+        private List<Complex> _eigenValues = new List<Complex>();
+        private List<MathNet.Numerics.LinearAlgebra.Vector<double>> _eigenVectors = new List<MathNet.Numerics.LinearAlgebra.Vector<double>>();
+        private List<(double, MathNet.Numerics.LinearAlgebra.Vector<double>)> _eigenLumps = new List<(double, MathNet.Numerics.LinearAlgebra.Vector<double>)>();
         private List<List<double>> _features = new List<List<double>>(); 
+        private List<MathNet.Numerics.LinearAlgebra.Vector<double>> _meanSums = new List<MathNet.Numerics.LinearAlgebra.Vector<double>>();
 
-        public List<double> EigenValues { get => _eigenValues; }
-        public List<Vector<double>> EigenVectors { get => _eigenVectors; }
-        public List<(double, Vector<double>)> EigenLumps { get => _eigenLumps; }
+        public List<Complex> EigenValues { get => _eigenValues; }
+        public List<MathNet.Numerics.LinearAlgebra.Vector<double>> EigenVectors { get => _eigenVectors; }
+        public List<(double, MathNet.Numerics.LinearAlgebra.Vector<double>)> EigenLumps { get => _eigenLumps; }
         public List<List<double>> Features { get => _features; }
+        public List<MathNet.Numerics.LinearAlgebra.Vector<double>> MeanSums { get => _meanSums; }
 
         public void SaveModelToFile(string filePath) 
         {
@@ -49,6 +51,7 @@ namespace DimensionReduction
                 this._eigenVectors = loadedModel.EigenVectors;
                 this._eigenLumps = loadedModel.EigenLumps;
                 this._features = loadedModel.Features;
+                this._meanSums = loadedModel.MeanSums;
             }
             finally
             {
