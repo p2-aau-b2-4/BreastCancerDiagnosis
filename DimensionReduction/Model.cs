@@ -14,24 +14,24 @@ namespace DimensionReduction
     ///</summary>
     public class Model
     {
-        private List<Complex> _eigenValues = new List<Complex>();
-        private List<MathNet.Numerics.LinearAlgebra.Vector<double>> _eigenVectors = new List<MathNet.Numerics.LinearAlgebra.Vector<double>>();
-        private List<(Complex, MathNet.Numerics.LinearAlgebra.Vector<double>)> _eigenLumps = new List<(Complex, MathNet.Numerics.LinearAlgebra.Vector<double>)>();
+        private Vector<Complex> _eigenValues;
+        private MathNet.Numerics.LinearAlgebra.Matrix<double> _eigenVectors;
+        private List<(Complex, MathNet.Numerics.LinearAlgebra.Matrix<double>)> _eigenLumps = new List<(Complex, MathNet.Numerics.LinearAlgebra.Matrix<double>)>();
         private List<List<double>> _features = new List<List<double>>(); 
         private List<MathNet.Numerics.LinearAlgebra.Vector<double>> _meanSums = new List<MathNet.Numerics.LinearAlgebra.Vector<double>>();
 
         ///<summary>
         ///Holds all eigen values
         ///</summary>
-        public List<Complex> EigenValues { get => _eigenValues; }
+        public Vector<Complex> EigenValues { get => _eigenValues; }
         ///<summary>
         ///Holds all eigen vectors
         ///</summary>
-        public List<MathNet.Numerics.LinearAlgebra.Vector<double>> EigenVectors { get => _eigenVectors; }
+        public MathNet.Numerics.LinearAlgebra.Matrix<double> EigenVectors { get => _eigenVectors; }
         ///<summary>
         ///Holds value/vector pairs
         ///</summary>
-        public List<(Complex, MathNet.Numerics.LinearAlgebra.Vector<double>)> EigenLumps { get => _eigenLumps; }
+        public List<(Complex, MathNet.Numerics.LinearAlgebra.Matrix<double>)> EigenLumps { get => _eigenLumps; }
         ///<summary>
         ///Holds features
         ///</summary>
@@ -95,8 +95,8 @@ namespace DimensionReduction
         ///<param name=eigenLumps>List of eigen value/vector pairs</param>
         ///<param name=features>List of features</param>
         ///<param name=meanSums>List of mean sums</param>
-        public Model(List<Complex> eigenValues, List<MathNet.Numerics.LinearAlgebra.Vector<double>> eigenVectors,
-                List<(Complex, MathNet.Numerics.LinearAlgebra.Vector<double>)> eigenLumps,
+        public Model(Vector<Complex> eigenValues, MathNet.Numerics.LinearAlgebra.Matrix<double> eigenVectors,
+                List<(Complex, MathNet.Numerics.LinearAlgebra.Matrix<double>)> eigenLumps,
                 List<List<double>> features, List<Vector<double>> meanSums) {
             _eigenValues = eigenValues;
             _eigenVectors = eigenVectors;
