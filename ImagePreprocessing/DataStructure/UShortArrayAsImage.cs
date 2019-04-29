@@ -69,7 +69,7 @@ namespace ImagePreprocessing
             return ms;
         }
 
-        public void SaveAsPng2(String saveLoc)
+        public override void SaveAsPng(String saveLoc)
         {
             using (FileStream file = new FileStream(saveLoc, FileMode.Create))
             {
