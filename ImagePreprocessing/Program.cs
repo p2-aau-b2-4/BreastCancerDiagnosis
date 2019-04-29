@@ -16,11 +16,11 @@ namespace ImagePreprocessing
             int i = 0;
             foreach (var ddsmImage in ddsmImages)
             {
-                var image = ddsmImage.DcomCroppedImage;
+                var image = ddsmImage.DcomOriginalImage;
                 image = Normalization.GetNormalizedImage(image,
                     Normalization.GetTumourPositionFromMask(ddsmImage.DcomMaskImage), 500);
+                image = Contrast.ApplyHistogramEqualization(image);
                 image.SaveAsPng("images/ready"+i+".png");
-
                 i++;
             }
         }
