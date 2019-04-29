@@ -13,10 +13,6 @@ namespace ImagePreprocessing
     {
         public static void GetNormalizedCrop(this UshortArrayAsImage image, Rectangle tumour, int size)
         {
-            // Rectangle = det markerede område med knuden (kan godt være ikke kvadratisk, men så lav det kvadratisk)
-            // tumoursize = hvor stor knuden skal være i output (kvadratisk)
-            // size = hvor stort billedet skal være (kvadratisk)
-            // returns a ushortarrayasimage, with black boxes around the resized tumour.
 
             Bitmap imageBit = UshortToBitmap(Crop(tumour, image).PixelArray);
             
@@ -28,35 +24,6 @@ namespace ImagePreprocessing
 
             imageBit.Save("imageBit.png");
             result.Save("result.png");
-            //var billede = Crop(tumour, image);
-            /*billede.SaveAsPng("Billede.png");
-            
-            Bitmap imageBit = new Bitmap("Billede.png");
-            */
-
-            /*
-            var destRect = new Rectangle(0, 0, tumourSize, tumourSize);
-            var destImage = new Bitmap(size, size);
-
-            destImage.SetResolution(imageBit.HorizontalResolution, imageBit.VerticalResolution);
-
-            using (var graphics = Graphics.FromImage(destImage))
-            {
-                graphics.CompositingMode = CompositingMode.SourceCopy;
-                graphics.CompositingQuality = CompositingQuality.HighQuality;
-                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                graphics.SmoothingMode = SmoothingMode.HighQuality;
-                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-                using (var wrapMode = new ImageAttributes())
-                {
-                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
-                    graphics.DrawImage(imageBit, destRect, 0, 0, image.Width,image.Height, GraphicsUnit.Pixel, wrapMode);
-                }
-            }
-            */
-
-            //destImage.Save("BitmapCrop.png");
         }
 
         private static Bitmap UshortToBitmap(ushort[,] image)
@@ -72,17 +39,7 @@ namespace ImagePreprocessing
                     imgBitmap.SetPixel(x, y, Color.FromArgb(greyColor, greyColor, greyColor));
                 }
             }
-            /*
-            // lets add all bitmaps:
-            Graphics g = Graphics.FromImage(imgBitmap);
-            g.CompositingMode = CompositingMode.SourceOver;
-            foreach (Bitmap bitmap in Overlays)
-            {
-                bitmap.MakeTransparent();
-                g.DrawImage(bitmap, new Point(0, 0));
-            }
-            */
-            imgBitmap.Save("BitTest.png");
+
             return imgBitmap;
         }
         
