@@ -2,9 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 using MathNet.Numerics;
+using MathNet.Numerics.LinearAlgebra;
 using System.Xml.Serialization;
 using System.IO;
-using System.Numerics;
+using Complex = System.Numerics.Complex;
 
 namespace DimensionReduction
 {
@@ -15,7 +16,7 @@ namespace DimensionReduction
     {
         private List<Complex> _eigenValues = new List<Complex>();
         private List<MathNet.Numerics.LinearAlgebra.Vector<double>> _eigenVectors = new List<MathNet.Numerics.LinearAlgebra.Vector<double>>();
-        private List<(Complex, MathNet.Numerics.LinearAlgebra.Vector<double>)> _eigenLumps = new List<(double, MathNet.Numerics.LinearAlgebra.Vector<double>)>();
+        private List<(Complex, MathNet.Numerics.LinearAlgebra.Vector<double>)> _eigenLumps = new List<(Complex, MathNet.Numerics.LinearAlgebra.Vector<double>)>();
         private List<List<double>> _features = new List<List<double>>(); 
         private List<MathNet.Numerics.LinearAlgebra.Vector<double>> _meanSums = new List<MathNet.Numerics.LinearAlgebra.Vector<double>>();
 
@@ -96,7 +97,7 @@ namespace DimensionReduction
         ///<param name=meanSums>List of mean sums</param>
         public Model(List<Complex> eigenValues, List<MathNet.Numerics.LinearAlgebra.Vector<double>> eigenVectors,
                 List<(Complex, MathNet.Numerics.LinearAlgebra.Vector<double>)> eigenLumps,
-                List<List<double>> features, List<double> meanSums) {
+                List<List<double>> features, List<Vector<double>> meanSums) {
             _eigenValues = eigenValues;
             _eigenVectors = eigenVectors;
             _eigenLumps = eigenLumps;
