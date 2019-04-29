@@ -32,6 +32,7 @@ namespace ImagePreprocessing
 
         public UShortArrayAsImage(ushort[,] arrayIn) : base(null, arrayIn.GetLength(1), arrayIn.GetLength(0))
         {
+            PixelData = new byte[arrayIn.Length*2];
             PixelArray = arrayIn;
         }
 
