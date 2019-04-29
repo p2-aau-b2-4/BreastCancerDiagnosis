@@ -17,19 +17,19 @@ namespace Training
             // lets apply the relevant image preprocessing to every image
             foreach (var ddsmImage in ddsmImages)
             {
-                var img = ddsmImage.GetDcomOriginalImage();
-                if (Convert.ToBoolean(ConfigurationManager.AppSettings["doContrast"]))
-                    img.ApplyContrastEnhancement(
-                        Convert.ToInt32(ConfigurationManager.AppSettings["contrastThreshold"]));
+                var img = ddsmImage.DcomOriginalImage;
+                //if (Convert.ToBoolean(ConfigurationManager.AppSettings["doContrast"]))
+                //    img.ApplyContrastEnhancement(
+                //        Convert.ToInt32(ConfigurationManager.AppSettings["contrastThreshold"]));
 
-                if (Convert.ToBoolean(ConfigurationManager.AppSettings["doRemoveBreastMuscle"]))
-                    img.RemoveBreastMuscle();
+                //if (Convert.ToBoolean(ConfigurationManager.AppSettings["doRemoveBreastMuscle"]))
+                 //   img.RemoveBreastMuscle();
                 
                 // now lets resize it, according to the dataset mask
-                img.CropFromMask(ddsmImage.GetDcomMaskImage(),ConfigurationManager.AppSettings["safeDistanceCropFromMask"]);
+                //img.CropFromMask(ddsmImage.GetDcomMaskImage(),ConfigurationManager.AppSettings["safeDistanceCropFromMask"]);
 
-                if (Convert.ToBoolean(ConfigurationManager.AppSettings["doNormalizing"]))
-                    img.Normalize();
+                //if (Convert.ToBoolean(ConfigurationManager.AppSettings["doNormalizing"]))
+                    //img.Normalize();
                 
                 // todo save this processed image somehow???
             }

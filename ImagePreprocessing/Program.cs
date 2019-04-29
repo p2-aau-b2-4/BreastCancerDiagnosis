@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Drawing;
+using System.IO;
 using System.Linq;
 using Dicom;
 
@@ -11,18 +11,15 @@ namespace ImagePreprocessing
     {
         static void Main(string[] args)
         {
-
-            var img = DicomFile.Open(@"000000.dcm");
-            UshortArrayAsImage imgInfo = img.GetUshortImageInfo();
-            
-            imgInfo.SaveAsPng("BigPic.png");
-            
-            Rectangle rect = new Rectangle(1000, 1000, 500, 500);
-            imgInfo.GetNormalizedCrop(rect, 1000);
-            
-            
-            
-            
+            List<DdsmImage> ddsmImages =
+                DdsmImage.GetAllImagesFromCsvFile(@"e:\brysttest\mass_case_description_train_set.csv");
+            foreach (var x in ddsmImages)
+            {
+                x.DcomOriginalImage.SaveAsPng("testest.png");
+                
+                break;
+            }
+            //ddsmImages[14].GetNormalizedSizedCrop(100,100);
             //console.writeline($"found {ddsmimages.count}");
             //ddsmimages.first().getnormalizedsizedcrop(1000).saveaspng("black.png");
 
