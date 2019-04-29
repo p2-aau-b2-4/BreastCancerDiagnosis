@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <Compile Remove="PCA2.cs" />
+    <Compile Remove="PCA3.cs" />
   </ItemGroup>
 
 </Project>
