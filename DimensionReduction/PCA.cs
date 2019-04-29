@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using BitMiracle.LibJpeg.Classic;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Numerics.LinearAlgebra.Storage;
 using ImagePreprocessing;
-using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Factorization;
 using Microsoft.Win32.SafeHandles;
 using Vector = MathNet.Numerics.LinearAlgebra.Double.Vector;
 
@@ -32,7 +33,6 @@ namespace DimensionReduction
         {
             //TBD option 1: weighted solution. option 2: other solution.
             //Select 1
-            
         }
 
         public void Train(List<UshortArrayAsImage> images)
@@ -48,6 +48,7 @@ namespace DimensionReduction
                 {
                     for (int x = 0; x < image.Width; x++)
                     {
+                        //dImage[y * image.Width + x] = image.GetPixel(x,y).R;
                         dImage[y * image.Width + x] = tempI[x,y];
                     }
                 }
@@ -56,7 +57,7 @@ namespace DimensionReduction
                 {
                     for (int x = 0; x < image.Width; x++)
                     {
-                        allImages[x, i] = dImage[y * image.Width + x];
+                        allImages[i, y * image.Width + x] = dImage[y * image.Width + x];
                     }
                 }
 
@@ -66,13 +67,15 @@ namespace DimensionReduction
             SparseMatrix matrix = SparseMatrix.OfArray(allImages);
             matrix = MeanSubtraction(matrix);
             matrix = CovarianceMatrix(matrix);
-            List<double> eigenValues = SolveEigenValues(matrix);
-            List<Vector<double>> eigenVectors = SolveEigenVectors(matrix);
+            Evd<double> eigen = SolveForEigen(matrix);
+            
+            /*List<Complex> eigenValues = SolveEigenValues(matrix);
+            List<MathNet.Numerics.LinearAlgebra.Vector<double>> eigenVectors = SolveEigenVectors(matrix);*/
 
-            List<(double, Vector<double>)> eigenLumps = new List<(double, Vector<double>)>();
+            List<(double, MathNet.Numerics.LinearAlgebra.Vector<double>)> eigenLumps = new List<(double, MathNet.Numerics.LinearAlgebra.Vector<double>)>();
             List<List<double>> features = new List<List<double>>();
 
-            Model model = new Model(eigenValues, eigenVectors, eigenLumps, features);
+            Model model = new Model(eigen.EigenValues, eigen.EigenVectors, eigenLumps, features, new List<double>());
             model.SaveModelToFile("t.xml");
         }
 
@@ -86,7 +89,7 @@ namespace DimensionReduction
             var sums = matrix.ColumnSums();
             int index = 0;
             SparseMatrix tmpMatrix = new SparseMatrix(matrix.RowCount,matrix.ColumnCount);
-            List<Vector<double>> vectors = new List<Vector<double>>();
+            List<MathNet.Numerics.LinearAlgebra.Vector<double>> vectors = new List<MathNet.Numerics.LinearAlgebra.Vector<double>>();
             matrix.CopyTo(tmpMatrix);
             foreach (var sum in sums)
             {
@@ -124,6 +127,8 @@ namespace DimensionReduction
         public SparseMatrix CovarianceMatrix(SparseMatrix matrix)
         {
             double[,] cMatrix = new double[matrix.ColumnCount, matrix.ColumnCount];
+            SparseMatrix tmpMatrix = new SparseMatrix(matrix.RowCount,matrix.ColumnCount);
+            matrix.CopyTo(tmpMatrix);
 
             for (int x = 0; x < matrix.ColumnCount; x++)
             {
@@ -131,8 +136,8 @@ namespace DimensionReduction
                 {
                     for (int i = 0; i < matrix.RowCount; i++)
                     {
-                        double val = Covariance(matrix.Storage[i, x], matrix.Storage[i, y],
-                                matrix.RowCount);
+                        double val = Covariance(tmpMatrix[i, x], tmpMatrix[i, y],
+                            matrix.RowCount);
 
                         if (Double.IsNegativeInfinity(val) || Double.IsInfinity(val))
                             throw new NotFiniteNumberException(val);
@@ -145,7 +150,7 @@ namespace DimensionReduction
             return SparseMatrix.OfArray(cMatrix);
         }
 
-        ///<summary>
+        /*///<summary>
         ///Finds the eigen values of a matrix.
         ///</summary>
         ///<param name=matrix>input matrix. Must be square</param>
@@ -169,9 +174,9 @@ namespace DimensionReduction
             }
 
             return eigenValues;
-        }
+        }*/
 
-        public List<Vector<double>> SolveEigenVectors(SparseMatrix matrix)
+        /*public List<MathNet.Numerics.LinearAlgebra.Vector<double>> SolveEigenVectors(SparseMatrix matrix)
         {
             if (matrix.RowCount != matrix.ColumnCount)
                 throw new ArgumentException();
@@ -182,13 +187,33 @@ namespace DimensionReduction
             Console.WriteLine(eigen.EigenVectors);
             Console.WriteLine(evd.EigenVectors);
 
-            List<Vector<double>> eigenVectors = new List<Vector<double>>();
+            List<MathNet.Numerics.LinearAlgebra.Vector<double>> eigenVectors = new List<MathNet.Numerics.LinearAlgebra.Vector<double>>();
             for (int i = 0; i < evd.EigenVectors.RowCount; i++)
             {
                 eigenVectors.Add(evd.EigenVectors.Row(i));
             }
 
            return eigenVectors;
+        }*/
+        
+        public Evd<double> SolveForEigen(SparseMatrix matrix)
+        {
+            if (matrix.RowCount != matrix.ColumnCount)
+                throw new ArgumentException();
+
+            var eigen = matrix.Evd();
+            
+            /*foreach (var eigenValue in eigen.EigenValues)
+            {
+                model.EigenValues.Add(eigenValue);
+            }
+
+            for (int i = 0; i < matrix.ColumnCount; i++)
+            {
+                model.EigenVectors.Add(eigen.EigenVectors.Column(i));
+            }*/
+
+            return eigen;
         }
     }
 }
