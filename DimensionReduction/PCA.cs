@@ -1,12 +1,12 @@
 using System;
 using Complex = System.Numerics.Complex;
 using System.Collections.Generic;
-using System.Numerics;
 using BitMiracle.LibJpeg.Classic;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Numerics.LinearAlgebra.Storage;
 using ImagePreprocessing;
+using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Factorization;
 using Microsoft.Win32.SafeHandles;
 using Vector = MathNet.Numerics.LinearAlgebra.Double.Vector;
@@ -38,13 +38,13 @@ namespace DimensionReduction
 
         public void Train(List<UshortArrayAsImage> images)
         {
-            double[,] allImages = new double[images[0].PixelCount, images.Count];
+            double[,] allImages = new double[images.Count, images[0].Width*images[0].Height];
             int i = 0;
             foreach (var image in images)
             {
                 double[,] tempI = new double[image.Width,image.Height]; 
                 Array.Copy(image.PixelArray,tempI,image.PixelCount); 
-                double[] dImage = new double[image.PixelCount];
+                double[] dImage = new double[image.Width*image.Height];
                 for (int y = 0; y < image.Height; y++)
                 {
                     for (int x = 0; x < image.Width; x++)
@@ -71,12 +71,12 @@ namespace DimensionReduction
 
             Evd<double> eigen = SolveForEigen(matrix);
             
-            List<(Complex, Vector<double>)> eigenLumps = new List<(Complex, Vector<double>)>();
+            List<(Complex, Matrix<double>)> eigenLumps = new List<(Complex, Matrix<double>)>();
 
             List<List<double>> features = new List<List<double>>();
-            List<Vector<double>> meanSums = new List<Vector<double>>();
+            List<System.Numerics.Vector<double>> meanSums = new List<System.Numerics.Vector<double>>();
 
-            Model model = new Model(eigen.EigenValues, eigen.EigenVectors, eigenLumps, features, new List<double>());
+            Model model = new Model(eigen.EigenValues, eigen.EigenVectors, eigenLumps, features, new List<Vector<double>>());
             model.SaveModelToFile("t.xml");
         }
 
@@ -127,7 +127,10 @@ namespace DimensionReduction
         ///<param name=matrix>input matrix</param>
         public SparseMatrix CovarianceMatrix(SparseMatrix matrix)
         {
-            double[,] cMatrix = new double[matrix.ColumnCount, matrix.ColumnCount];
+            //double[,] cMatrix = new double[matrix.ColumnCount, matrix.ColumnCount];
+            
+            SparseMatrix scMatrix = new SparseMatrix(matrix.ColumnCount, matrix.ColumnCount);
+            
             SparseMatrix tmpMatrix = new SparseMatrix(matrix.RowCount,matrix.ColumnCount);
             matrix.CopyTo(tmpMatrix);
 
@@ -143,12 +146,12 @@ namespace DimensionReduction
                         if (Double.IsNegativeInfinity(val) || Double.IsInfinity(val))
                             throw new NotFiniteNumberException(val);
 
-                        cMatrix[x, y] += val;
+                        scMatrix[x, y] += val;
                     }
                 }
             }
 
-            return SparseMatrix.OfArray(cMatrix);
+            return scMatrix; //SparseMatrix.OfArray(scMatrix);
         }
 
         ///<summary>
