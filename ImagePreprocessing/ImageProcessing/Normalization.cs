@@ -42,23 +42,26 @@ namespace ImagePreprocessing
 
         public static Rectangle GetTumourPositionFromMask(UByteArrayAsImage maskUbyte)
         {
-            var mask = maskUbyte.PixelArray;
+            byte[,] mask = maskUbyte.PixelArray;
             int left = -1, right = -1, top = -1, bottom = -1;
             // finding the 4 edges of a rectangle, going from left, top, right and bottom.
             for (int y = 0; y < mask.GetLength(0); y++)
             {
+                
                 bool containsMask = false;
                 for (int x = 0; x < mask.GetLength(1); x++)
                 {
-                    if (mask[y, x] != 0)
+                   // Console.WriteLine($"{x},{y} = {mask[x,y]}");
+                    if (mask[y,x] == 255)
                     {
                         containsMask = true;
                         break;
+
                     }
                 }
 
                 if (top == -1 && containsMask) top = y;
-                if (top != -1 && bottom == -1 && !containsMask) bottom = y;
+                else if (top != -1 && bottom == -1 && !containsMask) bottom = y;
             }
 
             for (int x = 0; x < mask.GetLength(1); x++)
@@ -74,10 +77,10 @@ namespace ImagePreprocessing
                 }
 
                 if (left == -1 && containsMask) left = x;
-                if (left != -1 && right == -1 && !containsMask) right = x;
+                else if (left != -1 && right == -1 && !containsMask) right = x;
             }
 
-            return new Rectangle(top, left, bottom - top, right - left);
+            return new Rectangle(left, top, right-left, bottom-top);
         }
         
         private static UShortArrayAsImage Crop(Rectangle rectangle, UShortArrayAsImage image)
