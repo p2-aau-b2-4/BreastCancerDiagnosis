@@ -19,7 +19,7 @@ namespace ImagePreprocessing.Tests
         [SetUp]
         public void Setup()
         {
-            pixelArray = new ushort[,] { { 0, 20001 }, { 40001, 65535 } };
+            //pixelArray = new ushort[,] { { 0, 20001 }, { 40001, 65535 } };
            // image = new UShortArrayAsImage(new byte[2 * 2 * 2], 2, 2);
         }
 
@@ -28,7 +28,7 @@ namespace ImagePreprocessing.Tests
         {
 
             pixelArrayTestValuesResult = new ushort[,] { { 16383, 32767 }, { 49151, 65535 } };
-            var image = new UShortArrayAsImage(pixelArray);
+            var image = new UShortArrayAsImage(new ushort[,] { { 0, 20001 }, { 40001, 65535 } });
             image = Contrast.ApplyHistogramEqualization(image);
 
             CollectionAssert.AreEqual(pixelArrayTestValuesResult, image.PixelArray);
