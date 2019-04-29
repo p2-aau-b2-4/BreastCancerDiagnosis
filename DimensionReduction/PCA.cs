@@ -1,4 +1,5 @@
 using System;
+using Complex = System.Numerics.Complex;
 using System.Collections.Generic;
 using BitMiracle.LibJpeg.Classic;
 using MathNet.Numerics;
@@ -66,13 +67,14 @@ namespace DimensionReduction
             SparseMatrix matrix = SparseMatrix.OfArray(allImages);
             matrix = MeanSubtraction(matrix);
             matrix = CovarianceMatrix(matrix);
-            List<double> eigenValues = SolveEigenValues(matrix);
+            List<Complex> eigenValues = SolveEigenValues(matrix);
             List<Vector<double>> eigenVectors = SolveEigenVectors(matrix);
 
-            List<(double, Vector<double>)> eigenLumps = new List<(double, Vector<double>)>();
+            List<(Complex, Vector<double>)> eigenLumps = new List<(Complex, Vector<double>)>();
             List<List<double>> features = new List<List<double>>();
+            List<Vector<double>> meanSums = new List<Vector<double>>();
 
-            Model model = new Model(eigenValues, eigenVectors, eigenLumps, features);
+            Model model = new Model(eigenValues, eigenVectors, eigenLumps, features, meanSums);
             model.SaveModelToFile("t.xml");
         }
 
@@ -159,8 +161,6 @@ namespace DimensionReduction
             Console.WriteLine("Her kommer the EigenValues");
             Console.WriteLine(eigen.EigenValues);
             Console.WriteLine(evd.EigenValues);
-
-            return evd.EigenValues;
 
             List<Complex> eigenValues = new List<Complex>();
             for (int i = 0; i < evd.EigenValues.Count; i++)
