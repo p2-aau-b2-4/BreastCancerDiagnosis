@@ -48,5 +48,16 @@ namespace ImagePreprocessing.Tests
 
             Assert.True(equals);
         }
+
+        [TestCase]
+        public void PixelArrayGetSetTest()
+        {
+            ushort[,] pixelArray = new ushort[,] { { 2, 50 }, { 0, 10 } };
+            UShortArrayAsImage image = new UShortArrayAsImage(pixelArray);
+            image.PixelArray = pixelArray;
+            CollectionAssert.AreEqual(pixelArray, image.PixelArray);
+            
+        }
+
     }
 }
