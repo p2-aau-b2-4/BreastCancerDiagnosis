@@ -6,11 +6,13 @@ using System.IO;
 
 namespace ImagePreprocessing
 {
-    public abstract class ArrayAsImageAbstract
+    public abstract class ArrayAsImageAbstract<T>
     {
         public int Width { get; }
         public int Height { get; }
-        public byte[] PixelData { get; set; } // up to class to interpret byte array;
+        protected byte[] PixelData { get; set; } // up to class to interpret byte array;
+
+        public abstract T PixelArray { get; set; }
 
         protected ArrayAsImageAbstract(byte[] pixelData, int width, int height)
         {
@@ -20,7 +22,7 @@ namespace ImagePreprocessing
         }
 
         private List<Bitmap> _overlays = new List<Bitmap>();
-        public List<Bitmap> Overlays => _overlays;
+        private List<Bitmap> Overlays => _overlays;
 
         public void AddOverlay(Bitmap overlay)
         {
@@ -47,6 +49,7 @@ namespace ImagePreprocessing
 
             return bitmapIn;
         }
+
         public abstract Stream GetPngAsMemoryStream();
 
         protected static float Map(float s, float a1, float a2, float b1, float b2)
