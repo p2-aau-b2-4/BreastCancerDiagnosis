@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Numerics;
 using BitMiracle.LibJpeg.Classic;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Numerics.LinearAlgebra.Storage;
 using ImagePreprocessing;
-using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Factorization;
 using Microsoft.Win32.SafeHandles;
 using Vector = MathNet.Numerics.LinearAlgebra.Double.Vector;
@@ -34,7 +34,6 @@ namespace DimensionReduction
         {
             //TBD option 1: weighted solution. option 2: other solution.
             //Select 1
-            
         }
 
         public void Train(List<Bitmap> images)
@@ -155,7 +154,7 @@ namespace DimensionReduction
             var sums = matrix.ColumnSums();
             int index = 0;
             SparseMatrix tmpMatrix = new SparseMatrix(matrix.RowCount,matrix.ColumnCount);
-            List<Vector<double>> vectors = new List<Vector<double>>();
+            List<MathNet.Numerics.LinearAlgebra.Vector<double>> vectors = new List<MathNet.Numerics.LinearAlgebra.Vector<double>>();
             matrix.CopyTo(tmpMatrix);
             foreach (var sum in sums)
             {
@@ -256,11 +255,7 @@ namespace DimensionReduction
             if (matrix.RowCount != matrix.ColumnCount)
                 throw new ArgumentException();
 
-            //var evd = matrix.Evd(MathNet.Numerics.LinearAlgebra.Symmetricity.Asymmetric);
             var eigen = matrix.Evd();
-            Console.WriteLine("Her kommer the EigenVectors");
-            Console.WriteLine(eigen.EigenVectors);
-            //Console.WriteLine(evd.EigenVectors);
             
             Model model = new Model();
 
