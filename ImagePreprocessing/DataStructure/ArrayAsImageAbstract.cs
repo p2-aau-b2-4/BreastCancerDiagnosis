@@ -29,7 +29,13 @@ namespace ImagePreprocessing
             _overlays.Add(overlay);
         }
 
-        public abstract void SaveAsPng(String saveLoc);
+        public void SaveAsPng(String saveLoc)
+        {
+            using (FileStream file = new FileStream(saveLoc, FileMode.Create))
+            {
+                GetPngAsMemoryStream().CopyTo(file);
+            }
+        }
 
 
         protected Bitmap ApplyOverlays(Bitmap bitmapIn)
