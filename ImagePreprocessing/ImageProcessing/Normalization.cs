@@ -74,7 +74,7 @@ namespace ImagePreprocessing
                 }
 
                 if (top == -1 && containsMask) top = y;
-                else if (top != -1 && containsMask) bottom = y;
+                if(containsMask) bottom = y+1;
             }
 
             for (int x = 0; x < mask.GetLength(1); x++)
@@ -90,7 +90,7 @@ namespace ImagePreprocessing
                 }
 
                 if (left == -1 && containsMask) left = x;
-                else if (left != -1 && containsMask) right = x;
+                if(containsMask) right = x+1;
             }
 
             if (right == -1) right = mask.GetLength(1)-1;
