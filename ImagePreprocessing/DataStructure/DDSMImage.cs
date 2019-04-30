@@ -20,7 +20,7 @@ namespace ImagePreprocessing
     {
         public enum ImageViewEnum
         {
-            Mlo,
+            Mlo, 
             Cc
         }
 

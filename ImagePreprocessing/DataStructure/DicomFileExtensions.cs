@@ -31,6 +31,6 @@ namespace ImagePreprocessing
 
             byte[] byteData = pixelData.GetFrame(0).Data;
             return new UByteArrayAsImage(byteData, columns, rows);
-        }
+        } 
     }
 }

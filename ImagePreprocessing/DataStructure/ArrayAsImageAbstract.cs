@@ -27,7 +27,7 @@ namespace ImagePreprocessing
         public void AddOverlay(Bitmap overlay)
         {
             _overlays.Add(overlay);
-        }
+        } 
 
         public void SaveAsPng(String saveLoc)
         {
