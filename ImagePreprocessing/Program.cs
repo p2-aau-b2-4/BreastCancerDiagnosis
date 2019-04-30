@@ -24,9 +24,6 @@ namespace ImagePreprocessing
                x.DcomOriginalImage.GetPngAsMemoryStream();
                 break;
             }
-
-
-
         }
     }
 }
