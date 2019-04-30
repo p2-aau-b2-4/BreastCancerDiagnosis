@@ -15,7 +15,7 @@ namespace ImagePreprocessing
         {
             get
             {
-                byte[,] result = new byte[this.Height,this.Width];
+                byte[,] result = new byte[this.Width,this.Height];
                 // this uses blockcopy, since data format is the same in byte[] and byte[,]
                 Buffer.BlockCopy(PixelData, 0, result, 0, PixelData.Length);
                 return result;
@@ -46,7 +46,7 @@ namespace ImagePreprocessing
 
             int bytes = imgBitmapData.Height * Math.Abs(imgBitmapData.Stride);
             byte[] byteArray = new byte[bytes];
-            int[] intArray = new int[bytes/4];
+            int[] intArray = new int[bytes / 4];
             Marshal.Copy(scan0, byteArray, 0, bytes);
 
 
@@ -55,7 +55,7 @@ namespace ImagePreprocessing
             {
                 for (int y = 0; y < pixelArray.GetLength(1); y++)
                 {
-                    byte greyColor = pixelArray[x,y];
+                    byte greyColor = pixelArray[x, y];
                     byteArray[position++] = greyColor;
                     byteArray[position++] = greyColor;
                     byteArray[position++] = greyColor;
@@ -63,12 +63,20 @@ namespace ImagePreprocessing
                 }
             }
             Marshal.Copy(byteArray, 0, scan0, bytes);
-            
+
             imgBitmap.UnlockBits(imgBitmapData);
             MemoryStream ms = new MemoryStream();
             ApplyOverlays(imgBitmap).Save(ms, ImageFormat.Png);
             ms.Seek(0, SeekOrigin.Begin);
             return ms;
+        }
+
+        public override void SaveAsPng(String saveLoc)
+        {
+            using (FileStream file = new FileStream(saveLoc, FileMode.Create))
+            {
+                GetPngAsMemoryStream().CopyTo(file);
+            }
         }
     }
 }

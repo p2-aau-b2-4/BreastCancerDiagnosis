@@ -40,7 +40,7 @@ namespace ImagePreprocessing
             var pixelArray = PixelArray;
             Bitmap imgBitmap = new Bitmap(pixelArray.GetLength(1), pixelArray.GetLength(0));
             BitmapData imgBitmapData = imgBitmap.LockBits(new Rectangle(0, 0, imgBitmap.Width, imgBitmap.Height),
-                ImageLockMode.ReadWrite, imgBitmap.PixelFormat);
+            ImageLockMode.ReadWrite, imgBitmap.PixelFormat);
             IntPtr scan0 = imgBitmapData.Scan0;
 
             int bytes = imgBitmapData.Height * Math.Abs(imgBitmapData.Stride);
@@ -52,7 +52,7 @@ namespace ImagePreprocessing
             {
                 for (int x = 0; x < pixelArray.GetLength(1); x++)
                 {
-                    byte greyColor = (byte) Map(pixelArray[y, x], 0, UInt16.MaxValue, 0, 255);
+                    byte greyColor = (byte)Math.Round(Map(pixelArray[y, x], 0, UInt16.MaxValue, 0, 255));
                     byteArray[position++] = greyColor;
                     byteArray[position++] = greyColor;
                     byteArray[position++] = greyColor;
@@ -66,6 +66,14 @@ namespace ImagePreprocessing
             ApplyOverlays(imgBitmap).Save(ms, ImageFormat.Png);
             ms.Seek(0, SeekOrigin.Begin);
             return ms;
+        }
+
+        public override void SaveAsPng(String saveLoc)
+        {
+            using (FileStream file = new FileStream(saveLoc, FileMode.Create))
+            {
+                GetPngAsMemoryStream().CopyTo(file);
+            }
         }
     }
 }

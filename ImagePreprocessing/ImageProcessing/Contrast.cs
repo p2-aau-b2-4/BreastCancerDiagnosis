@@ -4,46 +4,45 @@ namespace ImagePreprocessing
 {
     public static class Contrast
     {
+        // We found formula for making the histogram equalization here: https://epochabuse.com/histogram-equalization/
         public static UShortArrayAsImage ApplyHistogramEqualization(UShortArrayAsImage img)
         {
-            int UInt16ValuesInTotal = UInt16.MaxValue + 1;
-            int[] histogram = new int[UInt16ValuesInTotal];
-            var pixelArray = img.PixelArray;
-            for (int i = 0; i < img.Height; i++)
-            {
-                for (int j = 0; j < img.Width; j++)
-                {
-                    histogram[pixelArray[i, j]]++;
-                }
-            }
+            int[] histogram = MakeHistogram(img);
 
-            histogram[0] = 0;
-            var nPixels = img.PixelArray.Length;
-            double[] normalizedHistogram = new double[UInt16ValuesInTotal];
-            for (int i = 0; i < UInt16ValuesInTotal; i++)
-            {
-                normalizedHistogram[i] = histogram[i] / (double) nPixels;
-            }
-
+            double[] normalizedHistogram = MakeNormalizedHistogram(histogram, img.PixelArray.Length);
 
             double[] accumulativeHistogram = MakeAccumulativeHistogram(normalizedHistogram);
 
             return new UShortArrayAsImage(CalculateResult(img.PixelArray, accumulativeHistogram));
         }
 
-        private static ushort[,] CalculateResult(ushort[,] origin, double[] accumulativeHistogram)
+        private static int[] MakeHistogram(UShortArrayAsImage img)
         {
-            ushort[,] result = origin.Clone() as ushort[,];
-            for (int i = 0; i < origin.GetLength(0); i++)
+            int[] Histogram = new int[UInt16.MaxValue + 1];
+            var pixelArray = img.PixelArray;
+
+            for (int i = 0; i < img.Height; i++)
             {
-                for (int j = 0; j < origin.GetLength(1); j++)
+                for (int j = 0; j < img.Width; j++)
                 {
-                    result[i, j] = (ushort) (accumulativeHistogram[origin[i, j]] * (double) UInt16.MaxValue);
+                    Histogram[pixelArray[i, j]]++;
                 }
             }
-
-            return result;
+            Histogram[0] = 0;
+            return Histogram;
         }
+
+        private static double[] MakeNormalizedHistogram(int[] histogram, int nPixels)
+        {
+            double[] normalizedHistogram = new double[UInt16.MaxValue + 1];
+
+            for (int i = 0; i < UInt16.MaxValue + 1; i++)
+            {
+                normalizedHistogram[i] = histogram[i] / (double)nPixels;
+            }
+            return normalizedHistogram;
+        }
+
 
         private static double[] MakeAccumulativeHistogram(double[] normalizedHistogram)
         {
@@ -56,6 +55,21 @@ namespace ImagePreprocessing
             }
 
             return accumulativeHistogram;
+        }
+
+        private static ushort[,] CalculateResult(ushort[,] origin, double[] accumulativeHistogram)
+        {
+            ushort[,] result = origin.Clone() as ushort[,];
+            for (int i = 0; i < origin.GetLength(0); i++)
+            {
+                for (int j = 0; j < origin.GetLength(1); j++)
+                {
+
+                    result[i, j] = (ushort)(accumulativeHistogram[origin[i, j]] * (double)UInt16.MaxValue);
+                }
+            }
+
+            return result;
         }
     }
 }
