@@ -50,7 +50,7 @@ namespace ImagePreprocessing.Tests
         }
 
         [TestCase]
-        public void PixelArrayGetSetTest()
+        public void UShortPixelArrayGetSetTest()
         {
             ushort[,] pixelArray = new ushort[,] { { 2, 50 }, { 0, 10 } };
             UShortArrayAsImage image = new UShortArrayAsImage(pixelArray);
@@ -59,5 +59,14 @@ namespace ImagePreprocessing.Tests
             
         }
 
+        [TestCase]
+        public void UBytePixelArrayGetSetTest()
+        {
+            byte[,] pixelArray = new byte[,] { { 2, 50 }, { 0, 10 } };
+            UByteArrayAsImage image = new UByteArrayAsImage(pixelArray);
+            image.PixelArray = pixelArray;
+            CollectionAssert.AreEqual(pixelArray, image.PixelArray);
+
+        }
     }
 }
