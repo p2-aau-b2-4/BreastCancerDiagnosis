@@ -52,8 +52,7 @@ namespace WebApp.Controllers
             string path = Path.GetTempPath() + filePath;
             UShortArrayAsImage image = DicomFile.Open(path).GetUshortImageInfo();
             image = Normalization.GetNormalizedImage(image, rectangle,
-                Convert.ToInt32(ConfigurationManager.AppSettings["CroppedImageSize"]),
-                Convert.ToInt32(ConfigurationManager.AppSettings["CroppedImageTumourSize"]));
+                Convert.ToInt32(ConfigurationManager.AppSettings["CroppedImageSize"]));
             //save the crop:
             string croppedImgSrc = filePath + "-cropped";
             image.SaveAsPng(Path.GetTempPath() + croppedImgSrc);
