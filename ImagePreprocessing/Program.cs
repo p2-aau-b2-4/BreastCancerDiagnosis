@@ -4,6 +4,9 @@ using System.Configuration;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Threading;
+using System.Threading.Tasks;
 using Dicom;
 
 namespace ImagePreprocessing
@@ -14,22 +17,15 @@ namespace ImagePreprocessing
         {
             List<DdsmImage> ddsmImages =
                 DdsmImage.GetAllImagesFromCsvFile(@"e:\brysttest\mass_case_description_train_set.csv");
-            int i = 0;
-            foreach (var ddsmImage in ddsmImages)
+            Parallel.ForEach(ddsmImages, ddsmImage =>
             {
-                if (i < 79)
-                {
-                    i++; continue;}
                 var image = ddsmImage.DcomOriginalImage;
                 Rectangle rectangle = Normalization.GetTumourPositionFromMask(ddsmImage.DcomMaskImage);
-                Console.WriteLine($"{i} = {rectangle.X},{rectangle.Y},{rectangle.Width},{rectangle.Height}");
-                Console.WriteLine($"{ddsmImage.DcomMaskFilePath}");
                 image = Normalization.GetNormalizedImage(image,
                     rectangle, 500);
                 image = Contrast.ApplyHistogramEqualization(image);
-                image.SaveAsPng("images/ready"+i+".png");
-                i++;
-            }
+                image.SaveAsPng("images/ready" + Guid.NewGuid()+ ".png");
+            });
         }
 
 
