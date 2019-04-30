@@ -28,6 +28,7 @@ namespace ImagePreprocessing
                     Histogram[pixelArray[i, j]]++;
                 }
             }
+            Histogram[0] = 0;
             return Histogram;
         }
 
@@ -63,6 +64,7 @@ namespace ImagePreprocessing
             {
                 for (int j = 0; j < origin.GetLength(1); j++)
                 {
+
                     result[i, j] = (ushort)(accumulativeHistogram[origin[i, j]] * (double)UInt16.MaxValue);
                 }
             }
