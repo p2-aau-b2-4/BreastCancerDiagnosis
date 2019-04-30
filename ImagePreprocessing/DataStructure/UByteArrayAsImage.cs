@@ -72,12 +72,5 @@ namespace ImagePreprocessing
             return ms;
         }
 
-        public override void SaveAsPng(String saveLoc)
-        {
-            using (FileStream file = new FileStream(saveLoc, FileMode.Create))
-            {
-                GetPngAsMemoryStream().CopyTo(file);
-            }
-        }
     }
 }
