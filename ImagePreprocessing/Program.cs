@@ -18,7 +18,7 @@ namespace ImagePreprocessing
             List<DdsmImage> ddsmImages =
                 DdsmImage.GetAllImagesFromCsvFile(@"e:\brysttest\mass_case_description_train_set.csv");
             Parallel.ForEach(ddsmImages, ddsmImage =>
-            {
+            { 
                 var image = ddsmImage.DcomOriginalImage;
                 Rectangle rectangle = Normalization.GetTumourPositionFromMask(ddsmImage.DcomMaskImage);
                 image = Normalization.GetNormalizedImage(image,

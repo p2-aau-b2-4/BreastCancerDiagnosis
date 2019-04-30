@@ -36,7 +36,7 @@ namespace ImagePreprocessing
             PixelData = new byte[arrayIn.Length];
             PixelArray = arrayIn;
         }
-
+ 
         public override Stream GetPngAsMemoryStream()
         {
             byte[,] pixelArray = PixelArray;
