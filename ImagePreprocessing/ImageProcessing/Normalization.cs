@@ -82,7 +82,7 @@ namespace ImagePreprocessing
                 bool containsMask = false;
                 for (int y = 0; y < mask.GetLength(0); y++)
                 {
-                    if (mask[y, x] != 0)
+                    if (mask[y, x] == 255)
                     {
                         containsMask = true;
                         break;
