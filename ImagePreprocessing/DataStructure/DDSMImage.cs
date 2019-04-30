@@ -129,6 +129,7 @@ namespace ImagePreprocessing
 
             if (foldersInFirstFolder.Length > 1)
             {
+                Console.WriteLine("{1}", foldersInFirstFolder);
                 // step 2
                 // lets first find the mask image:
                 foreach (String folderInFirstFolder in foldersInFirstFolder)
