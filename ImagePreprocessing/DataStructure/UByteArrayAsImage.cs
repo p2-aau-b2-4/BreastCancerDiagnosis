@@ -15,14 +15,14 @@ namespace ImagePreprocessing
         {
             get
             {
-                byte[,] result = new byte[this.Width, this.Height];
+                byte[,] result = new byte[this.Width,this.Height];
                 // this uses blockcopy, since data format is the same in byte[] and byte[,]
                 Buffer.BlockCopy(PixelData, 0, result, 0, PixelData.Length);
                 return result;
             }
             set
             {
-                byte[] result = new byte[this.Width * this.Height];
+                byte[] result = new byte[this.Height*this.Width];
                 Buffer.BlockCopy(value, 0, result, 0, PixelData.Length);
                 PixelData = result;
             }
