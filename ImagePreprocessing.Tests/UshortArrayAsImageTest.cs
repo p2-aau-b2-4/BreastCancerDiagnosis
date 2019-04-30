@@ -56,17 +56,6 @@ namespace ImagePreprocessing.Tests
             UShortArrayAsImage image = new UShortArrayAsImage(pixelArray);
             image.PixelArray = pixelArray;
             CollectionAssert.AreEqual(pixelArray, image.PixelArray);
-            
-        }
-
-        [TestCase]
-        public void UBytePixelArrayGetSetTest()
-        {
-            byte[,] pixelArray = new byte[,] { { 2, 50 }, { 0, 10 } };
-            UByteArrayAsImage image = new UByteArrayAsImage(pixelArray);
-            image.PixelArray = pixelArray;
-            CollectionAssert.AreEqual(pixelArray, image.PixelArray);
-
         }
     }
 }

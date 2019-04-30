@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Timers;
 using Dicom;
 
 namespace ImagePreprocessing
@@ -129,7 +130,6 @@ namespace ImagePreprocessing
 
             if (foldersInFirstFolder.Length > 1)
             {
-                Console.WriteLine("{1}", foldersInFirstFolder);
                 // step 2
                 // lets first find the mask image:
                 foreach (String folderInFirstFolder in foldersInFirstFolder)
