@@ -11,7 +11,7 @@ namespace Training
         {
             // lets first get all the training data
             List<DdsmImage> ddsmImages =
-                DdsmImage.GetAllImagesFromCsvFile(ConfigurationManager.AppSettings["trainingSetCsvPath"]);
+                DdsmImage.GetAllImagesFromCsvFile(ConfigurationManager.AppSettings["testSetCsvPath"]);
             Console.WriteLine($"Found {ddsmImages.Count} sets..");
 
             // lets apply the relevant image preprocessing to every image

@@ -15,7 +15,7 @@ namespace ImagePreprocessing
                 DdsmImage.GetAllImagesFromCsvFile(ConfigurationManager.AppSettings["testSetCsvPath"]);
             foreach (var x in ddsmImages)
             {
-                x.DcomOriginalImage.SaveAsPng("testest.png");
+               // x.DcomOriginalImage.SaveAsPng("testest.png");
                 
                 break;
             }
