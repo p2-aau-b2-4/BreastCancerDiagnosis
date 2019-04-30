@@ -17,10 +17,11 @@ namespace ImagePreprocessing
                 }
             }
 
+            histogram[0] = 0;
             var nPixels = img.PixelArray.Length;
             double[] normalizedHistogram = new double[UInt16ValuesInTotal];
             for (int i = 0; i < UInt16ValuesInTotal; i++)
-            { 
+            {
                 normalizedHistogram[i] = histogram[i] / (double) nPixels;
             }
 

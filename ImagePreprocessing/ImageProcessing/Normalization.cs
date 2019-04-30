@@ -20,8 +20,6 @@ namespace ImagePreprocessing
                 squareTumour = new Rectangle(tumour.X - (tumour.Height-tumour.Width), tumour.Y, tumour.Height, tumour.Height);   
             }
             
-            
-            // todo udvid til kvadrat
             return ResizeImage(Crop(squareTumour, image), size);
             
             
@@ -109,16 +107,14 @@ namespace ImagePreprocessing
 
             for (int x = 0; x < rectangle.Width; x++)
             {
+                if (rectangle.X + x < 0 || rectangle.X + x >= image.Width) continue;
                 for (int y = 0; y < rectangle.Height; y++)
                 {
+                    if (rectangle.Y + y < 0 || rectangle.Y+y >= image.Height) continue;
                     result[y, x] = current[y + rectangle.Y,x + rectangle.X];
                 }
             }
-
-            byte[] resultBytes = new byte[rectangle.Width*rectangle.Height * 2];
-            Buffer.BlockCopy(result, 0, resultBytes, 0, resultBytes.Length);
-            var finalResult = new UShortArrayAsImage(resultBytes,rectangle.Width,rectangle.Height);
-            return finalResult;
+            return new UShortArrayAsImage(result);
         }
     }
 }

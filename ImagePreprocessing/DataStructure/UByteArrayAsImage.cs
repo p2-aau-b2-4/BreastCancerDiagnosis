@@ -31,9 +31,8 @@ namespace ImagePreprocessing
         public UByteArrayAsImage(byte[] pixelData, int width, int height) : base(pixelData, width, height)
         {
         }
-        public UByteArrayAsImage(byte[,] arrayIn) : base(null, arrayIn.GetLength(1), arrayIn.GetLength(0))
+        public UByteArrayAsImage(byte[,] arrayIn) : base(new byte[arrayIn.Length], arrayIn.GetLength(1), arrayIn.GetLength(0))
         {
-            PixelData = new byte[arrayIn.Length];
             PixelArray = arrayIn;
         }
  
