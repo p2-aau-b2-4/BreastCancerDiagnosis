@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Diagnostics;
+using System.Threading;
 using Dicom;
 
 namespace ImagePreprocessing
@@ -11,14 +13,19 @@ namespace ImagePreprocessing
     {
         static void Main(string[] args)
         {
+
             List<DdsmImage> ddsmImages =
-                DdsmImage.GetAllImagesFromCsvFile(ConfigurationManager.AppSettings["trainingSetCsvPath"]);
+                DdsmImage.GetAllImagesFromCsvFile(ConfigurationManager.AppSettings["testSetCsvPath"]);
+
             foreach (var x in ddsmImages)
             {
-               // x.DcomOriginalImage.SaveAsPng("testest.png");
-                
+               x.DcomOriginalImage.GetPngAsMemoryStream();
                 break;
             }
+
+
+
         }
     }
 }
+
