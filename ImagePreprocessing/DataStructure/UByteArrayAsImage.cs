@@ -15,7 +15,7 @@ namespace ImagePreprocessing
         {
             get
             {
-                byte[,] result = new byte[this.Width,this.Height];
+                byte[,] result = new byte[this.Height,this.Width];
                 // this uses blockcopy, since data format is the same in byte[] and byte[,]
                 Buffer.BlockCopy(PixelData, 0, result, 0, PixelData.Length);
                 return result;
@@ -69,14 +69,6 @@ namespace ImagePreprocessing
             ApplyOverlays(imgBitmap).Save(ms, ImageFormat.Png);
             ms.Seek(0, SeekOrigin.Begin);
             return ms;
-        }
-
-        public override void SaveAsPng(String saveLoc)
-        {
-            using (FileStream file = new FileStream(saveLoc, FileMode.Create))
-            {
-                GetPngAsMemoryStream().CopyTo(file);
-            }
         }
     }
 }
