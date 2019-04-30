@@ -9,8 +9,22 @@ namespace ImagePreprocessing
     {
         public static UShortArrayAsImage GetNormalizedImage(UShortArrayAsImage image, Rectangle tumour, int size)
         {
+            Rectangle squareTumour = new Rectangle();
+            
+            if (tumour.Width > tumour.Height)
+            {
+                squareTumour = new Rectangle(tumour.X, tumour.Y - (tumour.Width-tumour.Height), tumour.Width, tumour.Width);   
+            }   
+            else if (tumour.Width < tumour.Height || tumour.Width == tumour.Height)
+            {
+                squareTumour = new Rectangle(tumour.X - (tumour.Height-tumour.Width), tumour.Y, tumour.Height, tumour.Height);   
+            }
+            
+            
             // todo udvid til kvadrat
-            return ResizeImage(Crop(tumour, image), size);   
+            return ResizeImage(Crop(squareTumour, image), size);
+            
+            
         }
         
         private static ushort FindNearest(double x, double y, ushort[,] image)
