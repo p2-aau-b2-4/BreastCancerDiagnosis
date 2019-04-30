@@ -21,7 +21,7 @@ namespace ImagePreprocessing.Tests
         public void GetTumourPositionFromMaskTest()
         {
             Rectangle RealValue = new Rectangle(1, 1, 1, 1);
-            byte[,] testValue = new byte[,] { { 0, 0, 0 }, { 0, 1, 0 }, { 0, 0, 0 } };
+            byte[,] testValue = new byte[,] { { 0, 0, 0 }, { 0, 255, 0 }, { 0, 0, 0 } };
             UByteArrayAsImage image = new UByteArrayAsImage(testValue);
             Rectangle rectangleTestValue = GetTumourPositionFromMask(image);
 

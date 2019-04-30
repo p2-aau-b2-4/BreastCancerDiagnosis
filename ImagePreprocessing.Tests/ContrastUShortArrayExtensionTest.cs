@@ -44,7 +44,7 @@ namespace ImagePreprocessing.Tests
         }
 
         [TestCase]
-        public void ApplyHistogramEqualizationTestBlackImage()
+        public void ApplyHistogramEqualizationTestWhiteImage()
         {
             var pixelArrayTestValuesResult = new ushort[,] { { 65535, 65535 }, { 65535, 65535 } };
             var image = new UShortArrayAsImage(new ushort[,] { { 65535, 65535 }, { 65535, 65535 } });
@@ -53,5 +53,14 @@ namespace ImagePreprocessing.Tests
             CollectionAssert.AreEqual(pixelArrayTestValuesResult, image.PixelArray);
         }
 
+        [TestCase]
+        public void ApplyHistogramEqualizationTestBlackImage()
+        {
+            var pixelArrayTestValuesResult = new ushort[,] { { 0, 0 }, { 0, 0 } };
+            var image = new UShortArrayAsImage(new ushort[,] { { 0, 0 }, { 0, 0 } });
+            image = Contrast.ApplyHistogramEqualization(image);
+
+            CollectionAssert.AreEqual(pixelArrayTestValuesResult, image.PixelArray);
+        }
     }
 }
