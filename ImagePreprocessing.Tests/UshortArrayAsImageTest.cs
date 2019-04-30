@@ -19,7 +19,7 @@ namespace ImagePreprocessing.Tests
         [TestCase]
         public void GetPngAsMemoryStreamTest()
         {
-            DicomFile.Open("000000.dcm").GetUshortImageInfo().SaveAsPng("wtf.png");
+            DicomFile.Open("000000.dcm").GetUshortImageInfo();
             var testImg =
                 new Bitmap(Image.FromStream(DicomFile.Open("000000.dcm").GetUshortImageInfo().GetPngAsMemoryStream()));
             var resultImg = new Bitmap(Image.FromFile("000000.png"));
