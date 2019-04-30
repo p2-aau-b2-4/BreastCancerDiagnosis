@@ -12,7 +12,7 @@ namespace ImagePreprocessing
     {
         public int Compare(FileInfo x, FileInfo y)
         {
-            return Convert.ToInt32(y.Length) - Convert.ToInt32(x.Length);
+            return y.Length - x.Length > 0 ? 1 : y.Length - x.Length < 0 ? -1 : 0;
         }
     }
 

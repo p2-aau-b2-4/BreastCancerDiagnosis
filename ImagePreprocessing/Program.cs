@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Diagnostics;
+using System.Security.Cryptography;
 using System.Threading;
+using System.Threading.Tasks;
 using Dicom;
 
 namespace ImagePreprocessing
@@ -28,4 +30,3 @@ namespace ImagePreprocessing
         }
     }
 }
-
