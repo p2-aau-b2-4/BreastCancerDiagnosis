@@ -12,7 +12,7 @@ namespace ImagePreprocessing
         static void Main(string[] args)
         {
             List<DdsmImage> ddsmImages =
-                DdsmImage.GetAllImagesFromCsvFile(ConfigurationManager.AppSettings["testSetCsvPath"]);
+                DdsmImage.GetAllImagesFromCsvFile(ConfigurationManager.AppSettings["trainingSetCsvPath"]);
             foreach (var x in ddsmImages)
             {
                // x.DcomOriginalImage.SaveAsPng("testest.png");
