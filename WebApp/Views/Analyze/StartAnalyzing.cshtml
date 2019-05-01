@@ -8,9 +8,16 @@
 <script type="text/javascript">
     var FileLoc = "@ViewBag.ImageId";
 </script>
-<h2 style="margin-bottom:2em">Vent venligst mens Mark analyserer billedet..</h2>
+<h2 style="margin-bottom: 2em">Vent venligst mens Mark analyserer billedet..</h2>
 <div class="spinner-border center" role="status" style="animation-duration: 2.6s; width: 500px; height: 500px; background-image: url('https://images-na.ssl-images-amazon.com/images/I/41q1QAln%2BQL.jpg'); background-size: contain">
     <span class="sr-only">Loading...</span>
 </div>
+<div class="progress">
+    <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+</div>
 <div class="result"></div>
+
+<form id="redirect" method="post" enctype="multipart/form-data" asp-controller="Analyze" asp-action="ShowAnalysis">
+    <input type="hidden" name="filePath" value="@ViewBag.ImageId"/>
+</form>
 <script src="~/js/loadingAnalysis.js" asp-append-version="true"></script>
