@@ -29,6 +29,51 @@ namespace ImagePreprocessing.Tests
         }
 
         [TestCase]
+        public void CropNormalCaseTest()
+        {
+            Rectangle testRect = new Rectangle(0, 0, 2, 2);
+            
+            ushort[,] testValue = new ushort[,] { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 1, 1 } };
+            ushort[,] realCrop = new ushort[,] {{1, 0}, {0, 1}};
+            
+            UShortArrayAsImage image = new UShortArrayAsImage(testValue);
+            UShortArrayAsImage testCrop = Crop(testRect, image);
+            
+            Assert.AreEqual(realCrop, testCrop.PixelArray);
+
+        }
+        
+        [TestCase]
+        public void CropOutOfBoundsCaseTest()
+        {
+            Rectangle testRect = new Rectangle(0, 0, 4, 4);
+            
+            ushort[,] testValue = new ushort[,] { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 1, 1 } };
+            ushort[,] realCrop = new ushort[,] {{ 1, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 1, 1, 0 }, {0, 0, 0, 0}};
+            
+            UShortArrayAsImage image = new UShortArrayAsImage(testValue);
+            UShortArrayAsImage testCrop = Crop(testRect, image);
+            
+            Assert.AreEqual(realCrop, testCrop.PixelArray);
+
+        }
+        
+        [TestCase]
+        public void CropStartOutOfBoundsCaseTest()
+        {
+            Rectangle testRect = new Rectangle(-1, -1, 2, 2);
+            
+            ushort[,] testValue = new ushort[,] { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 1, 1 } };
+            ushort[,] realCrop = new ushort[,] { { 0, 0 }, { 0, 1 } };
+            
+            UShortArrayAsImage image = new UShortArrayAsImage(testValue);
+            UShortArrayAsImage testCrop = Crop(testRect, image);
+            
+            Assert.AreEqual(realCrop, testCrop.PixelArray);
+
+        }
+
+        [TestCase]
         public void FindNearestTest()
         {
             //Does it return the value at the correct position in the array?

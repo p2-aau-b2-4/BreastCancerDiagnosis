@@ -9,6 +9,7 @@ namespace ImagePreprocessing
     {
         public static UShortArrayAsImage GetNormalizedImage(UShortArrayAsImage image, Rectangle tumour, int size)
         {
+
             Rectangle squareTumour = new Rectangle();
             
             if (tumour.Width > tumour.Height)
@@ -99,7 +100,7 @@ namespace ImagePreprocessing
             return new Rectangle(left, top, right-left, bottom-top);
         }
         
-        private static UShortArrayAsImage Crop(Rectangle rectangle, UShortArrayAsImage image)
+        public static UShortArrayAsImage Crop(Rectangle rectangle, UShortArrayAsImage image)
         {
             ushort[,] result = new ushort[rectangle.Height,rectangle.Width];
 
