@@ -90,6 +90,8 @@ namespace WebApp
                     "contact",
                     "/contact",
                     new {controller = "Home", action = "Contact"});
+                routes.MapRoute("analysisStatus", "/analyze/getStatus",
+                    new {controller = "Analyze", action = "GetAnalysisStatus"});
                 routes.MapRoute(
                     "default",
                     "/",
