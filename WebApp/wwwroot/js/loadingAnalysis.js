@@ -1,11 +1,17 @@
 
 // lets check if analysis is complete by constantly pinging a site, telling whether its done
 window.setInterval(function(){
-    /// call your function here
 
     $.post( "getStatus", { imageId: FileLoc},function( data ) {
-        $( ".result" ).html( data );
+        
+        var dataSplitted = data.split(",");
+        $( ".result" ).html( dataSplitted[0] );
+        $(".progress-bar").css("width",dataSplitted[1]+"%");
+        
+        if(dataSplitted[0] === ("done")){
+            $("#redirect").submit();
+        }
     });
     
     
-}, 1000);
+}, 100);

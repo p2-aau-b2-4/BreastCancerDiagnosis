@@ -22,15 +22,21 @@ namespace WebApp.Controllers
     public class AnalyzeController : Controller
     {
         private IMemoryCache _cache;
+        private static string loadedImageStatusStr = "Loaded Image";
+        private static string croppedImageStatusStr = "Cropped Image";
+        private static string contrastImageStatusStr = "Applied contrast";
+        private static string pcaImageStatusStr = "Ran PCA";
+        private static string svmImageStatusStr = "Ran SVM";
+        private static string doneStatusStr = "done";
 
         public AnalyzeController(IMemoryCache memoryCache)
         {
             _cache = memoryCache;
         }
 
-        public IActionResult SelectRegion(String FileName)
+        public IActionResult SelectRegion(String fileName)
         {
-            ViewBag.FileName = FileName;
+            ViewBag.FileName = fileName;
             return View();
         }
 
@@ -76,32 +82,32 @@ namespace WebApp.Controllers
                 new Task(() =>
                 {
                     image = DicomFile.Open(path).GetUshortImageInfo(); 
-                    _cache.Set($"_{imageLoc}-status", "Loaded image");
+                    _cache.Set($"_{imageLoc}-status", loadedImageStatusStr);
                 }),
                 new Task(() =>
                 {
                     image = Normalization.GetNormalizedImage(image, rectangle,
                         int.Parse(ConfigurationManager.AppSettings["SizeImageToAnalyze"]));
                     image.SaveAsPng(path + "-cropped");
-                    _cache.Set($"_{imageLoc}-status", "Crop done");
+                    _cache.Set($"_{imageLoc}-status", croppedImageStatusStr);
                 }),
                 new Task(() =>
                 {
                     image = Contrast.ApplyHistogramEqualization(image);
-                    image.SaveAsPng(path + "croppedContrast");
-                    _cache.Set($"_{imageLoc}-status", "Contrast done");
+                    image.SaveAsPng(path + "-croppedContrast");
+                    _cache.Set($"_{imageLoc}-status", contrastImageStatusStr);
                 }),
                 new Task(() =>
                 {
                     //PCA
                     Thread.Sleep(3000);
-                    _cache.Set($"_{imageLoc}-status", "PCA Done");
+                    _cache.Set($"_{imageLoc}-status", pcaImageStatusStr);
                 }),
                 new Task(() =>
                 {
                     //SVM
                     Thread.Sleep(3000);
-                    _cache.Set($"_{imageLoc}-status", "SVM Done");
+                    _cache.Set($"_{imageLoc}-status", svmImageStatusStr);
                 })
             };
             foreach (Task task in tasks)
@@ -112,15 +118,21 @@ namespace WebApp.Controllers
                 // lets set percentage done:
                 _cache.Set($"_{imageLoc}-percentage", (++tasksComplete*100)/tasks.Count);
             }
-            _cache.Set($"_{imageLoc}-status", "done");
+            _cache.Set($"_{imageLoc}-status", doneStatusStr);
         }
 
         public IActionResult GetAnalysisStatus()
         {
-            StreamReader sr = new StreamReader(Path.GetTempPath() + Request.Form["imageId"] + "-pending.txt");
-            var str = sr.ReadToEnd();
-            sr.Close();
-            return Ok(str);
+            var imageLoc = Request.Form["imageId"];
+            string status = _cache.Get($"_{imageLoc}-status").ToString();
+            string percentage = _cache.Get($"_{imageLoc}-percentage").ToString();
+            if (status.Equals(doneStatusStr));
+            {
+                _cache.Remove($"_{imageLoc}-status");
+                _cache.Remove($"_{imageLoc}-percentage");
+            }
+
+            return Ok(status+","+percentage);
         }
 
 
@@ -128,7 +140,7 @@ namespace WebApp.Controllers
         {
             string filePath = Request.Form["filePath"];
             string croppedImgSrc = filePath + "-cropped";
-            string contrastImgSrc = filePath + "-contrast";
+            string contrastImgSrc = filePath + "-croppedContrast";
 
             ViewBag.CroppedImgSrc = croppedImgSrc;
             ViewBag.ContrastImgSrc = contrastImgSrc;
