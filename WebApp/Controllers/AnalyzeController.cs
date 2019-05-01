@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
@@ -26,6 +27,7 @@ namespace WebApp.Controllers
         {
             _cache = memoryCache;
         }
+
         public IActionResult SelectRegion(String FileName)
         {
             ViewBag.FileName = FileName;
@@ -46,12 +48,8 @@ namespace WebApp.Controllers
 
         public IActionResult StartAnalyzing()
         {
-            StreamWriter sw = new StreamWriter(Path.GetTempPath() + Request.Form["filePath"] + "-pending.txt");
-
-            sw.WriteLine("Hello World!!");
-            sw.Close();
             ViewBag.ImageId = Request.Form["filePath"];
-            
+
             Point a = new Point(int.Parse(Request.Form["x1"]), int.Parse(Request.Form["y1"]));
             Point b = new Point(int.Parse(Request.Form["x2"]), int.Parse(Request.Form["y2"]));
             Rectangle rectangle = new Rectangle(a, new Size(b.X - a.X, b.Y - a.Y));
@@ -59,7 +57,6 @@ namespace WebApp.Controllers
             //before returning, lets start the async task of analyzing.
 #pragma warning disable 4014
             PerformAnalysis(Request.Form["filePath"], rectangle);
-            _cache.
 #pragma warning restore 4014
 
             return View();
@@ -69,66 +66,53 @@ namespace WebApp.Controllers
 
         private async Task PerformAnalysis(String imageLoc, Rectangle rectangle)
         {
-            StreamWriter sw = new StreamWriter(Path.GetTempPath() + Request.Form["filePath"] + "-pending.txt");
-            await sw.WriteLineAsync("begin");
-            sw.Close();
+            _cache.Set("_imageLoc-status", "Starting");
+
+            UShortArrayAsImage image = null;
+            int tasksComplete = 0;
             string path = Path.GetTempPath() + imageLoc;
-            var taskOriginal = new Task<UShortArrayAsImage>(() =>
-                DicomFile.Open(path).GetUshortImageInfo());
-            taskOriginal.Start();
-            UShortArrayAsImage original = await taskOriginal;
-
-            // lets crop the image
-            
-
-            var taskCrop = new Task<UShortArrayAsImage>(() =>
-                Normalization.GetNormalizedImage(original, rectangle,
-                    int.Parse(ConfigurationManager.AppSettings["SizeImageToAnalyze"])));
-            taskCrop.Start();
-            UShortArrayAsImage croppedImage = await taskCrop;
-            Task saveCropped = new Task(() => croppedImage.SaveAsPng(path + "-cropped"));
-
-            sw = new StreamWriter(Path.GetTempPath() + Request.Form["filePath"] + "-pending.txt");
-            await sw.WriteLineAsync("cropped");
-            sw.Close();
-            //sw.WriteLine("CroppedImage");
-
-
-            // lets apply contrast
-            var taskContrast = new Task<UShortArrayAsImage>(() => Contrast.ApplyHistogramEqualization(croppedImage));
-            taskContrast.Start();
-            UShortArrayAsImage croppedContrastImage =
-                await taskContrast;
-            Task saveCroppedContrast = new Task(() => croppedContrastImage.SaveAsPng(path + "-croppedContrast"));
-            saveCroppedContrast.Start();
-
-            sw = new StreamWriter(Path.GetTempPath() + Request.Form["filePath"] + "-pending.txt");
-            await sw.WriteLineAsync("contrast");
-            sw.Close();
-            //sw.WriteLine("Contrast Done");
-
-            // and lets perform PCA
-            Thread.Sleep(3000);
-            //sw.WriteLine("Pca Done");
-
-            sw = new StreamWriter(Path.GetTempPath() + Request.Form["filePath"] + "-pending.txt");
-            await sw.WriteLineAsync("pca");
-            sw.Close();
-
-            // and svm
-            Thread.Sleep(3000);
-            //sw.WriteLine("Svm Done");
-            sw = new StreamWriter(Path.GetTempPath() + Request.Form["filePath"] + "-pending.txt");
-            await sw.WriteLineAsync("svm");
-            sw.Close();
-
-
-            await saveCroppedContrast;
-            await saveCropped;
-
-            sw = new StreamWriter(Path.GetTempPath() + Request.Form["filePath"] + "-pending.txt");
-            await sw.WriteLineAsync("done");
-            sw.Close();
+            List<Task> tasks = new List<Task>()
+            {
+                new Task(() =>
+                {
+                    image = DicomFile.Open(path).GetUshortImageInfo(); 
+                    _cache.Set($"_{imageLoc}-status", "Loaded image");
+                }),
+                new Task(() =>
+                {
+                    image = Normalization.GetNormalizedImage(image, rectangle,
+                        int.Parse(ConfigurationManager.AppSettings["SizeImageToAnalyze"]));
+                    image.SaveAsPng(path + "-cropped");
+                    _cache.Set($"_{imageLoc}-status", "Crop done");
+                }),
+                new Task(() =>
+                {
+                    image = Contrast.ApplyHistogramEqualization(image);
+                    image.SaveAsPng(path + "croppedContrast");
+                    _cache.Set($"_{imageLoc}-status", "Contrast done");
+                }),
+                new Task(() =>
+                {
+                    //PCA
+                    Thread.Sleep(3000);
+                    _cache.Set($"_{imageLoc}-status", "PCA Done");
+                }),
+                new Task(() =>
+                {
+                    //SVM
+                    Thread.Sleep(3000);
+                    _cache.Set($"_{imageLoc}-status", "SVM Done");
+                })
+            };
+            foreach (Task task in tasks)
+            {
+                task.Start();
+                await task;
+                
+                // lets set percentage done:
+                _cache.Set($"_{imageLoc}-percentage", (++tasksComplete*100)/tasks.Count);
+            }
+            _cache.Set($"_{imageLoc}-status", "done");
         }
 
         public IActionResult GetAnalysisStatus()
