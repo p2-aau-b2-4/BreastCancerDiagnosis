@@ -25,12 +25,12 @@ namespace ImagePreprocessing
             
         }
         
-        private static ushort FindNearest(double x, double y, ushort[,] image)
+        public static ushort FindNearest(double x, double y, ushort[,] image)
         {
             return image[ (int) y,(int)x];
         }
 
-        private static float Map(float s, float a1, float a2, float b1, float b2)
+        public static float Map(float s, float a1, float a2, float b1, float b2)
             // lånt fra https://forum.unity.com/threads/re-map-a-number-from-one-range-to-another.119437/
         { 
             //todo denne kode er flere steder
