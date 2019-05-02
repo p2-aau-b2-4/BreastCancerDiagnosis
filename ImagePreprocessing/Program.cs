@@ -15,7 +15,7 @@ namespace ImagePreprocessing
     {
         static void Main(string[] args)
         {
-            List<DdsmImage> ddsmImages =
+           /* List<DdsmImage> ddsmImages =
                 DdsmImage.GetAllImagesFromCsvFile(@"e:\brysttest\mass_case_description_train_set.csv");
             Parallel.ForEach(ddsmImages, ddsmImage =>
             { 
@@ -26,6 +26,19 @@ namespace ImagePreprocessing
                 image = Contrast.ApplyHistogramEqualization(image);
                 image.SaveAsPng("images/ready" + Guid.NewGuid()+ ".png");
             });
+            */
+
+           var img = DicomFile.Open(@"000000.dcm").GetUshortImageInfo();
+           
+           img.SaveAsPng("OriginalImage.png");
+           
+           Rectangle meh = new Rectangle(1,1,1,1);
+            
+           ushort[,] testValue = new ushort[,] { { 1, 1, 0, 0 }, { 0, 1, 0, 1}, { 0, 1, 0, 1}, { 0, 1, 1, 0 } };
+           UShortArrayAsImage testImage = new UShortArrayAsImage(testValue);
+           Normalization.ResizeImage(testImage, 6);
+
+
         }
 
 

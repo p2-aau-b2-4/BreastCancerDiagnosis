@@ -96,6 +96,7 @@ namespace ImagePreprocessing.Tests
         [TestCase]
         public void ResizeImageUpTest()
         {
+            //Downscaling an image
             ushort[,] testValue = new ushort[,] { { 1, 1, 0, 0 }, { 0, 1, 0, 1}, { 0, 1, 0, 1}, { 0, 1, 1, 0 } };
             UShortArrayAsImage testImage = new UShortArrayAsImage(testValue);
             
