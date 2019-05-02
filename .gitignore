@@ -335,3 +335,8 @@ ASALocalRun/
 *.png
 *.jpg
 *.gz
+
+# allow 
+!*.Tests/*.dcm
+Training/App.config
+*.config
