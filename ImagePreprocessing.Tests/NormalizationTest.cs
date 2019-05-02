@@ -109,5 +109,20 @@ namespace ImagePreprocessing.Tests
             Assert.AreEqual(realValue, resizeImageDown.PixelArray);
 
         }
+        
+        [TestCase]
+        public void ResizeImageUpTest()
+        {   
+            // Expected Value
+            ushort[,] realValue = new ushort[,] {{1,1,1,0,0,0}, {1,1,1,0,0,0}, {0,0,1,0,0,1}, {0,0,1,0,0,1}, {0,0,1,0,0,1}, {0,0,1,1,1,0}};
+            
+            //Test image to pass to method
+            ushort[,] testValue = new ushort[,] { { 1,1, 0, 0 }, { 0, 1, 0, 1 }, { 0, 1, 0, 1 }, { 0, 1, 1, 0 } };
+            UShortArrayAsImage testImage = new UShortArrayAsImage(testValue);
+                
+            Assert.AreEqual(realValue, ResizeImage(testImage, 6).PixelArray);
+            
+        }
+        
     }
 }
