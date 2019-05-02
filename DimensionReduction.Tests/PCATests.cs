@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra.Double;
@@ -11,7 +12,7 @@ namespace DimensionReduction.Tests
     [TestFixture, Description("Tests for the PCA Class")]
     public class PCATests
     {
-        double floatingPointTolerance = 0.00000001;
+        double floatingPointTolerance = 0.0000001;
         PCA p = new PCA();
 
         [Test, Description("Tests a normal case for MeanSubtraction")]
