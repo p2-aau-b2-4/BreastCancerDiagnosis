@@ -77,11 +77,11 @@ namespace ImagePreprocessing.Tests
         public void FindNearestTest()
         {
             //Does it return the value at the correct position in the array?
-            ushort[,] RealImageValue = new ushort[3,5];
-            RealImageValue[2, 3] = 17;
-            ushort testImageValue = FindNearest(3.3, 2.8, RealImageValue);
+            ushort[,] realImageValue = new ushort[3,5];
+            realImageValue[2, 3] = 17;
+            ushort testImageValue = FindNearest(3.3, 2.8, realImageValue);
             
-            Assert.AreEqual(RealImageValue[2,3], testImageValue);
+            Assert.AreEqual(realImageValue[2,3], testImageValue);
         }
 
         [TestCase]
@@ -91,6 +91,23 @@ namespace ImagePreprocessing.Tests
             float realValue = -2.6904214876f;
             float testValue = Map(4.89f, 19f, -5.2f, 7f, -9.62f);
             Assert.AreEqual(Math.Round(realValue, 2, MidpointRounding.ToEven), Math.Round(testValue, 2, MidpointRounding.ToEven));
+        }
+
+        [TestCase]
+        public void ResizeImageDownTest()
+        {
+            //Expected value
+            ushort[,] realValue = new ushort[,] { { 1,0 }, { 0, 0 }};
+            
+            //Test image to pass to method
+            ushort[,] testValue = new ushort[,] { { 1,1, 0, 0 }, { 0, 1, 0,1 }, { 0, 1, 0, 1 }, { 0, 1, 1, 0 } };
+            UShortArrayAsImage testImage = new UShortArrayAsImage(testValue);
+            
+            //Method result
+            var resizeImageDown = ResizeImage(testImage, 2);
+            
+            Assert.AreEqual(realValue, resizeImageDown.PixelArray);
+
         }
     }
 }
