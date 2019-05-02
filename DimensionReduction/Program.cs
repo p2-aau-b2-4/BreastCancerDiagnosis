@@ -24,60 +24,24 @@ namespace DicomDisplayTest
     {
         static void Main(string[] args) {
             PCA pca = new PCA();
-            List<DdsmImage> DDSMImages =
-                DdsmImage.GetAllImagesFromCsvFile(@"E:\BrystTest\mass_case_description_train_set.csv");
-            Console.WriteLine($"Found {DDSMImages.Count}");
+            //List<DdsmImage> DDSMImages =
+            //    DdsmImage.GetAllImagesFromCsvFile(@"E:\BrystTest\mass_case_description_train_set.csv");
+            //Console.WriteLine($"Found {DDSMImages.Count}");
             
             
             List<UShortArrayAsImage> list = new List<UShortArrayAsImage>();
-            //UShortArrayAsImage image1 = Normalization.DicomFile.Open("000000.dcm").GetUshortImageInfo();
+            UShortArrayAsImage image1 = Normalization.GetNormalizedImage(DicomFile.Open("000000.dcm").GetUshortImageInfo(), new Rectangle(0,0,100,100),100 );
             
-            list.Add(Normalization.GetNormalizedImage(DDSMImages[0].DcomOriginalImage,Normalization.GetTumourPositionFromMask(DDSMImages[0].DcomMaskImage),50));
-            list.Add(Normalization.GetNormalizedImage(DDSMImages[1].DcomOriginalImage,Normalization.GetTumourPositionFromMask(DDSMImages[1].DcomMaskImage),50));
-            
-            //list.Add(image1);
-            /*list.Add(image1);*/
-            
-            /*SparseMatrix sparseMatrix = SparseMatrix.OfArray(arr);
-
-            sparseMatrix = pca.MeanSubtraction(sparseMatrix);
-            sparseMatrix = pca.CovarianceMatrix(sparseMatrix);
-            pca.SolveEigenValues(sparseMatrix);
-            pca.SolveEigenVectors(sparseMatrix);*/
-            
-            //PCA2 pca2 = new PCA2();
-            
-            
-            //pca2.Train(bitmaps);
-
-            pca.Train(list);
-            
-            
-            
-
-            /*sM5 = pca.MeanSubtraction(sM5);
-            sM5 = pca.CovarianceMatrix(sM5);
-
-            for (int xIndex = 0; xIndex < 4; xIndex++)
+            //list.Add(Normalization.GetNormalizedImage(DDSMImages[0].DcomOriginalImage,Normalization.GetTumourPositionFromMask(DDSMImages[0].DcomMaskImage),50));
+            //list.Add(Normalization.GetNormalizedImage(DDSMImages[1].DcomOriginalImage,Normalization.GetTumourPositionFromMask(DDSMImages[1].DcomMaskImage),50));
+            for (int i = 0; i < 10000; i++)
             {
-                for (int yIndex = 0; yIndex < 4; yIndex++)
-                {
-                    Console.Write(sM5[xIndex, yIndex]);
-                }
-
-                Console.WriteLine();
+                
+                list.Add(image1);
             }
 
-            pca.SolveEigenValues(sM5);
-            pca.SolveEigenValues(sM5);*/
-            
-            // Example #3: Write only some strings in an array to a file.
-            // The using statement automatically flushes AND CLOSES the stream and calls 
-            // IDisposable.Dispose on the stream object.
-            // NOTE: do not use FileStream for text files because it writes bytes, but StreamWriter
-            // encodes the output as text.
-            
-            
+            Console.WriteLine("list is done");
+            pca.Train(list);
         }
     }
 }

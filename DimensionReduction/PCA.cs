@@ -38,19 +38,20 @@ namespace DimensionReduction
 
         public void Train(List<UShortArrayAsImage> images)
         {
-            double[,] allImages = new double[images.Count, images[0].Width*images[0].Height];
+            double[,] allImages = new double[images.Count, images[0].Width * images[0].Height];
             int i = 0;
             foreach (var image in images)
             {
-                double[,] tempI = new double[image.Width,image.Height]; 
-                Array.Copy(image.PixelArray,tempI,image.PixelArray.Length); 
-                double[] dImage = new double[image.Width*image.Height];
+                
+                double[,] tempI = new double[image.Width, image.Height];
+                Array.Copy(image.PixelArray, tempI, image.PixelArray.Length);
+                double[] dImage = new double[image.Width * image.Height];
                 for (int y = 0; y < image.Height; y++)
                 {
                     for (int x = 0; x < image.Width; x++)
                     {
                         //dImage[y * image.Width + x] = image.GetPixel(x,y).R;
-                        dImage[y * image.Width + x] = tempI[x,y];
+                        dImage[y * image.Width + x] = tempI[x, y];
                     }
                 }
 
@@ -63,21 +64,30 @@ namespace DimensionReduction
                 }
 
                 i++;
+                Console.WriteLine($"Copied image #{i}");
             }
 
             SparseMatrix matrix = SparseMatrix.OfArray(allImages);
+
+            Console.WriteLine("done creating array");
             matrix = MeanSubtraction(matrix);
+
+            Console.WriteLine("done meansubtraction");
             matrix = CovarianceMatrix(matrix);
+            
+            Console.WriteLine($"Done covariance");
 
             Evd<double> eigen = SolveForEigen(matrix);
-            
+
+            Console.WriteLine("done creating eigen");
+
             List<(Complex, Matrix<double>)> eigenLumps = new List<(Complex, Matrix<double>)>();
 
             List<List<double>> features = new List<List<double>>();
             List<System.Numerics.Vector<double>> meanSums = new List<System.Numerics.Vector<double>>();
 
-            Model model = new Model(eigen.EigenValues, eigen.EigenVectors, eigenLumps, features, new List<Vector<double>>());
-            model.SaveModelToFile("t.xml");
+            //Model model = new Model(eigen.EigenValues, eigen.EigenVectors, eigenLumps, features, new List<Vector<double>>());
+            //model.SaveModelToFile("t.xml");
         }
 
         ///<summary>
@@ -89,8 +99,9 @@ namespace DimensionReduction
         {
             var sums = matrix.ColumnSums();
             int index = 0;
-            SparseMatrix tmpMatrix = new SparseMatrix(matrix.RowCount,matrix.ColumnCount);
-            List<MathNet.Numerics.LinearAlgebra.Vector<double>> vectors = new List<MathNet.Numerics.LinearAlgebra.Vector<double>>();
+            SparseMatrix tmpMatrix = new SparseMatrix(matrix.RowCount, matrix.ColumnCount);
+            List<MathNet.Numerics.LinearAlgebra.Vector<double>> vectors =
+                new List<MathNet.Numerics.LinearAlgebra.Vector<double>>();
             matrix.CopyTo(tmpMatrix);
             foreach (var sum in sums)
             {
@@ -102,7 +113,7 @@ namespace DimensionReduction
                 var tmpVector = matrix.Column(index);
                 tmpVector = tmpVector.Subtract(xI);
                 vectors.Add(tmpVector);
-                
+
                 index += 1;
             }
 
@@ -127,37 +138,21 @@ namespace DimensionReduction
         ///<param name=matrix>input matrix</param>
         public SparseMatrix CovarianceMatrix(SparseMatrix matrix)
         {
-            //double[,] cMatrix = new double[matrix.ColumnCount, matrix.ColumnCount];
-            
-            SparseMatrix scMatrix = new SparseMatrix(matrix.ColumnCount, matrix.ColumnCount);
-            
-            SparseMatrix tmpMatrix = new SparseMatrix(matrix.RowCount,matrix.ColumnCount);
-            matrix.CopyTo(tmpMatrix);
-
-
-            int columns = matrix.ColumnCount;
-            int rowcount = matrix.RowCount;
-            
-            Console.WriteLine($"{columns}*{rowcount}*{columns} = {columns*rowcount*columns}");
-            for (int x = 0; x < columns; x++)
+            double[,] scArrayMatrix = new double[matrix.ColumnCount, matrix.ColumnCount];
+            double[,] tmpArrayMatrix = matrix.ToArray();
+            for (int i = 0; i < matrix.RowCount; i++)
             {
-                Console.WriteLine(x);
-                for (int y = 0; y < columns; y++) // hvad er kompleksiteten p[ columns og rowcount?
+                if(i % 1 == 0) Console.WriteLine($"{i/matrix.RowCount}% done");
+                for (int x = 0; x < matrix.ColumnCount; x++)
                 {
-                    for (int i = 0; i < rowcount; i++)
+                    for (int y = 0; y < matrix.ColumnCount; y++)
                     {
-                        double val = Covariance(tmpMatrix[i, x], tmpMatrix[i, y],
-                            matrix.RowCount);
-
-                        if (Double.IsNegativeInfinity(val) || Double.IsInfinity(val))
-                            throw new NotFiniteNumberException(val);
-
-                        scMatrix[x, y] += val;
+                        scArrayMatrix[x, y] += (tmpArrayMatrix[i, x] * tmpArrayMatrix[i, y]) / (matrix.RowCount - 1);
                     }
                 }
             }
 
-            return scMatrix; //SparseMatrix.OfArray(scMatrix);
+            return SparseMatrix.OfArray(scArrayMatrix);
         }
 
         ///<summary>

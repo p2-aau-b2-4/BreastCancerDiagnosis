@@ -4,6 +4,7 @@ using NUnit.Framework;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra.Double;
 using DimensionReduction;
+using DimensionReduction;
 
 namespace DimensionReduction.Tests
 {
