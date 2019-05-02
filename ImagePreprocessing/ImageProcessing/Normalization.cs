@@ -49,8 +49,6 @@ namespace ImagePreprocessing
                 {
                     newImage[y, x] = FindNearest(Map(x, 0, size, 0, image.GetLength(1)),
                         Map(y, 0, size, 0, image.GetLength(0)), image);
-
-                    Console.WriteLine(newImage[y,x]);
                 }
             }
             return new UShortArrayAsImage(newImage);
