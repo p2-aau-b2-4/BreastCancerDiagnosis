@@ -92,5 +92,21 @@ namespace ImagePreprocessing.Tests
             float testValue = Map(4.89f, 19f, -5.2f, 7f, -9.62f);
             Assert.AreEqual(Math.Round(realValue, 2, MidpointRounding.ToEven), Math.Round(testValue, 2, MidpointRounding.ToEven));
         }
+
+        [TestCase]
+        public void ResizeImageUpTest()
+        {
+            ushort[,] testValue = new ushort[,] { { 1, 1, 0, 0 }, { 0, 1, 0, 1}, { 0, 1, 0, 1}, { 0, 1, 1, 0 } };
+            UShortArrayAsImage testImage = new UShortArrayAsImage(testValue);
+            
+            // 110000110000111111000001000001001110
+            ushort[,] realValue = new ushort[,] {{1,1,0,0,0,0}, {1,1,0,0,0,0}, {1,1,1,1,1,1}, {0,0,0,0,0,1}, {0,0,0,0,0,1}, {0,0,1,1,1,0}}; 
+
+            var imagestuff = ResizeImage(testImage, 6);
+                
+            Assert.AreEqual(realValue, imagestuff.PixelArray);
+            
+        }
+        
     }
 }
