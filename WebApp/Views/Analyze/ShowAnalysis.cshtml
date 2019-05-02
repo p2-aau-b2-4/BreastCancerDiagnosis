@@ -1,0 +1,12 @@
+@model object
+
+@{
+    ViewBag.Title = "Resultater";
+    Layout = "_Layout";
+}
+
+<h2 class="center">Klassificering: @ViewBag.Classification</h2>
+<h4 class="center">Sikkerhed: @ViewBag.Probability%</h4>
+
+<br/><img class="center" src="/analyze/showSavedPng/@ViewBag.CroppedImgSrc"/>
+<br/><img class="center" src="/analyze/showSavedPng/@ViewBag.ContrastImgSrc"/>

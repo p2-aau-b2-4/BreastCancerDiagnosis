@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,13 +20,13 @@ namespace WebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<CookiePolicyOptions>(options =>
-            {
+            //services.Configure<CookiePolicyOptions>(options =>
+            //{
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
-
+            //    options.CheckConsentNeeded = context => true;
+            //    options.MinimumSameSitePolicy = SameSiteMode.None;
+            //});
+            services.AddMemoryCache();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
@@ -46,23 +47,55 @@ namespace WebApp
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseCookiePolicy();
 
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-                routes.MapRoute(
-                    "Default",                                              // Route name
-                    "/png",                           // URL with parameters
-                    new { controller = "Home", action = "Png", id = "" }  // Parameter defaults
+                    "OperationUpload", // Route name
+                    "/opr/uploadfile", // URL with parameters
+                    new {controller = "Operations", action = "UploadFile"} // Parameter defaults
                 );
                 routes.MapRoute(
-                    "OperationUpload",                                              // Route name
-                    "/opr/uploadfile",                           // URL with parameters
-                    new { controller = "Operations", action = "UploadFile", id = "" }  // Parameter defaults
-                );
+                    "SelectRegion",
+                    "/analyze/selectregion/{FileName}",
+                    new {controller = "Analyze", action = "SelectRegion"},
+                    new {FileName = @"[\w-]+"});
+                routes.MapRoute(
+                    "ShowPng",
+                    "/analyze/showPng/{path}",
+                    new {controller = "Analyze", action = "GetPngFromTempPath"},
+                    new {path = @"[\w-]+"});
+                routes.MapRoute(
+                    "ShowSavedPng",
+                    "/analyze/showSavedPng/{path}",
+                    new {controller = "Analyze", action = "GetPngFromSavedTempPath"},
+                    new {path = @"[\w-]+"});
+                routes.MapRoute(
+                    "StartAnalyzing",
+                    "/analyze/startAnalyze",
+                    new {controller = "Analyze", action = "StartAnalyzing"});
+                routes.MapRoute(
+                    "ShowAnalysis",
+                    "/analyze/showResult",
+                    new {controller = "Analyze", action = "ShowAnalysis"});
+                routes.MapRoute(
+                    "about",
+                    "/about",
+                    new {controller = "Home", action = "About"});
+                routes.MapRoute(
+                    "statistics",
+                    "/statistics",
+                    new {controller = "Home", action = "Statistics"});
+                routes.MapRoute(
+                    "contact",
+                    "/contact",
+                    new {controller = "Home", action = "Contact"});
+                routes.MapRoute("analysisStatus", "/analyze/getStatus",
+                    new {controller = "Analyze", action = "GetAnalysisStatus"});
+                routes.MapRoute(
+                    "default",
+                    "/",
+                    new {controller = "Home", action = "Index"});
             });
         }
     }

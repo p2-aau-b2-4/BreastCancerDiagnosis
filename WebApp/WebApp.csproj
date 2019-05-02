@@ -9,9 +9,27 @@
 
 
   <ItemGroup>
+    <PackageReference Include="fo-dicom.NetCore" Version="4.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="2.0.1" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\ImagePreprocessing\ImagePreprocessing.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="Pages" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Content Include="..\Training\App.config">
+      <Link>App.config</Link>
+    </Content>
   </ItemGroup>
 
 </Project>
