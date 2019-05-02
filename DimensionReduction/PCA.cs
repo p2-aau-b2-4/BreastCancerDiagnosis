@@ -36,14 +36,14 @@ namespace DimensionReduction
             //Select 1
         }
 
-        public void Train(List<UshortArrayAsImage> images)
+        public void Train(List<UShortArrayAsImage> images)
         {
             double[,] allImages = new double[images.Count, images[0].Width*images[0].Height];
             int i = 0;
             foreach (var image in images)
             {
                 double[,] tempI = new double[image.Width,image.Height]; 
-                Array.Copy(image.PixelArray,tempI,image.PixelCount); 
+                Array.Copy(image.PixelArray,tempI,image.PixelArray.Length); 
                 double[] dImage = new double[image.Width*image.Height];
                 for (int y = 0; y < image.Height; y++)
                 {
@@ -134,11 +134,17 @@ namespace DimensionReduction
             SparseMatrix tmpMatrix = new SparseMatrix(matrix.RowCount,matrix.ColumnCount);
             matrix.CopyTo(tmpMatrix);
 
-            for (int x = 0; x < matrix.ColumnCount; x++)
+
+            int columns = matrix.ColumnCount;
+            int rowcount = matrix.RowCount;
+            
+            Console.WriteLine($"{columns}*{rowcount}*{columns} = {columns*rowcount*columns}");
+            for (int x = 0; x < columns; x++)
             {
-                for (int y = 0; y < matrix.ColumnCount; y++)
+                Console.WriteLine(x);
+                for (int y = 0; y < columns; y++) // hvad er kompleksiteten p[ columns og rowcount?
                 {
-                    for (int i = 0; i < matrix.RowCount; i++)
+                    for (int i = 0; i < rowcount; i++)
                     {
                         double val = Covariance(tmpMatrix[i, x], tmpMatrix[i, y],
                             matrix.RowCount);

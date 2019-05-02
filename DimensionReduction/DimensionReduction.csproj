@@ -10,5 +10,20 @@
       <Link>App.config</Link>
     </Content>
   </ItemGroup>
+  
+  
+  <ItemGroup>
+    <PackageReference Include="fo-dicom.NetCore" Version="4.0.1" />
+    <PackageReference Include="MathNet.Numerics" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ImagePreprocessing\ImagePreprocessing.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="PCA2.cs" />
+    <Compile Remove="PCA3.cs" />
+  </ItemGroup>
 
 </Project>
