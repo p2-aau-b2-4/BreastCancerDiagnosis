@@ -1,6 +1,10 @@
 using System;
+using System.Collections.Concurrent;
 using Complex = System.Numerics.Complex;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using BitMiracle.LibJpeg.Classic;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra.Double;
@@ -10,6 +14,7 @@ using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Factorization;
 using Microsoft.Win32.SafeHandles;
 using Vector = MathNet.Numerics.LinearAlgebra.Double.Vector;
+using Accord.Statistics;
 
 
 namespace DimensionReduction
@@ -42,7 +47,6 @@ namespace DimensionReduction
             int i = 0;
             foreach (var image in images)
             {
-                
                 double[,] tempI = new double[image.Width, image.Height];
                 Array.Copy(image.PixelArray, tempI, image.PixelArray.Length);
                 double[] dImage = new double[image.Width * image.Height];
@@ -74,7 +78,7 @@ namespace DimensionReduction
 
             Console.WriteLine("done meansubtraction");
             matrix = CovarianceMatrix(matrix);
-            
+
             Console.WriteLine($"Done covariance");
 
             Evd<double> eigen = SolveForEigen(matrix);
@@ -136,23 +140,57 @@ namespace DimensionReduction
         ///Finds the covariance matrix of a SparseMatrix
         ///</summary>
         ///<param name=matrix>input matrix</param>
+        /* public SparseMatrix CovarianceMatrix(SparseMatrix matrix)
+         {
+             
+             ConcurrentQueue<double[,]> count = new ConcurrentQueue<double[,]>();
+             double[,] tmpArrayMatrix = matrix.ToArray();
+             var cancellationTokenSource = new CancellationTokenSource();
+             var addMatricesInQueue = new Task(() => AddMatricesInQueue(count,matrix.ColumnCount,matrix.RowCount,cancellationToken));
+             Parallel.For(0, matrix.RowCount, (i, state) =>
+             {
+                 double[,] scArrayMatrix = new double[matrix.ColumnCount, matrix.ColumnCount];
+                 Console.WriteLine($"{count.Count} / {matrix.RowCount}");
+                 for (int x = 0; x < matrix.ColumnCount; x++)
+                 {
+                     for (int y = 0; y < matrix.ColumnCount; y++)
+                     {
+                         scArrayMatrix[x, y] += (tmpArrayMatrix[i, x] * tmpArrayMatrix[i, y]) / (matrix.RowCount - 1); // this is not threadsafe atm
+                     }
+                 }
+                 count.Enqueue(scArrayMatrix);
+             });
+             cancellationTokenSource.Cancel();
+ 
+             return await AddMatricesInQueue;
+         }*/
         public SparseMatrix CovarianceMatrix(SparseMatrix matrix)
         {
-            double[,] scArrayMatrix = new double[matrix.ColumnCount, matrix.ColumnCount];
             double[,] tmpArrayMatrix = matrix.ToArray();
-            for (int i = 0; i < matrix.RowCount; i++)
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            var covMatrix = tmpArrayMatrix.Covariance();
+            stopwatch.Stop();
+            Console.WriteLine($"Took {stopwatch.ElapsedMilliseconds}");
+            return SparseMatrix.OfArray(covMatrix);
+        }
+
+        private async Task<double[,]> AddMatricesInQueue(ConcurrentQueue<double[,]> queue, int columns, int rows,
+            CancellationToken cancellationToken)
+        {
+            double[,] scArrayMatrix = new double[columns, rows];
+            while (queue.TryDequeue(out var toAdd) || !cancellationToken.IsCancellationRequested)
             {
-                if(i % 1 == 0) Console.WriteLine($"{i/matrix.RowCount}% done");
-                for (int x = 0; x < matrix.ColumnCount; x++)
+                for (int x = 0; x < columns; x++)
                 {
-                    for (int y = 0; y < matrix.ColumnCount; y++)
+                    for (int y = 0; y < rows; y++)
                     {
-                        scArrayMatrix[x, y] += (tmpArrayMatrix[i, x] * tmpArrayMatrix[i, y]) / (matrix.RowCount - 1);
+                        scArrayMatrix[x, y] += toAdd[x, y];
                     }
                 }
             }
 
-            return SparseMatrix.OfArray(scArrayMatrix);
+            return scArrayMatrix;
         }
 
         ///<summary>

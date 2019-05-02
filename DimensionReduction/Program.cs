@@ -34,9 +34,8 @@ namespace DicomDisplayTest
             
             //list.Add(Normalization.GetNormalizedImage(DDSMImages[0].DcomOriginalImage,Normalization.GetTumourPositionFromMask(DDSMImages[0].DcomMaskImage),50));
             //list.Add(Normalization.GetNormalizedImage(DDSMImages[1].DcomOriginalImage,Normalization.GetTumourPositionFromMask(DDSMImages[1].DcomMaskImage),50));
-            for (int i = 0; i < 10000; i++)
+            for (int i = 0; i < 100; i++)
             {
-                
                 list.Add(image1);
             }
 
