@@ -173,22 +173,27 @@ namespace DimensionReduction
             sw.Start();
             double[,] scArrayMatrix = new double[matrix.ColumnCount, matrix.ColumnCount];
             double[,] tmpArrayMatrix = matrix.ToArray();
-            for (int i = 0; i < matrix.RowCount; i++)
-            {
-                if (i % 1 == 0) Console.WriteLine($"{i * 100 / matrix.RowCount}% done");
-                Parallel.For(0, matrix.ColumnCount,
-                    x =>
-                    { // the middle for loop is parallized. The first cannot, since it would not be atomic, the third is not parallized, due to overhead. (was 68% faster without)
+
+            
+            Parallel.For(0, matrix.ColumnCount,
+                x =>
+                {
+                    
+                    // the middle for loop is parallized. The first cannot, since it would not be atomic, the third is not parallized, due to overhead. (was 68% faster without)
+
+                    for (int i = 0; i < matrix.RowCount; i++)
+                    {
                         for (int y = 0; y < matrix.ColumnCount; y++)
 
                         {
                             scArrayMatrix[x, y] +=
                                 (tmpArrayMatrix[i, x] * tmpArrayMatrix[i, y]) / (matrix.RowCount - 1);
                         }
+                    }
 
-                        ;
-                    });
-            }
+                    ;
+                });
+
 
             sw.Stop();
             Console.WriteLine($"Took {sw.ElapsedMilliseconds}ms");
