@@ -29,9 +29,9 @@ namespace ImagePreprocessing
             });
             */
 
-            var imgInfo= DicomFile.Open(@"000000.dcm").GetUshortImageInfo();
+            var imgInfo= DicomFile.Open(@"000001.dcm").GetUByteImageInfo();
             imgInfo.SaveAsPng("eINFO.PNG");
-            Normalization.ResizeImage(imgInfo, 6);
+            //Normalization.ResizeImage(imgInfo, 6);
         }
 
 
