@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 
 namespace ImagePreprocessing
 {
+    [Serializable]
     public class UShortArrayAsImage : ArrayAsImageAbstract<ushort[,]>
     {
         public sealed override ushort[,] PixelArray

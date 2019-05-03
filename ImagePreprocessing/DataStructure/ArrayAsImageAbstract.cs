@@ -6,6 +6,7 @@ using System.IO;
 
 namespace ImagePreprocessing
 {
+    [Serializable]
     public abstract class ArrayAsImageAbstract<T>
     {
         public int Width { get; }
