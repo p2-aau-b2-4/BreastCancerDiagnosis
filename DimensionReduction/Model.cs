@@ -41,6 +41,8 @@ namespace DimensionReduction
         ///</summary>
         public List<MathNet.Numerics.LinearAlgebra.Vector<double>> MeanSums { get => _meanSums; }
 
+        public string ErDuModel { get => new String("Ja"); }
+
         ///<summary>
         ///Saves the current model object to an XML file.
         ///</summary>
