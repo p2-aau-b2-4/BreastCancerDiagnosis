@@ -9,15 +9,16 @@ namespace ImagePreprocessing
     {
         public static UShortArrayAsImage GetNormalizedImage(UShortArrayAsImage image, Rectangle tumour, int size)
         {
+
             Rectangle squareTumour = new Rectangle();
 
             if (tumour.Width > tumour.Height)
             {
-                squareTumour = new Rectangle(tumour.X, tumour.Y - (tumour.Width - tumour.Height), tumour.Width, tumour.Width);
+                squareTumour = new Rectangle(tumour.X, tumour.Y - (tumour.Width-tumour.Height), tumour.Width, tumour.Width);
             }
             else if (tumour.Width < tumour.Height || tumour.Width == tumour.Height)
             {
-                squareTumour = new Rectangle(tumour.X - (tumour.Height - tumour.Width), tumour.Y, tumour.Height, tumour.Height);
+                squareTumour = new Rectangle(tumour.X - (tumour.Height-tumour.Width), tumour.Y, tumour.Height, tumour.Height);
             }
 
             return ResizeImage(Crop(squareTumour, image), size);
@@ -25,13 +26,13 @@ namespace ImagePreprocessing
 
         }
 
-        private static ushort FindNearest(double x, double y, ushort[,] image)
+        public static ushort FindNearest(double x, double y, ushort[,] image)
         {
             return image[(int)y, (int)x];
         }
 
-        private static float Map(float s, float a1, float a2, float b1, float b2)
-        // lånt fra https://forum.unity.com/threads/re-map-a-number-from-one-range-to-another.119437/
+        public static float Map(float s, float a1, float a2, float b1, float b2)
+            // lånt fra https://forum.unity.com/threads/re-map-a-number-from-one-range-to-another.119437/
         {
             //todo denne kode er flere steder
             return b1 + (s - a1) * (b2 - b1) / (a2 - a1);
@@ -74,7 +75,7 @@ namespace ImagePreprocessing
                 }
 
                 if (top == -1 && containsMask) top = y;
-                else if (top != -1 && containsMask) bottom = y;
+                if(containsMask) bottom = y+1;
             }
 
             for (int x = 0; x < mask.GetLength(1); x++)
@@ -82,7 +83,7 @@ namespace ImagePreprocessing
                 bool containsMask = false;
                 for (int y = 0; y < mask.GetLength(0); y++)
                 {
-                    if (mask[y, x] != 0)
+                    if (mask[y, x] == 255)
                     {
                         containsMask = true;
                         break;
@@ -90,7 +91,7 @@ namespace ImagePreprocessing
                 }
 
                 if (left == -1 && containsMask) left = x;
-                else if (left != -1 && containsMask) right = x;
+                if(containsMask) right = x+1;
             }
 
             if (right == -1) right = mask.GetLength(1) - 1;
@@ -99,7 +100,7 @@ namespace ImagePreprocessing
             return new Rectangle(left, top, right - left, bottom - top);
         }
 
-        private static UShortArrayAsImage Crop(Rectangle rectangle, UShortArrayAsImage image)
+        public static UShortArrayAsImage Crop(Rectangle rectangle, UShortArrayAsImage image)
         {
             ushort[,] result = new ushort[rectangle.Height, rectangle.Width];
 
@@ -110,8 +111,8 @@ namespace ImagePreprocessing
                 if (rectangle.X + x < 0 || rectangle.X + x >= image.Width) continue;
                 for (int y = 0; y < rectangle.Height; y++)
                 {
-                    if (rectangle.Y + y < 0 || rectangle.Y + y >= image.Height) continue;
-                    result[y, x] = current[y + rectangle.Y, x + rectangle.X];
+                    if (rectangle.Y + y < 0 || rectangle.Y+y >= image.Height) continue;
+                    result[y, x] = current[y + rectangle.Y,x + rectangle.X];
                 }
             }
             return new UShortArrayAsImage(result);

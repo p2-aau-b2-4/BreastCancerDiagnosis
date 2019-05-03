@@ -15,17 +15,25 @@ namespace ImagePreprocessing
     {
         static void Main(string[] args)
         {
-
+            /*
             List<DdsmImage> ddsmImages =
-                DdsmImage.GetAllImagesFromCsvFile(ConfigurationManager.AppSettings["testSetCsvPath"]);
-
-            foreach (var x in ddsmImages)
+                DdsmImage.GetAllImagesFromCsvFile(@"e:\brysttest\mass_case_description_train_set.csv");
+            Parallel.ForEach(ddsmImages, ddsmImage =>
             {
-                var image = x.DcomOriginalImage;
-                image.SaveAsPng("tester.png");
-                
-                break;
-            }
+                var image = ddsmImage.DcomOriginalImage;
+                Rectangle rectangle = Normalization.GetTumourPositionFromMask(ddsmImage.DcomMaskImage);
+                image = Normalization.GetNormalizedImage(image,
+                    rectangle, 500);
+                image = Contrast.ApplyHistogramEqualization(image);
+                image.SaveAsPng("images/ready" + Guid.NewGuid()+ ".png");
+            });
+            */
+
+            var imgInfo= DicomFile.Open(@"000000.dcm").GetUshortImageInfo();
+            imgInfo.SaveAsPng("eINFO.PNG");
+            Normalization.ResizeImage(imgInfo, 6);
         }
+
+
     }
 }

@@ -15,7 +15,7 @@ namespace ImagePreprocessing
         {
             get
             {
-                byte[,] result = new byte[this.Width,this.Height];
+                byte[,] result = new byte[this.Height,this.Width];
                 // this uses blockcopy, since data format is the same in byte[] and byte[,]
                 Buffer.BlockCopy(PixelData, 0, result, 0, PixelData.Length);
                 return result;
@@ -31,9 +31,8 @@ namespace ImagePreprocessing
         public UByteArrayAsImage(byte[] pixelData, int width, int height) : base(pixelData, width, height)
         {
         }
-        public UByteArrayAsImage(byte[,] arrayIn) : base(null, arrayIn.GetLength(1), arrayIn.GetLength(0))
+        public UByteArrayAsImage(byte[,] arrayIn) : base(new byte[arrayIn.Length], arrayIn.GetLength(1), arrayIn.GetLength(0))
         {
-            PixelData = new byte[arrayIn.Length];
             PixelArray = arrayIn;
         }
 
@@ -71,6 +70,5 @@ namespace ImagePreprocessing
             ms.Seek(0, SeekOrigin.Begin);
             return ms;
         }
-
     }
 }
