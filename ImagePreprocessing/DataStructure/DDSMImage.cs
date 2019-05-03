@@ -73,7 +73,6 @@ namespace ImagePreprocessing
             {
                 String[] informations = line.Split(',');
                 if (informations.Length == 1) continue; // some lines are encoded with no info, lets skip those.
-                
                 ImageViewEnum imageView = ImageViewEnum.Cc;
                 if (informations[3].Equals("MLO")) imageView = ImageViewEnum.Mlo;
 

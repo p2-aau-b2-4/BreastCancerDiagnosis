@@ -24,6 +24,7 @@ namespace DimensionReduction
 {
     public class PCA
     {
+        public Model model { get; set; }
         public PCA()
         {
         }
@@ -95,6 +96,7 @@ namespace DimensionReduction
 
             //Model model = new Model(eigen.EigenValues, eigen.EigenVectors, eigenLumps, features, new List<Vector<double>>());
             //model.SaveModelToFile("t.xml");
+            model = new Model(eigen.EigenValues, eigen.EigenVectors, eigenLumps, features, new List<Vector<double>>());
         }
 
         ///<summary>
@@ -126,17 +128,6 @@ namespace DimensionReduction
 
             SparseMatrix sMatrix = SparseMatrix.OfColumnVectors(vectors);
             return sMatrix;
-        }
-
-        ///<summary>
-        ///Finds covariance for two doubles
-        ///</summary>
-        ///<param name=x>first value</param>
-        ///<param name=y>second value</param>
-        ///<param name=dim>dimensions of parent matrix</param>
-        private double Covariance(double x, double y, int dim)
-        {
-            return (x * y) / (dim - 1);
         }
 
         ///<summary>
