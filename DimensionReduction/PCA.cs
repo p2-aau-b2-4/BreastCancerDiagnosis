@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Accord.IO;
+using Accord.Math;
+using Accord.Math.Distances;
 using BitMiracle.LibJpeg.Classic;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra.Double;
@@ -166,32 +169,91 @@ namespace DimensionReduction
          }*/
         public SparseMatrix CovarianceMatrix(SparseMatrix matrix)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            double[,] scArrayMatrix = new double[matrix.ColumnCount, matrix.ColumnCount];
             double[,] tmpArrayMatrix = matrix.ToArray();
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            var covMatrix = tmpArrayMatrix.Covariance();
-            stopwatch.Stop();
-            Console.WriteLine($"Took {stopwatch.ElapsedMilliseconds}");
-            return SparseMatrix.OfArray(covMatrix);
+            for (int i = 0; i < matrix.RowCount; i++)
+            {
+                if (i % 1 == 0) Console.WriteLine($"{i * 100 / matrix.RowCount}% done");
+                Parallel.For(0, matrix.ColumnCount,
+                    x =>
+                    { // the middle for loop is parallized. The first cannot, since it would not be atomic, the third is not parallized, due to overhead. (was 68% faster without)
+                        for (int y = 0; y < matrix.ColumnCount; y++)
+
+                        {
+                            scArrayMatrix[x, y] +=
+                                (tmpArrayMatrix[i, x] * tmpArrayMatrix[i, y]) / (matrix.RowCount - 1);
+                        }
+
+                        ;
+                    });
+            }
+
+            sw.Stop();
+            Console.WriteLine($"Took {sw.ElapsedMilliseconds}ms");
+            return SparseMatrix.OfArray(scArrayMatrix);
         }
 
-        private async Task<double[,]> AddMatricesInQueue(ConcurrentQueue<double[,]> queue, int columns, int rows,
-            CancellationToken cancellationToken)
+
+        /*public SparseMatrix CovarianceMatrix(SparseMatrix matrix)
         {
-            double[,] scArrayMatrix = new double[columns, rows];
-            while (queue.TryDequeue(out var toAdd) || !cancellationToken.IsCancellationRequested)
+            double[,] tmpArrayMatrix = matrix.ToArray();
+            int threads = Environment.ProcessorCount;
+            
+            Task<double[,]>[] tasks = new Task<double[,]>[threads];
+            int rangeStart = 0;
+            for (int i = 0; i < threads; i++)
             {
-                for (int x = 0; x < columns; x++)
+                // lets start as many tasks as threads computing part of covariance
+                
+                // we have to run this matrix.RowCount amount of times, lets split this between the different threads.
+                int rangeSize = matrix.RowCount / threads;
+                // this leaves up to Environt.ProcessorCount-1, lets find this count by modulos
+                int left = matrix.RowCount % threads;
+                if (i < left) rangeSize++; // lets add an extra range, to eveyr thread started, thats under the amount of extra range.
+                int rangeStartThread = rangeStart.DeepClone();
+                tasks[i] = Task.Factory.StartNew(() => GetCoCovarianceMatrix(tmpArrayMatrix,rangeStartThread,rangeSize), TaskCreationOptions.LongRunning);
+                rangeStart += rangeSize;
+            }
+            Task.WaitAll(tasks);
+            Console.WriteLine("done multithreading");            
+            double[,] covMatrix  = new double[matrix.ColumnCount,matrix.ColumnCount];
+
+            for (int i = 0; i < threads; i++)
+            {
+                double[,] result = tasks[i].Result;
+                int xLength = result.GetLength(0);
+                int yLength = result.GetLength(1);
+                for (int x = 0; x < xLength; x++)
                 {
-                    for (int y = 0; y < rows; y++)
+                    for (int y = 0; y < yLength; y++)
                     {
-                        scArrayMatrix[x, y] += toAdd[x, y];
+                        covMatrix[x,y] += result[x, y];
                     }
                 }
             }
+            
+            return SparseMatrix.OfArray(covMatrix);
+        }*/
 
+        /*private double[,] GetCoCovarianceMatrix(double[,] tmpArrayMatrix, int rangeStart, int rangeSize)
+        {
+            Console.WriteLine($"Got called with rs={rangeStart} size = {rangeSize}");
+            double[,] scArrayMatrix = new double[tmpArrayMatrix.GetLength(1), tmpArrayMatrix.GetLength(1)];
+            for (int i = rangeStart; i < rangeStart+rangeSize; i++)
+            {
+                int length = tmpArrayMatrix.GetLength(1);
+                for (int x = 0; x < length; x++)
+                {
+                    for (int y = 0; y < length; y++)
+                    {
+                        scArrayMatrix[x, y] += (tmpArrayMatrix[i, x] * tmpArrayMatrix[i, y]) / (length - 1);
+                    }
+                }
+            }
             return scArrayMatrix;
-        }
+        }*/
 
         ///<summary>
         ///Finds the eigen values and vectors of a matrix.
