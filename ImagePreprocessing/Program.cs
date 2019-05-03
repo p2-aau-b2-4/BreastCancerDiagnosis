@@ -21,7 +21,9 @@ namespace ImagePreprocessing
 
             foreach (var x in ddsmImages)
             {
-               x.DcomOriginalImage.GetPngAsMemoryStream();
+                var image = x.DcomOriginalImage;
+                image.SaveAsPng("tester.png");
+                
                 break;
             }
         }
