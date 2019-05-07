@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Security.Cryptography.Xml;
 using System.Threading;
 using System.Threading.Tasks;
-using BrysterAsp.Models;
+using Accord.IO;
+using Accord.Math;
+using Accord.Statistics.Analysis;
 using Dicom;
 using ImagePreprocessing;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Caching.Memory;
+using DimensionReduction;
 using Microsoft.Extensions.Primitives;
+using Serializer = Accord.IO.Serializer;
 
 namespace WebApp.Controllers
 {
@@ -81,7 +80,7 @@ namespace WebApp.Controllers
             {
                 new Task(() =>
                 {
-                    image = DicomFile.Open(path).GetUshortImageInfo(); 
+                    image = DicomFile.Open(path).GetUshortImageInfo();
                     _cache.Set($"_{imageLoc}-status", loadedImageStatusStr);
                 }),
                 new Task(() =>
@@ -94,13 +93,18 @@ namespace WebApp.Controllers
                 new Task(() =>
                 {
                     image = Contrast.ApplyHistogramEqualization(image);
+                    image.Save(path + "-croppedContrastBinary");
                     image.SaveAsPng(path + "-croppedContrast");
                     _cache.Set($"_{imageLoc}-status", contrastImageStatusStr);
                 }),
                 new Task(() =>
                 {
                     //PCA
-                    Thread.Sleep(3000);
+                    PrincipalComponentAnalysis pca = DimensionReduction.newPca.LoadPcaFromFile();
+                    var imageToPca = Serializer
+                        .Load<UShortArrayAsImage>(path + "-croppedContrastBinary").PixelArray;
+                    pca.Transform(newPca.GetVectorFromUShortArray(imageToPca))
+                        .Save(path + "-pcaComponents");
                     _cache.Set($"_{imageLoc}-status", pcaImageStatusStr);
                 }),
                 new Task(() =>
@@ -114,10 +118,11 @@ namespace WebApp.Controllers
             {
                 task.Start();
                 await task;
-                
+
                 // lets set percentage done:
-                _cache.Set($"_{imageLoc}-percentage", (++tasksComplete*100)/tasks.Count);
+                _cache.Set($"_{imageLoc}-percentage", (++tasksComplete * 100) / tasks.Count);
             }
+
             _cache.Set($"_{imageLoc}-status", doneStatusStr);
         }
 
@@ -126,13 +131,13 @@ namespace WebApp.Controllers
             var imageLoc = Request.Form["imageId"];
             string status = _cache.Get($"_{imageLoc}-status").ToString();
             string percentage = _cache.Get($"_{imageLoc}-percentage").ToString();
-            if (status.Equals(doneStatusStr));
+            if (status.Equals(doneStatusStr)) ;
             {
                 _cache.Remove($"_{imageLoc}-status");
                 _cache.Remove($"_{imageLoc}-percentage");
             }
 
-            return Ok(status+","+percentage);
+            return Ok(status + "," + percentage);
         }
 
 
@@ -142,13 +147,66 @@ namespace WebApp.Controllers
             string croppedImgSrc = filePath + "-cropped";
             string contrastImgSrc = filePath + "-croppedContrast";
 
+
             ViewBag.CroppedImgSrc = croppedImgSrc;
             ViewBag.ContrastImgSrc = contrastImgSrc;
 
+
+            ViewBag.PcaComponents = Serializer.Load<double[]>(Path.GetTempPath() + filePath + "-pcaComponents");
             ViewBag.Classification = DdsmImage.Pathologies.Benign;
             ViewBag.Probability = (new Random().Next() % 1000) / 10.0;
 
             return View();
+        }
+
+        public IActionResult PcaComponentSelection()
+        {
+            List<double> components = new List<double>();
+            foreach (KeyValuePair<string, StringValues> x in Request.Form)
+            {
+                if (x.Key.StartsWith("component+")) components.Add(double.Parse(x.Value));
+            }
+
+            double[] componentsArr = components.ToArray();
+            // lets render the image, save it, and return the path to the user:
+            string path = Guid.NewGuid().ToString();
+            @ViewBag.ImagePath = path;
+
+            var pca = DimensionReduction.newPca.LoadPcaFromFile();
+            double[] resultVector = pca.ComponentVectors.Transpose().Dot(componentsArr);
+            resultVector = resultVector.Add(pca.Means);
+
+            int sideLength = (int) Math.Sqrt(pca.Means.Length);
+            ushort[,] imageAsUshortArray = new ushort[sideLength, sideLength];
+
+            for (int y = 0; y < sideLength; y++)
+            {
+                for (int x = 0; x < sideLength; x++)
+                {
+                    //if(resultVector[y*100+x] < UInt16.MinValue) Console.WriteLine(resultVector[y*100+x]);
+                    double result = resultVector[y * 100 + x];
+                    imageAsUshortArray[y, x] = (ushort) Math.Round(result);
+                    //Console.WriteLine($"{result} to {imageAsUshortarray[y,x]}");
+                }
+            }
+
+            new UShortArrayAsImage(imageAsUshortArray).SaveAsPng(Path.GetTempPath() + path);
+            @ViewBag.PcaComponents = componentsArr;
+
+            return View();
+        }
+
+        public IActionResult ShowPngFromTempPath(string path)
+        {
+            path = Path.GetTempPath() + path;
+            Image img = new Bitmap(path);
+            MemoryStream ms = new MemoryStream();
+
+            img.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+            ms.Seek(0, 0);
+            return new FileStreamResult(ms, "image/png");
+
+            return new FileStreamResult(DicomFile.Open(path).GetUshortImageInfo().GetPngAsMemoryStream(), "image/png");
         }
     }
 }

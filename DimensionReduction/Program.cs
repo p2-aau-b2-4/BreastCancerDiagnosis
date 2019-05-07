@@ -60,14 +60,14 @@ namespace DicomDisplayTest
             readyImages.Save("readyImagesTest.bin");*/
 
 
-            List<UShortArrayAsImage> imagesToTrainOn =
-                Serializer.Load<List<UShortArrayAsImage>>("readyImagesTrain.bin");
+            List<UShortArrayAsImage> imagesToTrainOn = new List<UShortArrayAsImage>();
+            //    Serializer.Load<List<UShortArrayAsImage>>("readyImagesTrain.bin");
             //imagesToTrainOn.AddRange(Serializer.Load<List<UShortArrayAsImage>>("readyImagesTest.bin"));
             PrincipalComponentAnalysis pca = TrainPCA(imagesToTrainOn, out var data);
 
 
             Console.WriteLine(pca.GetNumberOfComponents(1f));
-            ushort[,] imageAsUshortarrayPre = new ushort[100, 100];
+           /* ushort[,] imageAsUshortarrayPre = new ushort[100, 100];
 
             for (int y = 0; y < 100; y++)
             {
@@ -81,11 +81,13 @@ namespace DicomDisplayTest
                 }
             }
 
-            new UShortArrayAsImage(imageAsUshortarrayPre).SaveAsPng("foerPca.png");
+            new UShortArrayAsImage(imageAsUshortarrayPre).SaveAsPng("foerPca.png");*/
             //double[] imageAsVector = GetVectorFromUShortArray(imagesToTrainOn[0].PixelArray);
 
-            Console.WriteLine($"Data: {data.Length},{data[0].Length}");
-            double[] imagesAsComponents = pca.Transform(data[0]);
+//            Console.WriteLine($"Data: {data.Length},{data[0].Length}");
+            double[] imageToTransform =
+                GetVectorFromUShortArray(DicomFile.Open("000000.dcm").GetUshortImageInfo().PixelArray);
+            double[] imagesAsComponents = pca.Transform(imageToTransform);
 
             Console.WriteLine($"Components: {imagesAsComponents.Length}");
 
@@ -162,7 +164,7 @@ namespace DicomDisplayTest
 
             //data  = data.Transpose();
 
-            Console.WriteLine($"list is done {data.Length},{data[0].Length}");
+            //Console.WriteLine($"list is done {data.Length},{data[0].Length}");
 
 
             PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
@@ -176,7 +178,7 @@ namespace DicomDisplayTest
             return pca;
         }
 
-        private static double[] GetVectorFromUShortArray(ushort[,] pixelArray)
+        public static double[] GetVectorFromUShortArray(ushort[,] pixelArray)
         {
             double[] imageAsDouble = new double[pixelArray.Length];
             for (int y = 0; y < pixelArray.GetLength(0); y++)
