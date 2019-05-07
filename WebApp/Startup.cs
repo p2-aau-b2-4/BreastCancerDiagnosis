@@ -66,6 +66,11 @@ namespace WebApp
                     new {controller = "Analyze", action = "GetPngFromTempPath"},
                     new {path = @"[\w-]+"});
                 routes.MapRoute(
+                    "ShowPng",
+                    "/analyze/showPngAsPng/{path}",
+                    new {controller = "Analyze", action = "ShowPngFromTempPath"},
+                    new {path = @"[\w-]+"});
+                routes.MapRoute(
                     "ShowSavedPng",
                     "/analyze/showSavedPng/{path}",
                     new {controller = "Analyze", action = "GetPngFromSavedTempPath"},
@@ -92,6 +97,8 @@ namespace WebApp
                     new {controller = "Home", action = "Contact"});
                 routes.MapRoute("analysisStatus", "/analyze/getStatus",
                     new {controller = "Analyze", action = "GetAnalysisStatus"});
+                routes.MapRoute("showPcaComponents", "/analyze/pcaComponents",
+                    new {controller = "Analyze", action = "PcaComponentSelection"});
                 routes.MapRoute(
                     "default",
                     "/",
