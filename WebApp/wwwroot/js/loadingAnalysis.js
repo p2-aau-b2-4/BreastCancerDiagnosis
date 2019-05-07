@@ -14,4 +14,4 @@ window.setInterval(function(){
     });
     
     
-}, 100);
+}, 200);
