@@ -10,3 +10,17 @@
 
 <br/><img class="center" src="/analyze/showSavedPng/@ViewBag.CroppedImgSrc"/>
 <br/><img class="center" src="/analyze/showSavedPng/@ViewBag.ContrastImgSrc"/>
+<form method="post" enctype="multipart/form-data" asp-controller="Analyze" asp-action="PcaComponentSelection">
+    <button type="submit" class="btn btn-primary btn-lg btn-block" id="submitInput">Videre: Foretag analyse</button>
+    @for (int i = 0; i < @ViewBag.PcaComponents.Length; i++)
+    {
+        <input class="pcaComponent" name="component+@i"type="number" value="@ViewBag.PcaComponents[i]">
+    }
+
+</form>
+
+<script type="text/javascript">
+    $('.pcaComponent').bind('input', function() {
+        //alert("hmn");
+    });
+</script>
