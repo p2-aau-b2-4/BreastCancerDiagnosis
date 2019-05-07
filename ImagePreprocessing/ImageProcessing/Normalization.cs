@@ -12,6 +12,7 @@ namespace ImagePreprocessing
 
             Rectangle squareTumour = new Rectangle();
             
+            //Resize the Rectangle 
             if (tumour.Width > tumour.Height)
             {
                 squareTumour = new Rectangle(tumour.X, tumour.Y - (tumour.Width-tumour.Height), tumour.Width, tumour.Width);   
@@ -22,8 +23,6 @@ namespace ImagePreprocessing
             }
             
             return ResizeImage(Crop(squareTumour, image), size);
-            
-            
         }
         
         public static ushort FindNearest(double x, double y, ushort[,] image)
