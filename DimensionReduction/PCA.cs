@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using Complex = System.Numerics.Complex;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Accord.IO;
@@ -10,7 +11,6 @@ using Accord.Math;
 using Accord.Math.Distances;
 using BitMiracle.LibJpeg.Classic;
 using MathNet.Numerics;
-using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Numerics.LinearAlgebra.Storage;
 using ImagePreprocessing;
 using MathNet.Numerics.LinearAlgebra;
@@ -18,6 +18,8 @@ using MathNet.Numerics.LinearAlgebra.Factorization;
 using Microsoft.Win32.SafeHandles;
 using Vector = MathNet.Numerics.LinearAlgebra.Double.Vector;
 using Accord.Statistics;
+using MathNet.Numerics.LinearAlgebra.Complex;
+using SparseMatrix = MathNet.Numerics.LinearAlgebra.Double.SparseMatrix;
 
 
 namespace DimensionReduction
@@ -25,8 +27,15 @@ namespace DimensionReduction
     public class PCA
     {
         public Model model { get; set; }
+        private double AverageMean { get; set; }
+        private List<double> _eigenValues;
+        private List<double[,]> _eigenVectors;
+        private List<MathNet.Numerics.LinearAlgebra.Vector<double>> _meanSums = new List<MathNet.Numerics.LinearAlgebra.Vector<double>>();
         public PCA()
         {
+            AverageMean = 0.0;
+            _eigenValues = new List<double>();
+            _eigenVectors = new List<double[,]>();
         }
 
         public void LoadModelFromFile(string path)
@@ -39,10 +48,26 @@ namespace DimensionReduction
             //Save to database
         }
 
-        public void GetComponentsFromImage(int count, int image)
+        public void GetComponentsFromImage(SparseMatrix tmpmatrix, Vector<double> image, int numberOfComponents)
         {
-            //TBD option 1: weighted solution. option 2: other solution.
-            //Select 1
+            if (_eigenValues.Count <= 0)
+            {
+                Console.WriteLine("Run PCA train");
+                return;
+            }
+
+            _eigenValues.Reverse();
+            _eigenVectors.Reverse();
+
+            SparseMatrix matrix = SparseMatrix.OfRowVectors(image);
+
+            MeanSubtraction(matrix);
+            
+            
+
+            Console.WriteLine(_eigenValues[0].ToString());
+            Console.WriteLine(_eigenVectors[0].ToString());
+
         }
 
         public void Train(List<UShortArrayAsImage> images)
@@ -96,7 +121,27 @@ namespace DimensionReduction
 
             //Model model = new Model(eigen.EigenValues, eigen.EigenVectors, eigenLumps, features, new List<Vector<double>>());
             //model.SaveModelToFile("t.xml");
-            model = new Model(eigen.EigenValues, eigen.EigenVectors, eigenLumps, features, new List<Vector<double>>());
+            //model = new Model(eigen.EigenValues, eigen.EigenVectors, eigenLumps, features, new List<Vector<double>>());
+            foreach (var value in eigen.EigenValues)
+            {
+                _eigenValues.Add(value.Real);
+            }
+
+            /*int index = 0;
+            for (int j = 0; j < eigen.EigenVectors.ColumnCount; j++)
+            {
+                foreach (var vector in eigen.EigenVectors.Column(j).Enumerate())
+                {
+                    _eigenVectors[index].Add(vector);
+                    index += 1;
+                }
+            }*/
+
+        }
+
+        public void MeanFace(SparseMatrix matrix)
+        {
+            
         }
 
         ///<summary>
@@ -123,9 +168,14 @@ namespace DimensionReduction
                 tmpVector = tmpVector.Subtract(xI);
                 vectors.Add(tmpVector);
 
+                //model.MeanSums[index].Add(xI);
+                AverageMean += xI;
+
                 index += 1;
             }
 
+            AverageMean /= index - 1;
+            
             SparseMatrix sMatrix = SparseMatrix.OfColumnVectors(vectors);
             return sMatrix;
         }
@@ -274,6 +324,11 @@ namespace DimensionReduction
             }*/
 
             return eigen;
+        }
+
+        public void reverse()
+        {
+            
         }
     }
 }
