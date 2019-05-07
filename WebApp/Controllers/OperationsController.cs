@@ -41,11 +41,11 @@ namespace WebApp.Controllers
             {
                 f = DicomFile.Open(dcomStream);
             }
-            catch (DicomFileException e)
+            catch (DicomFileException)
             {
                 return false;
             }
-            catch (DicomReaderException e)
+            catch (DicomReaderException)
             {
                 return false;
             }

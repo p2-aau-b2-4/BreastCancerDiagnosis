@@ -6,7 +6,13 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\DimensionReduction\DimensionReduction.csproj" />
       <ProjectReference Include="..\ImagePreprocessing\ImagePreprocessing.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Accord.Statistics" Version="3.8.2-alpha" />
+      <PackageReference Include="LibSVMsharp" Version="1.2.5" />
     </ItemGroup>
 
 </Project>
