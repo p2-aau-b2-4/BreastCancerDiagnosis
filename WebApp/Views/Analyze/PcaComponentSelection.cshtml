@@ -1,0 +1,23 @@
+@model object
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<h2>title</h2>
+<img src="/analyze/showPngAsPng/@ViewBag.ImagePath"/ style="width:30%">
+<form method="post" enctype="multipart/form-data" asp-controller="Analyze" asp-action="PcaComponentSelection">
+    <button type="submit" class="btn btn-primary btn-lg btn-block" id="submitInput">Videre: Foretag analyse</button>
+    @for (int i = 0; i < @ViewBag.PcaComponents.Length; i++)
+    {
+        <input class="pcaComponent" name="component+@i"type="range" min="-1000000" max="1000000" value="@ViewBag.PcaComponents[i]" style="width:40%">
+    }
+
+</form>
+
+<script type="text/javascript">
+    $('.pcaComponent').bind('input', function() {
+        //alert("hmn");
+    });
+</script>
