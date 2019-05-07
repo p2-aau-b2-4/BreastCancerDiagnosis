@@ -15,6 +15,7 @@
   <ItemGroup>
     <PackageReference Include="Accord" Version="3.8.2-alpha" />
     <PackageReference Include="Accord.Statistics" Version="3.8.2-alpha" />
+    <PackageReference Include="Extreme.Numerics" Version="7.0.6" />
     <PackageReference Include="fo-dicom.NetCore" Version="4.0.1" />
     <PackageReference Include="MathNet.Numerics" Version="4.7.0" />
   </ItemGroup>
