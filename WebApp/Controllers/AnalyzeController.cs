@@ -65,7 +65,7 @@ namespace WebApp.Controllers
 #pragma warning restore 4014
 
             return View();
-            return Redirect($"~/analyze/showResult/{Request.Form["filePath"]}");
+            //return Redirect($"~/analyze/showResult/{Request.Form["filePath"]}");
             //return Ok(new{x1 = Rectangle.Item1,y1=Rectangle.Item2,x2=Rectangle.Item3,y2=Rectangle.Item4, file=Request.Form["filePath"]});
         }
 
@@ -131,7 +131,7 @@ namespace WebApp.Controllers
             var imageLoc = Request.Form["imageId"];
             string status = _cache.Get($"_{imageLoc}-status").ToString();
             string percentage = _cache.Get($"_{imageLoc}-percentage").ToString();
-            if (status.Equals(doneStatusStr)) ;
+            if (status.Equals(doneStatusStr))
             {
                 _cache.Remove($"_{imageLoc}-status");
                 _cache.Remove($"_{imageLoc}-percentage");
@@ -206,7 +206,7 @@ namespace WebApp.Controllers
             ms.Seek(0, 0);
             return new FileStreamResult(ms, "image/png");
 
-            return new FileStreamResult(DicomFile.Open(path).GetUshortImageInfo().GetPngAsMemoryStream(), "image/png");
+            //return new FileStreamResult(DicomFile.Open(path).GetUshortImageInfo().GetPngAsMemoryStream(), "image/png");
         }
     }
 }

@@ -1,27 +1,25 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
+using Accord.IO;
 using Accord.Statistics.Analysis;
 using ImagePreprocessing;
+using Training;
 using Serializer = Accord.IO.Serializer;
 
 namespace DimensionReduction
 {
     public class newPca
     {
-        public static PrincipalComponentAnalysis TrainPCA(List<UShortArrayAsImage> readyImages, out double[][] data)
+        public static PrincipalComponentAnalysis TrainPCA(List<ImageWithResultModel>readyImages, out double[][] data)
         {
             int imageCount = 0;
             data = new double[readyImages.Count][];
-            foreach (UShortArrayAsImage image in readyImages)
+            foreach (ImageWithResultModel image in readyImages)
             {
-                data[imageCount] = GetVectorFromUShortArray(image.PixelArray);
+                data[imageCount] = GetVectorFromUShortArray(image.Image.PixelArray);
                 imageCount++;
-                //if (imageCount == 100) break;
             }
-
-            //data  = data.Transpose();
-
-            //Console.WriteLine($"list is done {data.Length},{data[0].Length}");
 
 
             PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
@@ -29,8 +27,11 @@ namespace DimensionReduction
                 pca = Serializer.Load<PrincipalComponentAnalysis>("model.bin");
             else
             {
+                Console.WriteLine("training pca");
                 pca.Learn(data);
             }
+
+            pca.Save("model.bin");
 
             return pca;
         }
