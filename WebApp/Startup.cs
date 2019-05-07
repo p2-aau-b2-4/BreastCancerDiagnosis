@@ -26,7 +26,7 @@ namespace WebApp
             //    options.CheckConsentNeeded = context => true;
             //    options.MinimumSameSitePolicy = SameSiteMode.None;
             //});
-
+            services.AddMemoryCache();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
@@ -90,6 +90,8 @@ namespace WebApp
                     "contact",
                     "/contact",
                     new {controller = "Home", action = "Contact"});
+                routes.MapRoute("analysisStatus", "/analyze/getStatus",
+                    new {controller = "Analyze", action = "GetAnalysisStatus"});
                 routes.MapRoute(
                     "default",
                     "/",
