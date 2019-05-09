@@ -15,11 +15,11 @@ namespace ImagePreprocessing
             //Resize the Rectangle 
             if (tumour.Width > tumour.Height)
             {
-                squareTumour = new Rectangle(tumour.X, tumour.Y - (tumour.Width-tumour.Height), tumour.Width, tumour.Width);   
+                squareTumour = new Rectangle(tumour.X, tumour.Y - (tumour.Width-tumour.Height) / 2, tumour.Width, tumour.Width);   
             }   
             else if (tumour.Width < tumour.Height || tumour.Width == tumour.Height)
             {
-                squareTumour = new Rectangle(tumour.X - (tumour.Height-tumour.Width), tumour.Y, tumour.Height, tumour.Height);   
+                squareTumour = new Rectangle(tumour.X - (tumour.Height-tumour.Width) / 2, tumour.Y, tumour.Height, tumour.Height);   
             }
             
             return ResizeImage(Crop(squareTumour, image), size);
