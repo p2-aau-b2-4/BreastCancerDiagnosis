@@ -36,6 +36,7 @@ namespace DicomDisplayTest
     {
         static void Main(string[] args)
         {
+            DicomFile.Open("mask.dcm").GetUByteImageInfo().SaveAsPng("test.png");/*
             //PCA pca = new PCA();
 
             /*List<DdsmImage> DDSMImages =
@@ -59,7 +60,7 @@ namespace DicomDisplayTest
             ;
             readyImages.Save("readyImagesTest.bin");*/
 
-
+/*
             List<UShortArrayAsImage> imagesToTrainOn = new List<UShortArrayAsImage>();
             //    Serializer.Load<List<UShortArrayAsImage>>("readyImagesTrain.bin");
             //imagesToTrainOn.AddRange(Serializer.Load<List<UShortArrayAsImage>>("readyImagesTest.bin"));
@@ -85,7 +86,7 @@ namespace DicomDisplayTest
             //double[] imageAsVector = GetVectorFromUShortArray(imagesToTrainOn[0].PixelArray);
 
 //            Console.WriteLine($"Data: {data.Length},{data[0].Length}");
-            double[] imageToTransform =
+     /*       double[] imageToTransform =
                 GetVectorFromUShortArray(DicomFile.Open("000000.dcm").GetUshortImageInfo().PixelArray);
             double[] imagesAsComponents = pca.Transform(imageToTransform);
 
@@ -189,7 +190,7 @@ namespace DicomDisplayTest
                 }
             }
 
-            return Vector.Create(imageAsDouble);
+            return Vector.Create(imageAsDouble);*/
         }
     }
 }
