@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using NUnit.Framework;
 
 namespace ImagePreprocessing.Tests
@@ -17,7 +15,6 @@ namespace ImagePreprocessing.Tests
         [SetUp]
         public void Setup()
         {
-
             DDSMImages =
             DdsmImage.GetAllImagesFromCsvFile(@"D:\Bryster\mass_case_description_test_set.csv");
 

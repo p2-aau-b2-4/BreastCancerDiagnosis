@@ -7,16 +7,16 @@ namespace ImagePreprocessing
         // We found formula for making the histogram equalization here: https://epochabuse.com/histogram-equalization/
         public static UShortArrayAsImage ApplyHistogramEqualization(UShortArrayAsImage img)
         {
-            int[] histogram = MakeHistogram(img);
+            int[] histogram = MakeHistogram(img, out int blackPixelsCount);
 
-            double[] normalizedHistogram = MakeNormalizedHistogram(histogram, img.PixelArray.Length);
+            double[] normalizedHistogram = MakeNormalizedHistogram(histogram, img.PixelArray.Length - blackPixelsCount);
 
             double[] accumulativeHistogram = MakeAccumulativeHistogram(normalizedHistogram);
 
             return new UShortArrayAsImage(CalculateResult(img.PixelArray, accumulativeHistogram));
         }
 
-        private static int[] MakeHistogram(UShortArrayAsImage img)
+        private static int[] MakeHistogram(UShortArrayAsImage img, out int blackPixelsCount)
         {
             int[] Histogram = new int[UInt16.MaxValue + 1];
             var pixelArray = img.PixelArray;
@@ -28,7 +28,10 @@ namespace ImagePreprocessing
                     Histogram[pixelArray[i, j]]++;
                 }
             }
+            //Saving the amount of black pixels and setting the amount of black pixels to zero.
+            blackPixelsCount = Histogram[0];
             Histogram[0] = 0;
+
             return Histogram;
         }
 
@@ -64,11 +67,9 @@ namespace ImagePreprocessing
             {
                 for (int j = 0; j < origin.GetLength(1); j++)
                 {
-
                     result[i, j] = (ushort)(accumulativeHistogram[origin[i, j]] * (double)UInt16.MaxValue);
                 }
             }
-
             return result;
         }
     }
