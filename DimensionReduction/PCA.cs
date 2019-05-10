@@ -61,10 +61,16 @@ namespace DimensionReduction
             _eigenVectors.Reverse();
 
             SparseMatrix matrix = SparseMatrix.OfRowVectors(image);
+            SparseMatrix resMatrix = SparseMatrix.Create(matrix.RowCount, matrix.ColumnCount,0);
 
             MeanSubtraction(matrix);
             
-            
+            // multiply the data matrix by the selected eigenvectors
+            // TODO: Use cache-friendly multiplication
+            for (int i = 0; i < matrix.RowCount; i++)
+                for (int j = 0; j < numberOfComponents; j++)
+                    for (int k = 0; k < ComponentVectors[j].Length; k++) // Change to Lars's version
+                        resMatrix[i,j] += matrix[i,k] * ComponentVectors[j][k]; // Change to Lars's version
 
             Console.WriteLine(_eigenValues[0].ToString());
             Console.WriteLine(_eigenVectors[0].ToString());
