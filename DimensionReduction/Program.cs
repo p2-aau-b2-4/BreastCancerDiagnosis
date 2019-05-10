@@ -36,10 +36,10 @@ namespace DicomDisplayTest
     {
         static void Main(string[] args)
         {
-            //PCA pca = new PCA();
+            PCA pca2 = new PCA();
 
             /*List<DdsmImage> DDSMImages =
-                DdsmImage.GetAllImagesFromCsvFile(@"E:\BrystTest\mass_case_description_test_set.csv");
+                DdsmImage.GetAllImagesFromCsvFile(@"train/mass_case_description_test_set.csv");
             Console.WriteLine($"Found {DDSMImages.Count}");
             List<UShortArrayAsImage> readyImages = new List<UShortArrayAsImage>();
 
@@ -57,12 +57,16 @@ namespace DicomDisplayTest
             }
 
             ;
-            readyImages.Save("readyImagesTest.bin");*/
+            //readyImages.Save("readyImagesTest.bin");*/
 
+            
+            
+            
 
             List<UShortArrayAsImage> imagesToTrainOn = new List<UShortArrayAsImage>();
-            //    Serializer.Load<List<UShortArrayAsImage>>("readyImagesTrain.bin");
+            imagesToTrainOn = Serializer.Load<List<UShortArrayAsImage>>("readyImagesTrain.bin");
             //imagesToTrainOn.AddRange(Serializer.Load<List<UShortArrayAsImage>>("readyImagesTest.bin"));
+            pca2.Train(imagesToTrainOn);
             PrincipalComponentAnalysis pca = TrainPCA(imagesToTrainOn, out var data);
 
 
