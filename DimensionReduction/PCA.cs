@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Accord.IO;
 using Accord.Math;
+using Accord.Math.Decompositions;
 using Accord.Math.Distances;
 using BitMiracle.LibJpeg.Classic;
 using MathNet.Numerics;
@@ -99,6 +100,26 @@ namespace DimensionReduction
                 i++;
                 Console.WriteLine($"Copied image #{i}");
             }
+            
+            double[][] dArray = new double[images.Count][];
+            i = 0;
+            foreach (var image in images)
+            {
+                dArray[i] = new double[image.Width*image.Height];
+                
+                for (int y = 0; y < image.Height; y++)
+                {
+                    for (int x = 0; x < image.Width; x++)
+                    {
+                        //dImage[y * image.Width + x] = image.GetPixel(x,y).R;
+                        dArray[i][y * image.Width + x] = image.PixelArray[x, y];
+                    }
+                }
+                
+                i += 1;
+            }
+            
+            PrincipalComponentMethod1(dArray);
 
             SparseMatrix matrix = SparseMatrix.OfArray(allImages);
 
@@ -328,6 +349,69 @@ namespace DimensionReduction
 
         public void reverse()
         {
+            
+        }
+        
+        private double[] columnMeans;
+        public double[] Means
+        {
+            get { return this.columnMeans; }
+            set { this.columnMeans = value; }
+        }
+        
+        private double[] columnStdDev;
+        public double[] StandardDeviations
+        {
+            get { return this.columnStdDev; }
+            set { this.columnStdDev = value; }
+        }
+        
+        private double[] singularValues;
+        public double[] SingularValues
+        {
+            get { return singularValues; }
+            protected set { singularValues = value; }
+        }
+        
+        private double[] eigenvalues;
+        public double[] Eigenvalues
+        {
+            get { return eigenvalues; }
+            protected set { eigenvalues = value; }
+        }
+        
+        private double[][] eigenvectors;
+        public double[][] ComponentVectors
+        {
+            get { return this.eigenvectors; }
+            protected set { this.eigenvectors = value; }
+        }
+        
+        public void PrincipalComponentMethod1(double[][] x)
+        {
+            this.Means = x.Mean(dimension: 0);
+
+            //double[][] matrix = Overwrite ? x : Jagged.CreateAs(x);
+            double[][] matrix = true ? x : Jagged.CreateAs(x);
+            x.Subtract(Means, dimension: (VectorType)0, result: matrix);
+
+            this.StandardDeviations = x.StandardDeviation(Means);
+            matrix.Divide(StandardDeviations, dimension: (VectorType)0, result: matrix);
+
+            //  The principal components of 'Source' are the eigenvectors of Cov(Source). Thus if we
+            //  calculate the SVD of 'matrix' (which is Source standardized), the columns of matrix V
+            //  (right side of SVD) will be the principal components of Source.
+
+            // Perform the Singular Value Decomposition (SVD) of the matrix
+            var svd = new JaggedSingularValueDecomposition(matrix,
+                computeLeftSingularVectors: false,
+                computeRightSingularVectors: true,
+                autoTranspose: true, inPlace: true);
+
+            SingularValues = svd.Diagonal;
+            Eigenvalues = SingularValues.Pow(2);
+            Eigenvalues.Divide(x.Rows() - 1, result: Eigenvalues);
+            ComponentVectors = svd.RightSingularVectors.Transpose();
             
         }
     }
