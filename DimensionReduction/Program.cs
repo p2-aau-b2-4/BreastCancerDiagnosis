@@ -37,6 +37,8 @@ namespace DicomDisplayTest
         static void Main(string[] args)
         {
             PCA pca2 = new PCA();
+            //DicomFile.Open("mask.dcm").GetUByteImageInfo().SaveAsPng("test.png");/*
+            //PCA pca = new PCA();
 
             /*List<DdsmImage> DDSMImages =
                 DdsmImage.GetAllImagesFromCsvFile(@"train/mass_case_description_test_set.csv");
@@ -59,18 +61,14 @@ namespace DicomDisplayTest
             ;
             //readyImages.Save("readyImagesTest.bin");*/
 
-            
-            
-            
-
             List<UShortArrayAsImage> imagesToTrainOn = new List<UShortArrayAsImage>();
             imagesToTrainOn = Serializer.Load<List<UShortArrayAsImage>>("readyImagesTrain.bin");
             //imagesToTrainOn.AddRange(Serializer.Load<List<UShortArrayAsImage>>("readyImagesTest.bin"));
             pca2.Train(imagesToTrainOn);
-            PrincipalComponentAnalysis pca = TrainPCA(imagesToTrainOn, out var data);
+            //PrincipalComponentAnalysis pca = TrainPCA(imagesToTrainOn, out var data);
 
 
-            Console.WriteLine(pca.GetNumberOfComponents(1f));
+            //Console.WriteLine(pca.GetNumberOfComponents(1f));
            /* ushort[,] imageAsUshortarrayPre = new ushort[100, 100];
 
             for (int y = 0; y < 100; y++)
@@ -89,7 +87,7 @@ namespace DicomDisplayTest
             //double[] imageAsVector = GetVectorFromUShortArray(imagesToTrainOn[0].PixelArray);
 
 //            Console.WriteLine($"Data: {data.Length},{data[0].Length}");
-            double[] imageToTransform =
+     /*       double[] imageToTransform =
                 GetVectorFromUShortArray(DicomFile.Open("000000.dcm").GetUshortImageInfo().PixelArray);
             double[] imagesAsComponents = pca.Transform(imageToTransform);
 
@@ -193,7 +191,7 @@ namespace DicomDisplayTest
                 }
             }
 
-            return Vector.Create(imageAsDouble);
+            return Vector.Create(imageAsDouble);*/
         }
     }
 }
