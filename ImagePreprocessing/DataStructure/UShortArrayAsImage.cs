@@ -42,31 +42,32 @@ namespace ImagePreprocessing
             Bitmap imgBitmap = new Bitmap(pixelArray.GetLength(1), pixelArray.GetLength(0));
             BitmapData imgBitmapData = imgBitmap.LockBits(new Rectangle(0, 0, imgBitmap.Width, imgBitmap.Height),
             ImageLockMode.ReadWrite, imgBitmap.PixelFormat);
-            IntPtr scan0 = imgBitmapData.Scan0;
-
-            int bytes = imgBitmapData.Height * Math.Abs(imgBitmapData.Stride);
-            byte[] byteArray = new byte[bytes];
-            Marshal.Copy(scan0, byteArray, 0, bytes);
-
-            int position = 0;
-            for (int y = 0; y < pixelArray.GetLength(0); y++)
+            unsafe
             {
-                for (int x = 0; x < pixelArray.GetLength(1); x++)
+                byte* bitmapDataPointer = (byte*) imgBitmapData.Scan0.ToPointer();
+                int position = 0;
+                for (int y = 0; y < pixelArray.GetLength(0); y++)
                 {
-                    byte greyColor = (byte)Math.Round(Map(pixelArray[y, x], 0, UInt16.MaxValue, 0, 255));
-                    byteArray[position++] = greyColor;
-                    byteArray[position++] = greyColor;
-                    byteArray[position++] = greyColor;
-                    byteArray[position++] = 255;
+                    for (int x = 0; x < pixelArray.GetLength(1); x++)
+                    {
+                        byte greyColor = (byte) (pixelArray[y,x] * 255.0 / UInt16.MaxValue);
+                        bitmapDataPointer[position++] = greyColor;
+                        bitmapDataPointer[position++] = greyColor;
+                        bitmapDataPointer[position++] = greyColor;
+                        bitmapDataPointer[position++] = 255;
+                    }
                 }
             }
-
-            Marshal.Copy(byteArray, 0, scan0, bytes);
 
             MemoryStream ms = new MemoryStream();
             ApplyOverlays(imgBitmap).Save(ms, ImageFormat.Png);
             ms.Seek(0, SeekOrigin.Begin);
             return ms;
+        }
+        protected static float Map(float s, float a1, float a2, float b1, float b2)
+            // lånt fra https://forum.unity.com/threads/re-map-a-number-from-one-range-to-another.119437/
+        {
+            return b1 + (s - a1) * (b2 - b1) / (a2 - a1);
         }
     }
 }

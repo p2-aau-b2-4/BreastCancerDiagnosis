@@ -100,7 +100,7 @@ namespace WebApp.Controllers
                 new Task(() =>
                 {
                     //PCA
-                    PrincipalComponentAnalysis pca = DimensionReduction.newPca.LoadPcaFromFile();
+                    PrincipalComponentAnalysis pca = newPca.LoadPcaFromFile();
                     var imageToPca = Serializer
                         .Load<UShortArrayAsImage>(path + "-croppedContrastBinary").PixelArray;
                     pca.Transform(newPca.GetVectorFromUShortArray(imageToPca))
