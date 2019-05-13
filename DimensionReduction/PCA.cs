@@ -204,30 +204,6 @@ namespace DimensionReduction
         ///Finds the covariance matrix of a SparseMatrix
         ///</summary>
         ///<param name=matrix>input matrix</param>
-        /* public SparseMatrix CovarianceMatrix(SparseMatrix matrix)
-         {
-             
-             ConcurrentQueue<double[,]> count = new ConcurrentQueue<double[,]>();
-             double[,] tmpArrayMatrix = matrix.ToArray();
-             var cancellationTokenSource = new CancellationTokenSource();
-             var addMatricesInQueue = new Task(() => AddMatricesInQueue(count,matrix.ColumnCount,matrix.RowCount,cancellationToken));
-             Parallel.For(0, matrix.RowCount, (i, state) =>
-             {
-                 double[,] scArrayMatrix = new double[matrix.ColumnCount, matrix.ColumnCount];
-                 Console.WriteLine($"{count.Count} / {matrix.RowCount}");
-                 for (int x = 0; x < matrix.ColumnCount; x++)
-                 {
-                     for (int y = 0; y < matrix.ColumnCount; y++)
-                     {
-                         scArrayMatrix[x, y] += (tmpArrayMatrix[i, x] * tmpArrayMatrix[i, y]) / (matrix.RowCount - 1); // this is not threadsafe atm
-                     }
-                 }
-                 count.Enqueue(scArrayMatrix);
-             });
-             cancellationTokenSource.Cancel();
- 
-             return await AddMatricesInQueue;
-         }*/
         public SparseMatrix CovarianceMatrix(SparseMatrix matrix)
         {
             Stopwatch sw = new Stopwatch();
@@ -260,66 +236,6 @@ namespace DimensionReduction
             Console.WriteLine($"Took {sw.ElapsedMilliseconds}ms");
             return SparseMatrix.OfArray(scArrayMatrix);
         }
-
-
-        /*public SparseMatrix CovarianceMatrix(SparseMatrix matrix)
-        {
-            double[,] tmpArrayMatrix = matrix.ToArray();
-            int threads = Environment.ProcessorCount;
-            
-            Task<double[,]>[] tasks = new Task<double[,]>[threads];
-            int rangeStart = 0;
-            for (int i = 0; i < threads; i++)
-            {
-                // lets start as many tasks as threads computing part of covariance
-                
-                // we have to run this matrix.RowCount amount of times, lets split this between the different threads.
-                int rangeSize = matrix.RowCount / threads;
-                // this leaves up to Environt.ProcessorCount-1, lets find this count by modulos
-                int left = matrix.RowCount % threads;
-                if (i < left) rangeSize++; // lets add an extra range, to eveyr thread started, thats under the amount of extra range.
-                int rangeStartThread = rangeStart.DeepClone();
-                tasks[i] = Task.Factory.StartNew(() => GetCoCovarianceMatrix(tmpArrayMatrix,rangeStartThread,rangeSize), TaskCreationOptions.LongRunning);
-                rangeStart += rangeSize;
-            }
-            Task.WaitAll(tasks);
-            Console.WriteLine("done multithreading");            
-            double[,] covMatrix  = new double[matrix.ColumnCount,matrix.ColumnCount];
-
-            for (int i = 0; i < threads; i++)
-            {
-                double[,] result = tasks[i].Result;
-                int xLength = result.GetLength(0);
-                int yLength = result.GetLength(1);
-                for (int x = 0; x < xLength; x++)
-                {
-                    for (int y = 0; y < yLength; y++)
-                    {
-                        covMatrix[x,y] += result[x, y];
-                    }
-                }
-            }
-            
-            return SparseMatrix.OfArray(covMatrix);
-        }*/
-
-        /*private double[,] GetCoCovarianceMatrix(double[,] tmpArrayMatrix, int rangeStart, int rangeSize)
-        {
-            Console.WriteLine($"Got called with rs={rangeStart} size = {rangeSize}");
-            double[,] scArrayMatrix = new double[tmpArrayMatrix.GetLength(1), tmpArrayMatrix.GetLength(1)];
-            for (int i = rangeStart; i < rangeStart+rangeSize; i++)
-            {
-                int length = tmpArrayMatrix.GetLength(1);
-                for (int x = 0; x < length; x++)
-                {
-                    for (int y = 0; y < length; y++)
-                    {
-                        scArrayMatrix[x, y] += (tmpArrayMatrix[i, x] * tmpArrayMatrix[i, y]) / (length - 1);
-                    }
-                }
-            }
-            return scArrayMatrix;
-        }*/
 
         ///<summary>
         ///Finds the eigen values and vectors of a matrix.
