@@ -213,11 +213,6 @@ namespace DimensionReduction
             Console.WriteLine("PCA done");
         }
 
-        public void MeanFace(SparseMatrix matrix)
-        {
-            
-        }
-
         public SparseMatrix MeanSubtraction(double[] matrix)
         {
             SparseMatrix test = new SparseMatrix(1,matrix.Length);
@@ -324,12 +319,6 @@ namespace DimensionReduction
 
             return eigen;
         }
-
-        public void reverse()
-        {
-            
-        }
-        
         
     }
 }
