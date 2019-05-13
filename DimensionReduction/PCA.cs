@@ -141,44 +141,10 @@ namespace DimensionReduction
             
             PrincipalComponentMethod1(dArray);
             Console.WriteLine("PCA done");
-            return;
-            SparseMatrix matrix = SparseMatrix.OfArray(allImages);
-
-            Console.WriteLine("done creating array");
-            matrix = MeanSubtraction(matrix);
-
-            Console.WriteLine("done meansubtraction");
-            matrix = CovarianceMatrix(matrix);
-
-            Console.WriteLine($"Done covariance");
-
-            Evd<double> eigen = SolveForEigen(matrix);
-
-            Console.WriteLine("done creating eigen");
-
-            List<(Complex, Matrix<double>)> eigenLumps = new List<(Complex, Matrix<double>)>();
-
-            List<List<double>> features = new List<List<double>>();
-            List<System.Numerics.Vector<double>> meanSums = new List<System.Numerics.Vector<double>>();
 
             //Model model = new Model(eigen.EigenValues, eigen.EigenVectors, eigenLumps, features, new List<Vector<double>>());
             //model.SaveModelToFile("t.xml");
             //model = new Model(eigen.EigenValues, eigen.EigenVectors, eigenLumps, features, new List<Vector<double>>());
-            foreach (var value in eigen.EigenValues)
-            {
-                _eigenValues.Add(value.Real);
-            }
-
-            /*int index = 0;
-            for (int j = 0; j < eigen.EigenVectors.ColumnCount; j++)
-            {
-                foreach (var vector in eigen.EigenVectors.Column(j).Enumerate())
-                {
-                    _eigenVectors[index].Add(vector);
-                    index += 1;
-                }
-            }*/
-
         }
 
         public void MeanFace(SparseMatrix matrix)
