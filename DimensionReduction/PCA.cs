@@ -29,15 +29,44 @@ namespace DimensionReduction
     public class PCA
     {
         public Model model { get; set; }
-        private double AverageMean { get; set; }
-        private List<double> _eigenValues;
-        private List<double[,]> _eigenVectors;
-        private List<MathNet.Numerics.LinearAlgebra.Vector<double>> _meanSums = new List<MathNet.Numerics.LinearAlgebra.Vector<double>>();
+        
+        private double[] columnMeans;
+        public double[] Means
+        {
+            get { return this.columnMeans; }
+            set { this.columnMeans = value; }
+        }
+        
+        private double[] columnStdDev;
+        public double[] StandardDeviations
+        {
+            get { return this.columnStdDev; }
+            set { this.columnStdDev = value; }
+        }
+        
+        private double[] singularValues;
+        public double[] SingularValues
+        {
+            get { return singularValues; }
+            protected set { singularValues = value; }
+        }
+        
+        private double[] eigenvalues;
+        public double[] Eigenvalues
+        {
+            get { return eigenvalues; }
+            protected set { eigenvalues = value; }
+        }
+        
+        private double[][] eigenvectors;
+        public double[][] ComponentVectors
+        {
+            get { return this.eigenvectors; }
+            protected set { this.eigenvectors = value; }
+        }
+        
         public PCA()
         {
-            AverageMean = 0.0;
-            _eigenValues = new List<double>();
-            _eigenVectors = new List<double[,]>();
         }
 
         public void LoadModelFromFile(string path)
@@ -226,13 +255,10 @@ namespace DimensionReduction
                 vectors.Add(tmpVector);
 
                 //model.MeanSums[index].Add(xI);
-                AverageMean += xI;
 
                 index += 1;
             }
 
-            AverageMean /= index - 1;
-            
             SparseMatrix sMatrix = SparseMatrix.OfColumnVectors(vectors);
             return sMatrix;
         }
@@ -304,39 +330,6 @@ namespace DimensionReduction
             
         }
         
-        private double[] columnMeans;
-        public double[] Means
-        {
-            get { return this.columnMeans; }
-            set { this.columnMeans = value; }
-        }
         
-        private double[] columnStdDev;
-        public double[] StandardDeviations
-        {
-            get { return this.columnStdDev; }
-            set { this.columnStdDev = value; }
-        }
-        
-        private double[] singularValues;
-        public double[] SingularValues
-        {
-            get { return singularValues; }
-            protected set { singularValues = value; }
-        }
-        
-        private double[] eigenvalues;
-        public double[] Eigenvalues
-        {
-            get { return eigenvalues; }
-            protected set { eigenvalues = value; }
-        }
-        
-        private double[][] eigenvectors;
-        public double[][] ComponentVectors
-        {
-            get { return this.eigenvectors; }
-            protected set { this.eigenvectors = value; }
-        }
     }
 }
