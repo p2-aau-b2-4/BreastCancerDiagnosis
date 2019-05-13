@@ -29,12 +29,17 @@
 
 
   <ItemGroup>
-    <Content Include="..\ImagePreprocessing\config">
-      <Link>config</Link>
-    </Content>
     <Content Include="..\Training\App.config">
       <Link>App.config</Link>
     </Content>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <None Remove="libsvm.dll" />
+    <EmbeddedResource Include="libsvm.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

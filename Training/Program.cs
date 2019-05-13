@@ -117,15 +117,15 @@ namespace Training
                 Console.WriteLine();
             }
 
-//            List<double[]> derpshit = new List<double[]>();
-//            double[] derp = testSet.PredictProbability(model, out derpshit);
-//            for (int i = 0; i < derpshit.Count; i++)
-//            {
-//                String x = "";
-//                if (derp[i] != testSet.Y[i]) x = " FUCKED UP!!! ";
-//                Console.WriteLine(
-//                    $"Resultat|Sandsynlighed for sand|Sandsynlighed for falsk: {derp[i]} | {derpshit[i][0]} | {derpshit[i][1]} | {testSet.Y[i]} | {x}");
-//            }
+            List<double[]> derpshit = new List<double[]>();
+            double[] derp = testSet.PredictProbability(model, out derpshit);
+            for (int i = 0; i < derpshit.Count; i++)
+            {
+                String x = "";
+                if (derp[i] != testSet.Y[i]) x = " FUCKED UP!!! ";
+                Console.WriteLine(
+                    $"Resultat|Sandsynlighed for sand|Sandsynlighed for falsk: {derp[i]} | {derpshit[i][0]} | {derpshit[i][1]} | {testSet.Y[i]} | {x}");
+            }
         }
 
         private static void TransformAndSaveImagesWithResultModels(List<DdsmImage> images, string saveLoc)

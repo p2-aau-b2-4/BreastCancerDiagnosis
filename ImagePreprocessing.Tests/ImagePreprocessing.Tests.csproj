@@ -7,9 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="..\ImagePreprocessing\config">
-      <Link>config</Link>
-    </Content>
     <Content Include="..\Training\App.config">
       <Link>App.config</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

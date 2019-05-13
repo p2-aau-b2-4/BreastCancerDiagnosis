@@ -6,7 +6,7 @@ namespace ImagePreprocessing
     {
         public static string Get(string key)
         {
-            string[] lines = System.IO.File.ReadAllLines("config");
+            string[] lines = System.IO.File.ReadAllLines("../config");
             foreach (string line in lines)
             {
                 string[] substrings = line.Split('=');
