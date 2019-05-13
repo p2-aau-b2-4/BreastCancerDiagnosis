@@ -153,12 +153,35 @@ namespace DimensionReduction
 
         public void Train(double[][] data)
         {
-            PrincipalComponentMethod1(data);
-            Console.WriteLine("PCA done");
+            this.Means = data.Mean(dimension: 0);
+
+            //double[][] matrix = Overwrite ? x : Jagged.CreateAs(x);
+            double[][] matrix = true ? data : Jagged.CreateAs(data);
+            data.Subtract(Means, dimension: (VectorType)0, result: matrix);
+
+            this.StandardDeviations = data.StandardDeviation(Means);
+            matrix.Divide(StandardDeviations, dimension: (VectorType)0, result: matrix);
+
+            //  The principal components of 'Source' are the eigenvectors of Cov(Source). Thus if we
+            //  calculate the SVD of 'matrix' (which is Source standardized), the columns of matrix V
+            //  (right side of SVD) will be the principal components of Source.
+
+            // Perform the Singular Value Decomposition (SVD) of the matrix
+            var svd = new JaggedSingularValueDecomposition(matrix,
+                computeLeftSingularVectors: false,
+                computeRightSingularVectors: true,
+                autoTranspose: true, inPlace: true);
+
+            SingularValues = svd.Diagonal;
+            Eigenvalues = SingularValues.Pow(2);
+            Eigenvalues.Divide(data.Rows() - 1, result: Eigenvalues);
+            ComponentVectors = svd.RightSingularVectors.Transpose();
 
             //Model model = new Model(eigen.EigenValues, eigen.EigenVectors, eigenLumps, features, new List<Vector<double>>());
             //model.SaveModelToFile("t.xml");
             //model = new Model(eigen.EigenValues, eigen.EigenVectors, eigenLumps, features, new List<Vector<double>>());
+            
+            Console.WriteLine("PCA done");
         }
 
         public void MeanFace(SparseMatrix matrix)
@@ -314,34 +337,6 @@ namespace DimensionReduction
         {
             get { return this.eigenvectors; }
             protected set { this.eigenvectors = value; }
-        }
-        
-        public void PrincipalComponentMethod1(double[][] x)
-        {
-            this.Means = x.Mean(dimension: 0);
-
-            //double[][] matrix = Overwrite ? x : Jagged.CreateAs(x);
-            double[][] matrix = true ? x : Jagged.CreateAs(x);
-            x.Subtract(Means, dimension: (VectorType)0, result: matrix);
-
-            this.StandardDeviations = x.StandardDeviation(Means);
-            matrix.Divide(StandardDeviations, dimension: (VectorType)0, result: matrix);
-
-            //  The principal components of 'Source' are the eigenvectors of Cov(Source). Thus if we
-            //  calculate the SVD of 'matrix' (which is Source standardized), the columns of matrix V
-            //  (right side of SVD) will be the principal components of Source.
-
-            // Perform the Singular Value Decomposition (SVD) of the matrix
-            var svd = new JaggedSingularValueDecomposition(matrix,
-                computeLeftSingularVectors: false,
-                computeRightSingularVectors: true,
-                autoTranspose: true, inPlace: true);
-
-            SingularValues = svd.Diagonal;
-            Eigenvalues = SingularValues.Pow(2);
-            Eigenvalues.Divide(x.Rows() - 1, result: Eigenvalues);
-            ComponentVectors = svd.RightSingularVectors.Transpose();
-            
         }
     }
 }
