@@ -160,7 +160,7 @@ namespace ImagePreprocessing.Tests
             Rectangle testRect = new Rectangle(0, 0, 4, 2);
             var normalizedImage = GetNormalizedImage(testImage, testRect, 4);
 
-            Rectangle squareRect = new Rectangle(0, testRect.Y - (testRect.Width - testRect.Height), 4, 4);
+            Rectangle squareRect = new Rectangle(0, testRect.Y - (testRect.Width - testRect.Height)/2, 4, 4);
             var croppedImage = Crop(squareRect, testImage);
 
             Assert.AreEqual(croppedImage.PixelArray, normalizedImage.PixelArray);
