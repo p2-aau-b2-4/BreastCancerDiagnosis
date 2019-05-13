@@ -15,11 +15,4 @@
       <PackageReference Include="LibSVMsharp" Version="1.2.5" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Content Include="..\ImagePreprocessing\config.config">
-        <Link>config.config</Link>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-    </ItemGroup>
-
 </Project>

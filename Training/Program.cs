@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Accord;
@@ -26,6 +27,7 @@ namespace Training
 
         static void Main(string[] args)
         {
+            Console.WriteLine(Environment.CurrentDirectory);
             if (CreateImages)
             {
                 List<DdsmImage> ddsmImagesTrain =
