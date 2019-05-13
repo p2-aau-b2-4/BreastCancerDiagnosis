@@ -14,8 +14,8 @@ namespace ImagePreprocessing.Tests
         public void GetPngAsMemoryStreamTest()
         {
             var testImg =
-                new Bitmap(Image.FromStream(DicomFile.Open("000000.dcm").GetUshortImageInfo().GetPngAsMemoryStream()));
-            var resultImg = new Bitmap(Image.FromFile("000000.png"));
+                new Bitmap(Image.FromStream(DicomFile.Open("../../../000000.dcm").GetUshortImageInfo().GetPngAsMemoryStream()));
+            var resultImg = new Bitmap(Image.FromFile("../../../000000.png"));
             var testImgData = testImg.LockBits(new Rectangle(0, 0, testImg.Width, testImg.Height),
                 ImageLockMode.ReadWrite, testImg.PixelFormat);
             var resultImgData = resultImg.LockBits(new Rectangle(0, 0, resultImg.Width, resultImg.Height),
@@ -45,11 +45,11 @@ namespace ImagePreprocessing.Tests
         public void SaveAsPNGTest()
         {
 
-            var image = DicomFile.Open("000000.dcm").GetUshortImageInfo();
-            image.SaveAsPng("test.png");
+            var image = DicomFile.Open("../../../000000.dcm").GetUshortImageInfo();
+            image.SaveAsPng("../../../test.png");
 
-            var testImg = new Bitmap(Image.FromFile("test.png"));
-            var resultImg = new Bitmap(Image.FromFile("000000.png"));
+            var testImg = new Bitmap(Image.FromFile("../../../test.png"));
+            var resultImg = new Bitmap(Image.FromFile("../../../000000.png"));
 
             var testImgData = testImg.LockBits(new Rectangle(0, 0, testImg.Width, testImg.Height),
                 ImageLockMode.ReadWrite, testImg.PixelFormat);

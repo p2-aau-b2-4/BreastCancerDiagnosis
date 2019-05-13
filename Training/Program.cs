@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
+using System.Threading.Tasks;
+using Accord;
 using Accord.IO;
 using Accord.Statistics.Analysis;
 using DimensionReduction;
@@ -17,52 +19,58 @@ namespace Training
     {
         static void Main(string[] args)
         {
-            //List<DdsmImage> ddsmImagesTrain =
-            //   DdsmImage.GetAllImagesFromCsvFile(@"E:\BrystTest\mass_case_description_train_set.csv");
-            //TransformAndSaveImagesWithResultModels(ddsmImagesTrain,"readyImageModelTrain.bin");
-            // List<DdsmImage> ddsmImagesTest =
-            //     DdsmImage.GetAllImagesFromCsvFile(@"E:\BrystTest\mass_case_description_test_set.csv"); //todo use configurationManager
-            // TransformAndSaveImagesWithResultModels(ddsmImagesTest,"readyImageModelTest.bin");
+//            List<DdsmImage> ddsmImagesTrain =
+//                DdsmImage.GetAllImagesFromCsvFile(@"E:\BrystTest\mass_case_description_train_set.csv");
+//            ddsmImagesTrain = ddsmImagesTrain
+//                .Where(image => image.Pathology != DdsmImage.Pathologies.BenignWithoutCallback).ToList();
+//            TransformAndSaveImagesWithResultModels(ddsmImagesTrain,"readyImageModelTrain.bin");
+//            List<DdsmImage> ddsmImagesTest =
+//               DdsmImage.GetAllImagesFromCsvFile(@"E:\BrystTest\mass_case_description_test_set.csv"); //todo use configurationManager
+//            ddsmImagesTest = ddsmImagesTest
+//                .Where(image => image.Pathology != DdsmImage.Pathologies.BenignWithoutCallback).ToList();
+//            TransformAndSaveImagesWithResultModels(ddsmImagesTest,"readyImageModelTest.bin");
 
             TrainPcaAndSvm();
         }
 
         private static void TrainPcaAndSvm()
         {
-            List<ImageWithResultModel> imagesToTrainOn =
-                Serializer.Load<List<ImageWithResultModel>>("readyImageModelTrain.bin");
-            List<ImageWithResultModel> imagesToTestOn =
-                Serializer.Load<List<ImageWithResultModel>>("readyImageModelTest.bin");
+//            List<ImageWithResultModel> imagesToTrainOn =
+//                Serializer.Load<List<ImageWithResultModel>>("readyImageModelTrain.bin");
+//            List<ImageWithResultModel> imagesToTestOn =
+//                Serializer.Load<List<ImageWithResultModel>>("readyImageModelTest.bin");
+//
+//            // create the pca MODEL:
+//            List<ImageWithResultModel> pcaTrainSet = imagesToTrainOn.DeepClone();
+//            pcaTrainSet.AddRange(imagesToTestOn);
+//
+//            PrincipalComponentAnalysis pca = newPca.TrainPCA(pcaTrainSet, out var data);
+//
+//            // with this, then let us create the two svm problems.
+//            SVMProblem trainingSet = GetProblemFromImageModelResultList(imagesToTrainOn, pca, 200);
+//            SVMProblem testSet = GetProblemFromImageModelResultList(imagesToTestOn, pca, 200);
+//
+//            testSet.Save("test.txt");
+//            trainingSet.Save("train.txt");
 
-            // create the pca MODEL:
-            List<ImageWithResultModel> pcaTrainSet = imagesToTrainOn.DeepClone();
-            pcaTrainSet.AddRange(imagesToTestOn);
-
-            PrincipalComponentAnalysis pca = newPca.TrainPCA(pcaTrainSet, out var data);
-
-            // with this, then let us create the two svm problems.
-            SVMProblem trainingSet = GetProblemFromImageModelResultList(imagesToTrainOn, pca,10000);
-            SVMProblem testSet = GetProblemFromImageModelResultList(imagesToTestOn, pca,10000);
-
-            testSet.Save("test.txt");
-            trainingSet.Save("train.txt");
+            SVMProblem trainingSet = SVMProblemHelper.Load("train.txt");
+            SVMProblem testSet = SVMProblemHelper.Load("test.txt");
 
 
-            //trainingSet = trainingSet.Normalize(SVMNormType.L2);
-            //testSet = testSet.Normalize(SVMNormType.L2);
+            trainingSet = trainingSet.Normalize(SVMNormType.L2);
+            testSet = testSet.Normalize(SVMNormType.L2);
 
             SVMParameter parameter = new SVMParameter
             {
                 Type = SVMType.C_SVC,
                 Kernel = SVMKernelType.RBF,
-                C = 100,
-                Gamma = 0,
+                C = 1,
+                Gamma = 1,
                 Probability = true,
-                WeightLabels = new []{0,1},
-                Weights = new double[]{0.5,0.4}
             };
 
             Console.WriteLine("training svm");
+            Console.WriteLine(System.AppContext.BaseDirectory);
             //////////////////////////////////////////////////////////////////////////////////////////////////////////
             ///
             ///
@@ -88,8 +96,7 @@ namespace Training
 
 
             // Evaluate the test results
-            int[,] confusionMatrix;
-            double testAccuracy = testSet.EvaluateClassificationProblem(testResults, model.Labels, out confusionMatrix);
+            double testAccuracy = testSet.EvaluateClassificationProblem(testResults, model.Labels, out var confusionMatrix);
 
             // Print the resutls
             Console.WriteLine("\n\nCross validation accuracy: " + crossValidationAccuracy);
@@ -110,27 +117,26 @@ namespace Training
                 Console.WriteLine();
             }
 
-            List<double[]> derpshit = new List<double[]>();
-            double[] derp = testSet.PredictProbability(model, out derpshit);
-            for (int i = 0; i < derpshit.Count; i++)
-            {
-                String x = "";
-                if (derp[i] != testSet.Y[i]) x = " FUCKED UP!!! ";
-                Console.WriteLine(
-                    $"Resultat|Sandsynlighed for sand|Sandsynlighed for falsk: {derp[i]} | {derpshit[i][0]} | {derpshit[i][1]} | {testSet.Y[i]} | {x}");
-            }
+//            List<double[]> derpshit = new List<double[]>();
+//            double[] derp = testSet.PredictProbability(model, out derpshit);
+//            for (int i = 0; i < derpshit.Count; i++)
+//            {
+//                String x = "";
+//                if (derp[i] != testSet.Y[i]) x = " FUCKED UP!!! ";
+//                Console.WriteLine(
+//                    $"Resultat|Sandsynlighed for sand|Sandsynlighed for falsk: {derp[i]} | {derpshit[i][0]} | {derpshit[i][1]} | {testSet.Y[i]} | {x}");
+//            }
         }
 
         private static void TransformAndSaveImagesWithResultModels(List<DdsmImage> images, string saveLoc)
         {
-            List<ImageWithResultModel> readyImages = new List<ImageWithResultModel>();
+            ConcurrentBag<ImageWithResultModel> readyImages = new ConcurrentBag<ImageWithResultModel>();
 
             //readyImages.Add(Normalization.GetNormalizedImage(DDSMImages[0].DcomOriginalImage, Normalization.GetTumourPositionFromMask(DDSMImages[0].DcomMaskImage),100));
             List<DdsmImage> imagesCc = images.Where(x => (x.ImageView == DdsmImage.ImageViewEnum.Cc)).ToList();
             //new List<UShortArrayAsImage>(readyImages).Save("readyImages.bin");
             Console.WriteLine($"CC: {imagesCc.Count}");
-            //Parallel.ForEach(imagesCC, image =>
-            foreach (DdsmImage image in imagesCc)
+            Parallel.ForEach(imagesCc, image =>
             {
                 Console.WriteLine($"{readyImages.Count * 100 / imagesCc.Count}% done");
                 var imageResult = new ImageWithResultModel();
@@ -138,11 +144,11 @@ namespace Training
 
                 imageResult.Image = Contrast.ApplyHistogramEqualization(Normalization.GetNormalizedImage(
                     image.DcomOriginalImage,
-                    Normalization.GetTumourPositionFromMask(image.DcomMaskImage), 100));
+                    Normalization.GetTumourPositionFromMask(image.DcomMaskImage), 500));
                 readyImages.Add(imageResult);
-            }
+            });
 
-            readyImages.Save(saveLoc);
+            new List<ImageWithResultModel>(readyImages).Save(saveLoc);
         }
 
         private static SVMProblem GetProblemFromImageModelResultList(List<ImageWithResultModel> images,
@@ -157,7 +163,6 @@ namespace Training
                 if (components >= pcaComponents.Length) pcaDownsizedComponents = pcaComponents;
                 else
                 {
-
                     pcaDownsizedComponents = new double[components];
                     for (int i = 0; i < pcaDownsizedComponents.Length; i++)
                         pcaDownsizedComponents[i] = pcaComponents[i];
@@ -166,7 +171,7 @@ namespace Training
                 SVMNode[] svmNodes = new SVMNode[pcaDownsizedComponents.Length];
                 for (int i = 0; i < pcaDownsizedComponents.Length; i++)
                 {
-                    svmNodes[i] = new SVMNode(i+1, pcaDownsizedComponents[i]);
+                    svmNodes[i] = new SVMNode(i + 1, pcaDownsizedComponents[i]);
                 }
 
                 problem.Add(svmNodes, image.Result);

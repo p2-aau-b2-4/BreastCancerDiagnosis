@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Timers;
 using Dicom;
 
 namespace ImagePreprocessing
@@ -19,6 +19,7 @@ namespace ImagePreprocessing
     [Serializable]
     public class DdsmImage
     {
+
         public enum ImageViewEnum
         {
             Mlo, 

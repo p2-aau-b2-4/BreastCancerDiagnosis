@@ -15,6 +15,11 @@
   <ItemGroup>
     <Content Include="..\Training\App.config">
       <Link>App.config</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Remove="config" />
+    <Content Include="config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
