@@ -13,6 +13,7 @@ namespace ImagePreprocessing.Tests
         [SetUp]
         public void Setup()
         {
+
             DDSMImages =
             DdsmImage.GetAllImagesFromCsvFile(@"D:\Bryster\mass_case_description_test_set.csv");
 
