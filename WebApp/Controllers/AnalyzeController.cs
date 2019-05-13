@@ -17,6 +17,7 @@ using LibSVMsharp;
 using LibSVMsharp.Extensions;
 using LibSVMsharp.Helpers;
 using Microsoft.Extensions.Primitives;
+using Configuration = ImagePreprocessing.Configuration;
 using Serializer = Accord.IO.Serializer;
 
 namespace WebApp.Controllers
@@ -89,7 +90,7 @@ namespace WebApp.Controllers
                 new Task(() =>
                 {
                     image = Normalization.GetNormalizedImage(image, rectangle,
-                        int.Parse(ConfigurationManager.AppSettings["SizeImageToAnalyze"]));
+                        int.Parse(Configuration.Get("sizeImageToAnalyze")));
                     image.SaveAsPng(path + "-cropped");
                     _cache.Set($"_{imageLoc}-status", croppedImageStatusStr);
                 }),
@@ -117,8 +118,9 @@ namespace WebApp.Controllers
 
                     // add all the components to an SVMNode[]
                     double[] pcaComponents = Serializer.Load<double[]>(path + "-pcaComponents");
-                    SVMNode[] nodes = new SVMNode[200];
-                    for (int i = 0; i < 200; i++)
+                    int componentsToUse = int.Parse(Configuration.Get("componentsToUse"));
+                    SVMNode[] nodes = new SVMNode[componentsToUse];
+                    for (int i = 0; i < componentsToUse; i++)
                     {
                         nodes[i] = new SVMNode(i + 1, pcaComponents[i]);
                     }
