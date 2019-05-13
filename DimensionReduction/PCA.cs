@@ -19,6 +19,7 @@ using MathNet.Numerics.LinearAlgebra.Factorization;
 using Microsoft.Win32.SafeHandles;
 using Vector = MathNet.Numerics.LinearAlgebra.Double.Vector;
 using Accord.Statistics;
+using Accord.Statistics.Kernels;
 using MathNet.Numerics.LinearAlgebra.Complex;
 using SparseMatrix = MathNet.Numerics.LinearAlgebra.Double.SparseMatrix;
 
@@ -49,31 +50,44 @@ namespace DimensionReduction
             //Save to database
         }
 
-        public void GetComponentsFromImage(SparseMatrix tmpmatrix, Vector<double> image, int numberOfComponents)
+        public SparseMatrix GetComponentsFromImage(UShortArrayAsImage image, int numberOfComponents)
         {
-            if (_eigenValues.Count <= 0)
+            if (ComponentVectors.Length <= 0)
             {
                 Console.WriteLine("Run PCA train");
-                return;
+                return null;
+            }
+            
+            double[,] imgMatrix = new double[image.Width, image.Height];
+            Array.Copy(image.PixelArray, imgMatrix, image.PixelArray.Length);
+            
+            double[] matrix = new double[image.Width*image.Height];
+            
+            for (int i = 0; i < image.Height; i++)
+            {
+                for (int j = 0; j < image.Width; j++)
+                {
+                    matrix[i * image.Width + i] = imgMatrix[i, j];
+                }
+            }
+            
+            SparseMatrix tmpMatrix = MeanSubtraction(matrix);
+            
+            for (int i = 0; i < image.Height; i++)
+            {
+                matrix[i] = tmpMatrix[0,i];
             }
 
-            _eigenValues.Reverse();
-            _eigenVectors.Reverse();
+            SparseMatrix resMatrix = SparseMatrix.Create(image.Width, image.Height,0);
 
-            SparseMatrix matrix = SparseMatrix.OfRowVectors(image);
-            SparseMatrix resMatrix = SparseMatrix.Create(matrix.RowCount, matrix.ColumnCount,0);
-
-            MeanSubtraction(matrix);
-            
             // multiply the data matrix by the selected eigenvectors
             // TODO: Use cache-friendly multiplication
-            for (int i = 0; i < matrix.RowCount; i++)
+            for (int i = 0; i < 1; i++)
                 for (int j = 0; j < numberOfComponents; j++)
-                    for (int k = 0; k < ComponentVectors[j].Length; k++) // Change to Lars's version
-                        resMatrix[i,j] += matrix[i,k] * ComponentVectors[j][k]; // Change to Lars's version
+                    for (int k = 0; k < ComponentVectors[j].Length; k++)
+                        resMatrix[i, j] += matrix[k] * ComponentVectors[j][k];
 
-            Console.WriteLine(_eigenValues[0].ToString());
-            Console.WriteLine(_eigenVectors[0].ToString());
+            return SparseMatrix.OfMatrix(resMatrix);
 
         }
 
@@ -126,7 +140,8 @@ namespace DimensionReduction
             }
             
             PrincipalComponentMethod1(dArray);
-
+            Console.WriteLine("PCA done");
+            return;
             SparseMatrix matrix = SparseMatrix.OfArray(allImages);
 
             Console.WriteLine("done creating array");
@@ -169,6 +184,18 @@ namespace DimensionReduction
         public void MeanFace(SparseMatrix matrix)
         {
             
+        }
+
+        public SparseMatrix MeanSubtraction(double[] matrix)
+        {
+            SparseMatrix test = new SparseMatrix(1,matrix.Length);
+            
+            for (int i = 0; i < matrix.Length; i++)
+            {
+                test[0,i] = matrix[i];
+            }
+            
+            return MeanSubtraction(test);
         }
 
         ///<summary>
