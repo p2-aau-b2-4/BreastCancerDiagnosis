@@ -17,44 +17,63 @@ namespace Training
 {
     class Program
     {
+        // should main create images from dataset? (crop normalize)
+        // if false, it requires the files readyImagesTest.bin and readyImagesTrain.bin alreayd genereated
+        static bool CreateImages = false;
+
+        // this will skip the pca part, requires test.txt and train.txt to be ready. (if false)
+        private static bool IsSvmProblemReady = false;
+
         static void Main(string[] args)
         {
-//            List<DdsmImage> ddsmImagesTrain =
-//                DdsmImage.GetAllImagesFromCsvFile(@"E:\BrystTest\mass_case_description_train_set.csv");
-//            ddsmImagesTrain = ddsmImagesTrain
-//                .Where(image => image.Pathology != DdsmImage.Pathologies.BenignWithoutCallback).ToList();
-//            TransformAndSaveImagesWithResultModels(ddsmImagesTrain,"readyImageModelTrain.bin");
-//            List<DdsmImage> ddsmImagesTest =
-//               DdsmImage.GetAllImagesFromCsvFile(@"E:\BrystTest\mass_case_description_test_set.csv"); //todo use configurationManager
-//            ddsmImagesTest = ddsmImagesTest
-//                .Where(image => image.Pathology != DdsmImage.Pathologies.BenignWithoutCallback).ToList();
-//            TransformAndSaveImagesWithResultModels(ddsmImagesTest,"readyImageModelTest.bin");
+            if (CreateImages)
+            {
+                List<DdsmImage> ddsmImagesTrain =
+                    DdsmImage.GetAllImagesFromCsvFile(Configuration.Get("trainingSetCsvPath"));
+                ddsmImagesTrain = ddsmImagesTrain
+                    .Where(image => image.Pathology != DdsmImage.Pathologies.BenignWithoutCallback).ToList();
+                TransformAndSaveImagesWithResultModels(ddsmImagesTrain, "readyImageModelTrain.bin");
+                List<DdsmImage> ddsmImagesTest =
+                    DdsmImage.GetAllImagesFromCsvFile(Configuration.Get("testSetCsvPath"));
+                ddsmImagesTest = ddsmImagesTest
+                    .Where(image => image.Pathology != DdsmImage.Pathologies.BenignWithoutCallback).ToList();
+                TransformAndSaveImagesWithResultModels(ddsmImagesTest, "readyImageModelTest.bin");
+            }
 
             TrainPcaAndSvm();
         }
 
         private static void TrainPcaAndSvm()
         {
-//            List<ImageWithResultModel> imagesToTrainOn =
-//                Serializer.Load<List<ImageWithResultModel>>("readyImageModelTrain.bin");
-//            List<ImageWithResultModel> imagesToTestOn =
-//                Serializer.Load<List<ImageWithResultModel>>("readyImageModelTest.bin");
-//
-//            // create the pca MODEL:
-//            List<ImageWithResultModel> pcaTrainSet = imagesToTrainOn.DeepClone();
-//            pcaTrainSet.AddRange(imagesToTestOn);
-//
-//            PrincipalComponentAnalysis pca = newPca.TrainPCA(pcaTrainSet, out var data);
-//
-//            // with this, then let us create the two svm problems.
-//            SVMProblem trainingSet = GetProblemFromImageModelResultList(imagesToTrainOn, pca, 200);
-//            SVMProblem testSet = GetProblemFromImageModelResultList(imagesToTestOn, pca, 200);
-//
-//            testSet.Save("test.txt");
-//            trainingSet.Save("train.txt");
+            List<ImageWithResultModel> imagesToTrainOn =
+                Serializer.Load<List<ImageWithResultModel>>("readyImageModelTrain.bin");
+            List<ImageWithResultModel> imagesToTestOn =
+                Serializer.Load<List<ImageWithResultModel>>("readyImageModelTest.bin");
 
-            SVMProblem trainingSet = SVMProblemHelper.Load("train.txt");
-            SVMProblem testSet = SVMProblemHelper.Load("test.txt");
+            SVMProblem trainingSet;
+            SVMProblem testSet;
+            if (!IsSvmProblemReady)
+            {
+                // create the pca MODEL:
+                List<ImageWithResultModel> pcaTrainSet = imagesToTrainOn.DeepClone();
+                pcaTrainSet.AddRange(imagesToTestOn);
+
+                PrincipalComponentAnalysis pca = newPca.TrainPCA(pcaTrainSet, out var data);
+
+                // with this, then let us create the two svm problems.
+                trainingSet = GetProblemFromImageModelResultList(imagesToTrainOn, pca,
+                    int.Parse(Configuration.Get("componentsToUse")));
+                testSet = GetProblemFromImageModelResultList(imagesToTestOn, pca,
+                    int.Parse(Configuration.Get("componentsToUse")));
+
+                testSet.Save("test.txt");
+                trainingSet.Save("train.txt");
+            }
+            else
+            {
+                trainingSet = SVMProblemHelper.Load("train.txt");
+                testSet = SVMProblemHelper.Load("test.txt");
+            }
 
 
             trainingSet = trainingSet.Normalize(SVMNormType.L2);
@@ -70,13 +89,7 @@ namespace Training
             };
 
             Console.WriteLine("training svm");
-            Console.WriteLine(System.AppContext.BaseDirectory);
-            //////////////////////////////////////////////////////////////////////////////////////////////////////////
-            ///
-            ///
-            ///
-            ///
-            /// //////////////////////////////////////////////////////////////////////////////////////////////////////
+
             double[] crossValidationResults; // output labels
             int nFold = 5;
             trainingSet.CrossValidation(parameter, nFold, out crossValidationResults);
@@ -96,7 +109,8 @@ namespace Training
 
 
             // Evaluate the test results
-            double testAccuracy = testSet.EvaluateClassificationProblem(testResults, model.Labels, out var confusionMatrix);
+            double testAccuracy =
+                testSet.EvaluateClassificationProblem(testResults, model.Labels, out var confusionMatrix);
 
             // Print the resutls
             Console.WriteLine("\n\nCross validation accuracy: " + crossValidationAccuracy);
@@ -131,10 +145,7 @@ namespace Training
         private static void TransformAndSaveImagesWithResultModels(List<DdsmImage> images, string saveLoc)
         {
             ConcurrentBag<ImageWithResultModel> readyImages = new ConcurrentBag<ImageWithResultModel>();
-
-            //readyImages.Add(Normalization.GetNormalizedImage(DDSMImages[0].DcomOriginalImage, Normalization.GetTumourPositionFromMask(DDSMImages[0].DcomMaskImage),100));
             List<DdsmImage> imagesCc = images.Where(x => (x.ImageView == DdsmImage.ImageViewEnum.Cc)).ToList();
-            //new List<UShortArrayAsImage>(readyImages).Save("readyImages.bin");
             Console.WriteLine($"CC: {imagesCc.Count}");
             Parallel.ForEach(imagesCc, image =>
             {
