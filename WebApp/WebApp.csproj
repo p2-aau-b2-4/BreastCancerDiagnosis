@@ -29,14 +29,6 @@
 
 
   <ItemGroup>
-    <Content Include="..\ImagePreprocessing\config.config">
-      <Link>config.config</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-
-  <ItemGroup>
     <None Remove="libsvm.dll" />
     <EmbeddedResource Include="libsvm.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
