@@ -15,4 +15,14 @@
       <PackageReference Include="LibSVMsharp" Version="1.2.5" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Dataset100x100" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\ImagePreprocessing\config">
+        <Link>config</Link>
+      </Content>
+    </ItemGroup>
+
 </Project>
