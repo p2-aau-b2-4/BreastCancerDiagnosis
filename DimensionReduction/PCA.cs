@@ -1,28 +1,13 @@
 using System;
-using System.Collections.Concurrent;
-using Complex = System.Numerics.Complex;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Accord.IO;
 using Accord.Math;
 using Accord.Math.Decompositions;
-using Accord.Math.Distances;
-using BitMiracle.LibJpeg.Classic;
-using MathNet.Numerics;
-using MathNet.Numerics.LinearAlgebra.Storage;
 using ImagePreprocessing;
-using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Factorization;
-using Microsoft.Win32.SafeHandles;
-using Vector = MathNet.Numerics.LinearAlgebra.Double.Vector;
 using Accord.Statistics;
-using Accord.Statistics.Kernels;
-using MathNet.Numerics.LinearAlgebra.Complex;
 using SparseMatrix = MathNet.Numerics.LinearAlgebra.Double.SparseMatrix;
-
 
 namespace DimensionReduction
 {
