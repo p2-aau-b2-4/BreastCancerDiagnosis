@@ -52,33 +52,40 @@ namespace DimensionReduction
 
         public SparseMatrix GetComponentsFromImage(UShortArrayAsImage image, int numberOfComponents)
         {
+            double[,] tmpImage = new double[image.Width,image.Height];
+            Array.Copy(image.PixelArray, tmpImage, image.PixelArray.Length);
+            return GetComponentsFromImage(tmpImage,numberOfComponents);
+        }
+
+        public SparseMatrix GetComponentsFromImage(double[,] image, int numberOfComponents)
+        {
             if (ComponentVectors.Length <= 0)
             {
                 Console.WriteLine("Run PCA train");
                 return null;
             }
+
+            int columns = image.Columns();
+            int rows = image.Rows();
             
-            double[,] imgMatrix = new double[image.Width, image.Height];
-            Array.Copy(image.PixelArray, imgMatrix, image.PixelArray.Length);
+            double[] matrix = new double[image.Length];
             
-            double[] matrix = new double[image.Width*image.Height];
-            
-            for (int i = 0; i < image.Height; i++)
+            for (int i = 0; i < rows; i++)
             {
-                for (int j = 0; j < image.Width; j++)
+                for (int j = 0; j < columns; j++)
                 {
-                    matrix[i * image.Width + i] = imgMatrix[i, j];
+                    matrix[i * columns + i] = image[i, j];
                 }
             }
             
             SparseMatrix tmpMatrix = MeanSubtraction(matrix);
             
-            for (int i = 0; i < image.Height; i++)
+            for (int i = 0; i < rows; i++)
             {
                 matrix[i] = tmpMatrix[0,i];
             }
 
-            SparseMatrix resMatrix = SparseMatrix.Create(image.Width, image.Height,0);
+            SparseMatrix resMatrix = SparseMatrix.Create(columns, rows,0);
 
             // multiply the data matrix by the selected eigenvectors
             // TODO: Use cache-friendly multiplication
