@@ -128,25 +128,32 @@ namespace DimensionReduction
                 Console.WriteLine($"Copied image #{i}");
             }
             
-            double[][] dArray = new double[images.Count][];
-            i = 0;
-            foreach (var image in images)
+            Train(allImages);
+        }
+        
+        public void Train(double[,] data)
+        {
+            int rows = data.Rows();
+            int columns = data.Columns();
+            
+            double[][] dArray = new double[data.Rows()][];
+
+            for (int j = 0; j < rows; j++)
             {
-                dArray[i] = new double[image.Width*image.Height];
+                dArray[j] = new double[columns];
                 
-                for (int y = 0; y < image.Height; y++)
+                for (int x = 0; x < columns; x++)
                 {
-                    for (int x = 0; x < image.Width; x++)
-                    {
-                        //dImage[y * image.Width + x] = image.GetPixel(x,y).R;
-                        dArray[i][y * image.Width + x] = image.PixelArray[x, y];
-                    }
+                    dArray[j][x] = data[j, x];
                 }
-                
-                i += 1;
             }
             
-            PrincipalComponentMethod1(dArray);
+            Train(dArray);
+        }
+
+        public void Train(double[][] data)
+        {
+            PrincipalComponentMethod1(data);
             Console.WriteLine("PCA done");
 
             //Model model = new Model(eigen.EigenValues, eigen.EigenVectors, eigenLumps, features, new List<Vector<double>>());
