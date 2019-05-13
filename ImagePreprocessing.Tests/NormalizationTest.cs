@@ -150,6 +150,21 @@ namespace ImagePreprocessing.Tests
             
             Assert.AreEqual(croppedImage.PixelArray, normalizedImage.PixelArray);
         }
-        
+        [TestCase]
+        public void GetNormalizedImageTest2()
+        {
+
+            ushort[,] testValue = new ushort[,] { { 1, 1, 1, 0, 0, 0 }, { 1, 1, 1, 0, 0, 0 }, { 0, 0, 1, 0, 0, 1 }, { 0, 0, 1, 0, 0, 1 }, { 0, 0, 1, 0, 0, 1 }, { 0, 0, 1, 1, 1, 0 } };
+            UShortArrayAsImage testImage = new UShortArrayAsImage(testValue);
+
+            Rectangle testRect = new Rectangle(0, 0, 4, 2);
+            var normalizedImage = GetNormalizedImage(testImage, testRect, 4);
+
+            Rectangle squareRect = new Rectangle(0, testRect.Y - (testRect.Width - testRect.Height), 4, 4);
+            var croppedImage = Crop(squareRect, testImage);
+
+            Assert.AreEqual(croppedImage.PixelArray, normalizedImage.PixelArray);
+        }
+
     }
 }
