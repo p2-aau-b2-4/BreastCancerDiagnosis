@@ -7,8 +7,13 @@ namespace ImagePreprocessing
     /// </summary>
     public static class Contrast
     {
-        // We found formula for making the histogram equalization here: https://epochabuse.com/histogram-equalization/
+        /// <summary>
+        /// Applies histogram equalization to a given image.
+        /// </summary>
+        /// <param name="img"> The image of which to apply histogram equalization to </param>
+        /// <returns> The image with applied histogram equalization </returns>
         public static UShortArrayAsImage ApplyHistogramEqualization(UShortArrayAsImage img)
+            // We found formula for making the histogram equalization here: https://epochabuse.com/histogram-equalization/
         {
             int[] histogram = MakeHistogram(img, out int blackPixelsCount);
 
@@ -18,26 +23,38 @@ namespace ImagePreprocessing
 
             return new UShortArrayAsImage(CalculateResult(img.PixelArray, accumulativeHistogram));
         }
-
+        
+        /// <summary>
+        /// Creates a histogram based on the given image.
+        /// </summary>
+        /// <param name="img"> The image </param>
+        /// <param name="blackPixelsCount"> The amount of black pixels in the picture </param>
+        /// <returns> The image histogram </returns>
         private static int[] MakeHistogram(UShortArrayAsImage img, out int blackPixelsCount)
         {
-            int[] Histogram = new int[UInt16.MaxValue + 1];
+            int[] histogram = new int[UInt16.MaxValue + 1];
             var pixelArray = img.PixelArray;
 
             for (int i = 0; i < img.Height; i++)
             {
                 for (int j = 0; j < img.Width; j++)
                 {
-                    Histogram[pixelArray[i, j]]++;
+                    histogram[pixelArray[i, j]]++;
                 }
             }
             //Saving the amount of black pixels and setting the amount of black pixels to zero.
-            blackPixelsCount = Histogram[0];
-            Histogram[0] = 0;
+            blackPixelsCount = histogram[0];
+            histogram[0] = 0;
 
-            return Histogram;
+            return histogram;
         }
 
+        /// <summary>
+        /// Normalizes the histogram created previously.
+        /// </summary>
+        /// <param name="histogram"> The image histogram </param>
+        /// <param name="nPixels"> Total amount of pixels in the image, not counting the black </param>
+        /// <returns> The normalized histogram </returns>
         private static double[] MakeNormalizedHistogram(int[] histogram, int nPixels)
         {
             double[] normalizedHistogram = new double[UInt16.MaxValue + 1];
@@ -49,7 +66,11 @@ namespace ImagePreprocessing
             return normalizedHistogram;
         }
 
-
+        /// <summary>
+        /// Calculates the accumulative histogram, based on the normalized histogram.
+        /// </summary>
+        /// <param name="normalizedHistogram"> The normalized histogram </param>
+        /// <returns> Array containing the sum of all the values in the normalized histogram </returns>
         private static double[] MakeAccumulativeHistogram(double[] normalizedHistogram)
         {
             double[] accumulativeHistogram = new double[UInt16.MaxValue + 1];
