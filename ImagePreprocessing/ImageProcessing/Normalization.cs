@@ -37,7 +37,13 @@ namespace ImagePreprocessing
             //todo denne kode er flere steder
             return b1 + (s - a1) * (b2 - b1) / (a2 - a1);
         }
-
+        
+        /// <summary>
+        /// Resizes the given image to the given size.
+        /// </summary>
+        /// <param name="uShortArrayAsImageIn"> Image to be resized </param>
+        /// <param name="size"> Width and height of the resized image </param>
+        /// <returns> The resized image </returns>
         public static UShortArrayAsImage ResizeImage(UShortArrayAsImage uShortArrayAsImageIn, int size)
         {
             var newImage = new ushort[size, size];
