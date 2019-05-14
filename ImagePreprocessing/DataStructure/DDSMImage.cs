@@ -65,7 +65,11 @@ namespace ImagePreprocessing
             DcomMaskFilePath = dcomMaskFilePath;
             DcomCroppedFilePath = dcomCroppedFilePath;
         }
-
+        /// <summary>
+        /// Get all images from CSV file.
+        /// </summary>
+        /// <param name="csvFilePath"> The path to the CSV file </param>
+        /// <returns> List of all DDSM images to return </returns>
         public static List<DdsmImage> GetAllImagesFromCsvFile(String csvFilePath)
         {
             List<DdsmImage> imagesToReturn = new List<DdsmImage>();
@@ -91,7 +95,13 @@ namespace ImagePreprocessing
 
             return imagesToReturn;
         }
-
+        
+        /// <summary>
+        /// Locate filepath for DCOM images, based on string.
+        /// </summary>
+        /// <param name="csvFilePath"> The filepath to the CSV file </param>
+        /// <param name="s"> String used to locate DCOM images </param>
+        /// <returns></returns>
         private static string GetDcomFilePathFromString(string csvFilePath, string s)
         {
             csvFilePath = csvFilePath.Substring(0, csvFilePath.LastIndexOf(@"\", StringComparison.Ordinal) + 1);

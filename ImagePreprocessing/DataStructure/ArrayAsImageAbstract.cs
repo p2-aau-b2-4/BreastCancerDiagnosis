@@ -29,7 +29,11 @@ namespace ImagePreprocessing
         {
             _overlays.Add(overlay);
         }
-
+        
+        /// <summary>
+        /// Saves an image as type PNG.
+        /// </summary>
+        /// <param name="saveLoc"> The location to save the file </param>
         public void SaveAsPng(String saveLoc)
         {
             using (FileStream file = new FileStream(saveLoc, FileMode.Create))
@@ -38,7 +42,7 @@ namespace ImagePreprocessing
             }
         }
 
-
+        
         protected Bitmap ApplyOverlays(Bitmap bitmapIn)
         {
             Graphics g = Graphics.FromImage(bitmapIn);
