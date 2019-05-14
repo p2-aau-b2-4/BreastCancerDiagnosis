@@ -184,7 +184,7 @@ namespace DimensionReduction
             var svd = new JaggedSingularValueDecomposition(matrix,
                 computeLeftSingularVectors: false,
                 computeRightSingularVectors: true,
-                autoTranspose: true, inPlace: true);
+                autoTranspose: false, inPlace: true);
 
             SingularValues = svd.Diagonal;
             Eigenvalues = SingularValues.Pow(2);
@@ -254,11 +254,9 @@ namespace DimensionReduction
             double[,] scArrayMatrix = new double[matrix.ColumnCount, matrix.ColumnCount];
             double[,] tmpArrayMatrix = matrix.ToArray();
 
-            
             Parallel.For(0, matrix.ColumnCount,
                 x =>
                 {
-                    
                     // the middle for loop is parallized. The first cannot, since it would not be atomic, the third is not parallized, due to overhead. (was 68% faster without)
 
                     for (int i = 0; i < matrix.RowCount; i++)
@@ -270,8 +268,6 @@ namespace DimensionReduction
                                 (tmpArrayMatrix[i, x] * tmpArrayMatrix[i, y]) / (matrix.RowCount - 1);
                         }
                     }
-
-                    ;
                 });
 
 
