@@ -5,8 +5,19 @@ using System.Linq;
 
 namespace ImagePreprocessing
 {
+    /// <summary>
+    /// Class for normalization. This class includes methods to crop, resize and normalize a UShortArrayAsImage.
+    /// </summary>
     public static class Normalization
     {
+        
+        /// <summary>
+        /// Normalizes, crops and resizes the given UShortArrayAsImage.
+        /// </summary>
+        /// <param name="image">The image to be normalized</param>
+        /// <param name="tumour">The position of the tumour</param>
+        /// <param name="size">The desired size of the image</param>
+        /// <returns>The normalized image as UShortArrayAsImage</returns>
         public static UShortArrayAsImage GetNormalizedImage(UShortArrayAsImage image, Rectangle tumour, int size)
         {
 

@@ -2,6 +2,9 @@
 
 namespace ImagePreprocessing
 {
+    /// <summary>
+    /// Class for adding histogram equalization to an image. 
+    /// </summary>
     public static class Contrast
     {
         // We found formula for making the histogram equalization here: https://epochabuse.com/histogram-equalization/
@@ -59,7 +62,13 @@ namespace ImagePreprocessing
 
             return accumulativeHistogram;
         }
-
+        
+        /// <summary>
+        /// Calculates the final result of the histogram equalization. 
+        /// </summary>
+        /// <param name="origin">The original image</param>
+        /// <param name="accumulativeHistogram">The output from "MakeAccumulativeHistogram"</param>
+        /// <returns>Returns the finished image as a 2D ushort array</returns>
         private static ushort[,] CalculateResult(ushort[,] origin, double[] accumulativeHistogram)
         {
             ushort[,] result = origin.Clone() as ushort[,];
