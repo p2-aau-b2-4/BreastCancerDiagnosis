@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Accord.Math;
+using Accord.Statistics.Distributions.Univariate;
 using NUnit.Framework;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra.Double;
@@ -355,6 +357,68 @@ namespace DimensionReduction.Tests
 
             SparseMatrix matrix = SparseMatrix.OfArray(matrixArr);
             Assert.Throws<NotFiniteNumberException>(() => p.CovarianceMatrix(matrix));
+        }
+
+        [Test, Description("Tests PCA training in a normal case")]
+        public void Train()
+        {
+            double[,] matrix = new double[10,2] {
+                {0.69, 0.49},
+                {-1.31, -1.21},
+                {0.39, 0.99},
+                {0.09, 0.29},
+                {1.29, 1.09},
+                {0.49, 0.79},
+                {0.19, -0.31},
+                {-0.81, -0.81},
+                {-0.31, -0.31},
+                {-0.71, -1.01}
+            };
+            
+            double[,] matrix2 = new double[10,2] {
+                {0.399, 0.419},
+                {-1.511, -1.191},
+                {0.189, 1.009},
+                {0.889, 1.309},
+                {1.089, 1.109},
+                {0.289, 0.809},
+                {2.089, -0.391},
+                {-1.011, -0.791},
+                {-1.511, -1.291},
+                {-0.911, -0.991}
+            };
+            
+            p.MeanSubtraction(SparseMatrix.OfArray(matrix));
+            
+            
+        }
+        
+        [Test, Description("Tests GetComponentFromImage in a normal case")]
+        public void GetComponentFromImageNormalCase() // Not working 
+        {
+            double[,] matrix = new double[10,2] {
+                {0.69, 0.49},
+                {-1.31, -1.21},
+                {0.39, 0.99},
+                {0.09, 0.29},
+                {1.29, 1.09},
+                {0.49, 0.79},
+                {0.19, -0.31},
+                {-0.81, -0.81},
+                {-0.31, -0.31},
+                {-0.71, -1.01}
+            };
+            
+            double[,] expectation = new double[2,2] {
+                {-0.735178656, -0.677873399},
+                {0.677873399, -0.735178656}
+            };
+            
+            SparseMatrix res = p.GetComponentsFromImage(matrix, 2);
+            
+            CollectionAssert.AreEqual(expectation.ToArray(),
+                res.ToArray(),
+                new Comparer(floatingPointTolerance));
         }
     }
 }
