@@ -19,7 +19,6 @@ namespace ImagePreprocessing
             }   
             else if (tumour.Width < tumour.Height || tumour.Width == tumour.Height)
             {
-                squareTumour = new Rectangle(tumour.X - (tumour.Height-tumour.Width) / 2, tumour.Y, tumour.Height, tumour.Height);   
                 squareTumour = new Rectangle(tumour.X - (tumour.Height-tumour.Width)/2, tumour.Y, tumour.Height, tumour.Height);
             }
             
