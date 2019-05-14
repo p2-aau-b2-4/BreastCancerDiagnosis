@@ -11,16 +11,18 @@ namespace ImagePreprocessing
         {
 
             Rectangle squareTumour = new Rectangle();
-
+            
+            //Resize the Rectangle 
             if (tumour.Width > tumour.Height)
             {
-                squareTumour = new Rectangle(tumour.X, tumour.Y - (tumour.Width-tumour.Height)/2, tumour.Width, tumour.Width);
-            }
+                squareTumour = new Rectangle(tumour.X, tumour.Y - (tumour.Width-tumour.Height) / 2, tumour.Width, tumour.Width);   
+            }   
             else if (tumour.Width < tumour.Height || tumour.Width == tumour.Height)
             {
+                squareTumour = new Rectangle(tumour.X - (tumour.Height-tumour.Width) / 2, tumour.Y, tumour.Height, tumour.Height);   
                 squareTumour = new Rectangle(tumour.X - (tumour.Height-tumour.Width)/2, tumour.Y, tumour.Height, tumour.Height);
             }
-
+            
             return ResizeImage(Crop(squareTumour, image), size);
 
 
@@ -100,15 +102,15 @@ namespace ImagePreprocessing
                 if(containsMask) right = x+1;
             }
 
-            if (right == -1) right = mask.GetLength(1) - 1;
-            if (bottom == -1) bottom = mask.GetLength(0) - 1;
+            if (right == -1) right = mask.GetLength(1)-1;
+            if (bottom == -1) bottom = mask.GetLength(0)-1;
 
-            return new Rectangle(left, top, right - left, bottom - top);
+            return new Rectangle(left, top, right-left, bottom-top);
         }
-
+        
         public static UShortArrayAsImage Crop(Rectangle rectangle, UShortArrayAsImage image)
         {
-            ushort[,] result = new ushort[rectangle.Height, rectangle.Width];
+            ushort[,] result = new ushort[rectangle.Height,rectangle.Width];
 
             ushort[,] current = image.PixelArray; // set here - lazy evaluation
 
