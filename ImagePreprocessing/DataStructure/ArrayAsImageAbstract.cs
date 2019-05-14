@@ -9,8 +9,19 @@ namespace ImagePreprocessing
     [Serializable]
     public abstract class ArrayAsImageAbstract<T>
     {
+        /// <summary>
+        /// The Width of an image.
+        /// </summary>
         public int Width { get; }
+        
+        /// <summary>
+        /// The Height of an image.
+        /// </summary>
         public int Height { get; }
+        
+        /// <summary>
+        /// The Pixel Data defined by the classes.
+        /// </summary>
         protected byte[] PixelData { get; set; } // up to class to interpret byte array;
 
         public abstract T PixelArray { get; set; }
