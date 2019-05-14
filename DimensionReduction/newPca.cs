@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Accord.IO;
+using Accord.Math;
 using Accord.Statistics.Analysis;
 using ImagePreprocessing;
 using Training;
@@ -11,8 +12,23 @@ namespace DimensionReduction
 {
     public class newPca
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="readyImages"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static PrincipalComponentAnalysis TrainPCA(List<ImageWithResultModel>readyImages, out double[][] data)
         {
+            //reduce data:
+            List<ImageWithResultModel> toTrainOn = new List<ImageWithResultModel>();
+            for (int i = 0; i < readyImages.Count; i++)
+            {
+                if(i % 2 == 0) toTrainOn.Add(readyImages[i]);
+            }
+
+            readyImages = toTrainOn;
+            
             int imageCount = 0;
             data = new double[readyImages.Count][];
             foreach (ImageWithResultModel image in readyImages)
@@ -21,6 +37,10 @@ namespace DimensionReduction
                 imageCount++;
             }
 
+            //data = data.Transpose();
+
+            Console.WriteLine("done creating data");
+
 
             PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
             if (File.Exists("model.bin"))
@@ -28,9 +48,15 @@ namespace DimensionReduction
             else
             {
                 Console.WriteLine("training pca");
+                
+                
+                
+                
+                
                 pca.Learn(data);
             }
 
+            Console.WriteLine(pca.Eigenvalues.Length);
             pca.Save("model.bin");
 
             return pca;

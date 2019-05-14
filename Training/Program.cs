@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Accord;
 using Accord.IO;
+using Accord.Math;
 using Accord.Statistics.Analysis;
 using DimensionReduction;
 using ImagePreprocessing;
@@ -18,47 +19,81 @@ namespace Training
 {
     class Program
     {
-        // should main create images from dataset? (crop normalize)
-        // if false, it requires the files readyImagesTest.bin and readyImagesTrain.bin alreayd genereated
-        static bool CreateImages = false;
-
-        // this will skip the pca part, requires test.txt and train.txt to be ready. (if false)
-        private static bool IsSvmProblemReady = false;
-
         static void Main(string[] args)
         {
-            Console.WriteLine(Environment.CurrentDirectory);
-            if (CreateImages)
+            //TrainWithDifferentParameters();
+           //PrintHighestCrossValidation();
+//            Console.WriteLine(Environment.CurrentDirectory);
+//            if (Configuration.Get("ShouldCreateImages").Equals("1"))
+//            {
+//                List<DdsmImage> trainingSetDdsm = new List<DdsmImage>();
+//                List<DdsmImage> testSetDdsm = new List<DdsmImage>();
+//
+//                (string, List<DdsmImage>)[] paths =
+//                {
+//                    ("massTrainingSetCsvPath", trainingSetDdsm), ("massTestSetCsvPath", testSetDdsm),
+//                    ("calcTrainingSetCsvPath", trainingSetDdsm), ("calcTestSetCsvPath", testSetDdsm)
+//                };
+//
+//
+//                foreach ((string, List<DdsmImage>) path in paths)
+//                {
+//                    path.Item2.AddRange(DdsmImage.GetAllImagesFromCsvFile(Configuration.Get(path.Item1)));
+//                }
+//
+//                Task<List<ImageWithResultModel>> trainTask = Task.Factory.StartNew(
+//                    () => TransformDdsmImageList(trainingSetDdsm),
+//                    TaskCreationOptions.LongRunning);
+//                Task<List<ImageWithResultModel>> testTask = Task.Factory.StartNew(
+//                    () => TransformDdsmImageList(testSetDdsm),
+//                    TaskCreationOptions.LongRunning);
+//                Task.WaitAll(new Task[] {trainTask, testTask});
+//                List<ImageWithResultModel> trainingSet = trainTask.Result;
+//                List<ImageWithResultModel> testSet = testTask.Result;
+//
+//                trainingSet.Save(Configuration.Get("TrainReadyImage"));
+//                testSet.Save(Configuration.Get("TestReadyImage"));
+//            }
+            TrainPcaAndSvm();
+        }
+
+        private static List<ImageWithResultModel> TransformDdsmImageList(List<DdsmImage> images)
+        {
+            List<ImageWithResultModel> result = new List<ImageWithResultModel>();
+            List<DdsmImage> imagesCc = images.Where(x => (x.ImageView == DdsmImage.ImageViewEnum.Cc)).ToList();
+            foreach (DdsmImage image in imagesCc)
             {
-                List<DdsmImage> ddsmImagesTrain =
-                    DdsmImage.GetAllImagesFromCsvFile(Configuration.Get("trainingSetCsvPath"));
-                ddsmImagesTrain = ddsmImagesTrain
-                    .Where(image => image.Pathology != DdsmImage.Pathologies.BenignWithoutCallback).ToList();
-                TransformAndSaveImagesWithResultModels(ddsmImagesTrain, "readyImageModelTrain.bin");
-                List<DdsmImage> ddsmImagesTest =
-                    DdsmImage.GetAllImagesFromCsvFile(Configuration.Get("testSetCsvPath"));
-                ddsmImagesTest = ddsmImagesTest
-                    .Where(image => image.Pathology != DdsmImage.Pathologies.BenignWithoutCallback).ToList();
-                TransformAndSaveImagesWithResultModels(ddsmImagesTest, "readyImageModelTest.bin");
+                Console.WriteLine($"{result.Count * 100 / imagesCc.Count}% done");
+                var imageResult = new ImageWithResultModel
+                {
+                    Result = image.Pathology == DdsmImage.Pathologies.Malignant ? 1 : 0,
+                    Image = Contrast.ApplyHistogramEqualization(
+                        Normalization.GetNormalizedImage(image.DcomOriginalImage,
+                            Normalization.GetTumourPositionFromMask(image.DcomMaskImage),
+                            int.Parse(Configuration.Get("sizeImageToAnalyze"))))
+                };
+                result.Add(imageResult);
             }
 
-            TrainPcaAndSvm();
+            return result;
         }
 
         private static void TrainPcaAndSvm()
         {
             List<ImageWithResultModel> imagesToTrainOn =
-                Serializer.Load<List<ImageWithResultModel>>("readyImageModelTrain.bin");
+                Serializer.Load<List<ImageWithResultModel>>(Configuration.Get("TrainReadyImage"));
             List<ImageWithResultModel> imagesToTestOn =
-                Serializer.Load<List<ImageWithResultModel>>("readyImageModelTest.bin");
+                Serializer.Load<List<ImageWithResultModel>>(Configuration.Get("TestReadyImage"));
+            Console.WriteLine(
+                $"{imagesToTrainOn.Where(x => x.Result == 1).ToList().Count * 1.0 / imagesToTrainOn.Where(x => x.Result == 0).ToList().Count}");
 
             SVMProblem trainingSet;
             SVMProblem testSet;
-            if (!IsSvmProblemReady)
+
+            if (Configuration.Get("ShouldCreateSVMSetsWithPCA").Equals("1"))
             {
                 // create the pca MODEL:
                 List<ImageWithResultModel> pcaTrainSet = imagesToTrainOn.DeepClone();
-                pcaTrainSet.AddRange(imagesToTestOn);
 
                 PrincipalComponentAnalysis pca = newPca.TrainPCA(pcaTrainSet, out var data);
 
@@ -68,13 +103,13 @@ namespace Training
                 testSet = GetProblemFromImageModelResultList(imagesToTestOn, pca,
                     int.Parse(Configuration.Get("componentsToUse")));
 
-                testSet.Save("test.txt");
-                trainingSet.Save("train.txt");
+                testSet.Save(Configuration.Get("TestSetLocation"));
+                trainingSet.Save(Configuration.Get("TrainSetLocation"));
             }
             else
             {
-                trainingSet = SVMProblemHelper.Load("train.txt");
-                testSet = SVMProblemHelper.Load("test.txt");
+                trainingSet = SVMProblemHelper.Load(Configuration.Get("TrainSetLocation"));
+                testSet = SVMProblemHelper.Load(Configuration.Get("TestSetLocation"));
             }
 
 
@@ -85,15 +120,17 @@ namespace Training
             {
                 Type = SVMType.C_SVC,
                 Kernel = SVMKernelType.RBF,
-                C = 1,
-                Gamma = 1,
+                C = double.Parse(Configuration.Get("C")),
+                Gamma = double.Parse(Configuration.Get("Gamma")),
                 Probability = true,
+                WeightLabels = new int[] {0, 1},
+                Weights = new double[] {1-0.69949494949495, 0.69949494949495}
             };
 
             Console.WriteLine("training svm");
 
             double[] crossValidationResults; // output labels
-            int nFold = 5;
+            int nFold = int.Parse(Configuration.Get("nFold"));
             trainingSet.CrossValidation(parameter, nFold, out crossValidationResults);
 
             // Evaluate the cross validation result
@@ -104,7 +141,7 @@ namespace Training
             SVMModel model = trainingSet.Train(parameter);
 
             // Save the model
-            SVM.SaveModel(model, @"phishing_model.txt");
+            SVM.SaveModel(model, Configuration.Get("ModelLocation"));
 
             // Predict the instances in the test set
             double[] testResults = testSet.Predict(model);
@@ -133,8 +170,21 @@ namespace Training
                 Console.WriteLine();
             }
 
+            double sensitivitity = confusionMatrix[0, 0] * 1.0 /
+                                   (confusionMatrix[0, 1] + confusionMatrix[0, 0]);
+            double specificity = confusionMatrix[1, 1] * 1.0 /
+                                 (confusionMatrix[1, 1] + confusionMatrix[1, 0]);
+            using (StreamWriter file = new StreamWriter(@"svmData.txt", true))
+            {
+                file.WriteLine(
+                    $"C={1.4}, GAMMA={0.3} testAccuracy={testAccuracy}, sensitivity={sensitivitity}, specificity={specificity}");
+            }
+
+
             List<double[]> derpshit = new List<double[]>();
             double[] derp = testSet.PredictProbability(model, out derpshit);
+
+
             for (int i = 0; i < derpshit.Count; i++)
             {
                 String x = "";
@@ -167,6 +217,25 @@ namespace Training
         private static SVMProblem GetProblemFromImageModelResultList(List<ImageWithResultModel> images,
             PrincipalComponentAnalysis pca, int components)
         {
+            //GetPcaData:
+            //reduce data:
+            int imageCount = 0;
+            var data = new double[images.Count][];
+            foreach (ImageWithResultModel image in images)
+            {
+                data[imageCount] = newPca.GetVectorFromUShortArray(image.Image.PixelArray);
+                imageCount++;
+            }
+
+            Console.WriteLine(pca.Eigenvalues.Length);
+            Console.WriteLine(pca.Components.Count);
+            //data = data.Transpose();
+
+            //double[][] pcaComponents2d = pca.Transform(data);
+            
+            
+            
+            
             SVMProblem problem = new SVMProblem();
             foreach (ImageWithResultModel image in images)
             {
@@ -184,6 +253,7 @@ namespace Training
                 SVMNode[] svmNodes = new SVMNode[pcaDownsizedComponents.Length];
                 for (int i = 0; i < pcaDownsizedComponents.Length; i++)
                 {
+                    // index is i+1, because libsvm has index 0 reserved.
                     svmNodes[i] = new SVMNode(i + 1, pcaDownsizedComponents[i]);
                 }
 
@@ -191,6 +261,119 @@ namespace Training
             }
 
             return problem;
+        }
+
+        private static void TrainWithDifferentParameters()
+        {
+            List<Task> tasks = new List<Task>();
+            for (double cInit = 0.01; cInit <= 10000; cInit *= 10)
+            {
+                double c = cInit.DeepClone();
+                tasks.Add(new Task(() =>
+                {
+                    for (double gamma = 0.01; gamma <= 10000; gamma *= 10)
+                    {
+                        SVMProblem trainingSet = SVMProblemHelper.Load(Configuration.Get("TrainSetLocation"));
+                        SVMProblem testSet = SVMProblemHelper.Load(Configuration.Get("TestSetLocation"));
+
+
+                        trainingSet = trainingSet.Normalize(SVMNormType.L2);
+                        testSet = testSet.Normalize(SVMNormType.L2);
+
+                        SVMParameter parameter = new SVMParameter
+                        {
+                            Type = SVMType.C_SVC,
+                            Kernel = SVMKernelType.RBF,
+                            C = c,
+                            Gamma = gamma,
+                            Probability = false,
+                            //WeightLabels = new int[] {0, 1},
+                            //Weights = new double[] {1-0.638190954773869, 0.638190954773869}
+                        };
+
+                        Console.WriteLine($"training svm with c={c},gamma={gamma}");
+
+                        double[] crossValidationResults; // output labels
+                        int nFold = int.Parse(Configuration.Get("nFold"));
+                        trainingSet.CrossValidation(parameter, nFold, out crossValidationResults);
+
+                        // Evaluate the cross validation result
+                        // If it is not good enough, select the parameter set again
+                        double crossValidationAccuracy =
+                            trainingSet.EvaluateClassificationProblem(crossValidationResults);
+
+                        // Train the model, If your parameter set gives good result on cross validation
+                        SVMModel model = trainingSet.Train(parameter);
+
+                        // Save the model
+                        SVM.SaveModel(model, Configuration.Get("ModelLocation"));
+
+                        // Predict the instances in the test set
+                        double[] testResults = testSet.Predict(model);
+
+
+                        // Evaluate the test results
+                        double testAccuracy =
+                            testSet.EvaluateClassificationProblem(testResults, model.Labels, out var confusionMatrix);
+
+                        // Print the resutls
+                        Console.WriteLine("\n\nCross validation accuracy: " + crossValidationAccuracy);
+                        Console.WriteLine("\nTest accuracy: " + testAccuracy);
+                        double sensitivitity = confusionMatrix[0, 0] * 1.0 /
+                                               (confusionMatrix[0, 1] + confusionMatrix[0, 0]);
+                        double specificity = confusionMatrix[1, 1] * 1.0 /
+                                             (confusionMatrix[1, 1] + confusionMatrix[1, 0]);
+                        using (StreamWriter file = new StreamWriter(@"svmData.txt", true))
+                        {
+                            file.WriteLine(
+                                $"C={c}, GAMMA={gamma} testAccuracy={testAccuracy}, sensitivity={sensitivitity}, specificity={specificity}");
+                        }
+                    }
+                }));
+            }
+
+            foreach (Task x in tasks) x.Start();
+
+            Task.WaitAll(tasks.ToArray());
+        }
+
+        private static void PrintHighestCrossValidation()
+        {
+            SVMProblem trainingSet = SVMProblemHelper.Load(Configuration.Get("TrainSetLocation"));
+            SVMProblem testSet = SVMProblemHelper.Load(Configuration.Get("TestSetLocation"));
+
+
+            trainingSet = trainingSet.Normalize(SVMNormType.L2);
+            testSet = testSet.Normalize(SVMNormType.L2);
+            for (double c = 0.01; c <= 10000; c *= 10)
+            {
+                {
+                    for (double gamma = 0.01; gamma <= 10000; gamma *= 10)
+                    {
+                        SVMParameter parameter = new SVMParameter
+                        {
+                            Type = SVMType.C_SVC,
+                            Kernel = SVMKernelType.RBF,
+                            C = c,
+                            Gamma = gamma,
+                            Probability = false,
+                            WeightLabels = new int[] {0, 1},
+                            Weights = new double[] {0.638190954773869, 1}
+                        };
+
+
+                        double[] crossValidationResults; // output labels
+                        int nFold = int.Parse(Configuration.Get("nFold"));
+                        trainingSet.CrossValidation(parameter, nFold, out crossValidationResults);
+
+                        // Evaluate the cross validation result
+                        // If it is not good enough, select the parameter set again
+                        double crossValidationAccuracy =
+                            trainingSet.EvaluateClassificationProblem(crossValidationResults);
+                        Console.WriteLine($"training svm with c={c},gamma={gamma}, cross={crossValidationAccuracy}");
+                    }
+                }
+            }
         }
     }
 }
