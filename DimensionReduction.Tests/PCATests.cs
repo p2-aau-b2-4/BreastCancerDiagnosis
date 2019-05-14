@@ -455,8 +455,8 @@ namespace DimensionReduction.Tests
                 {-0.735178656, -0.677873399},
                 {0.677873399, -0.735178656}
             };
-            
-            SparseMatrix res = p.GetComponentsFromImage(matrixArr, 2);
+
+            SparseMatrix res = null; //todo p.GetComponentsFromImage(matrixArr, 2);
             
             CollectionAssert.AreEqual(expectation.ToArray(),
                 res.ToArray(),

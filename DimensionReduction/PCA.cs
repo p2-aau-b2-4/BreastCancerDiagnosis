@@ -11,79 +11,80 @@ using SparseMatrix = MathNet.Numerics.LinearAlgebra.Double.SparseMatrix;
 
 namespace DimensionReduction
 {
+    [Serializable]
     public class PCA
     {
-        public Model model { get; set; }
-        
+        //public Model model { get; set; }
+
         private double[] columnMeans;
+
         public double[] Means
         {
             get { return this.columnMeans; }
             set { this.columnMeans = value; }
         }
-        
+
         private double[] columnStdDev;
+
         public double[] StandardDeviations
         {
             get { return this.columnStdDev; }
             set { this.columnStdDev = value; }
         }
-        
+
         private double[] singularValues;
+
         public double[] SingularValues
         {
             get { return singularValues; }
             protected set { singularValues = value; }
         }
-        
+
         private double[] eigenvalues;
+
         public double[] Eigenvalues
         {
             get { return eigenvalues; }
             protected set { eigenvalues = value; }
         }
-        
+
         private double[][] eigenvectors;
+
         public double[][] ComponentVectors
         {
             get { return this.eigenvectors; }
             protected set { this.eigenvectors = value; }
         }
-        
+
         public PCA()
         {
         }
 
-        public void LoadModelFromFile(string path)
+        public static PCA LoadModelFromFile(string path)
         {
-            //Load database
+            return Serializer.Load<PCA>(path);
         }
 
-        public void SaveModelToFile(string path)
+        public double[] GetComponentsFromImage(UShortArrayAsImage image, int numberOfComponents)
         {
-            //Save to database
-        }
-
-        public SparseMatrix GetComponentsFromImage(UShortArrayAsImage image, int numberOfComponents)
-        {
-            double[,] tmpImage = new double[image.Width,image.Height];
+            double[,] tmpImage = new double[image.Width, image.Height];
             Array.Copy(image.PixelArray, tmpImage, image.PixelArray.Length);
-            return GetComponentsFromImage(tmpImage,numberOfComponents);
+            return GetComponentsFromImage(tmpImage, numberOfComponents);
         }
 
-        public SparseMatrix GetComponentsFromImage(double[,] image, int numberOfComponents)
+        public double[] GetComponentsFromImage(double[,] image, int numberOfComponents)
         {
             if (ComponentVectors.Length <= 0)
             {
-                Console.WriteLine("Run PCA train");
+                Console.WriteLine("Run PCA train"); // todo throw exception
                 return null;
             }
 
             int columns = image.Columns();
             int rows = image.Rows();
-            
+
             double[] matrix = new double[image.Length];
-            
+
             for (int i = 0; i < rows; i++)
             {
                 for (int j = 0; j < columns; j++)
@@ -91,25 +92,21 @@ namespace DimensionReduction
                     matrix[i * columns + i] = image[i, j];
                 }
             }
-            
+
             SparseMatrix tmpMatrix = MeanSubtraction(matrix);
-            
+
             for (int i = 0; i < rows; i++)
             {
-                matrix[i] = tmpMatrix[0,i];
+                matrix[i] = tmpMatrix[0, i];
             }
 
-            SparseMatrix resMatrix = SparseMatrix.Create(columns, rows,0);
-
+            double[] res = new double[numberOfComponents];
             // multiply the data matrix by the selected eigenvectors
             // TODO: Use cache-friendly multiplication
-            for (int i = 0; i < 1; i++)
-                for (int j = 0; j < numberOfComponents; j++)
-                    for (int k = 0; k < ComponentVectors[j].Length; k++)
-                        resMatrix[i, j] += matrix[k] * ComponentVectors[j][k];
-
-            return SparseMatrix.OfMatrix(resMatrix);
-
+            for (int j = 0; j < numberOfComponents; j++)
+            for (int k = 0; k < ComponentVectors[j].Length; k++)
+                res[j] += matrix[k] * ComponentVectors[j][k];
+            return res;
         }
 
         public void Train(List<UShortArrayAsImage> images)
@@ -141,46 +138,49 @@ namespace DimensionReduction
                 i++;
                 Console.WriteLine($"Copied image #{i}");
             }
-            
+
             Train(allImages);
         }
-        
+
         public void Train(double[,] data)
         {
+            data.ToJagged();
             int rows = data.Rows();
             int columns = data.Columns();
-            
+
             double[][] dArray = new double[data.Rows()][];
 
             for (int j = 0; j < rows; j++)
             {
                 dArray[j] = new double[columns];
-                
+
                 for (int x = 0; x < columns; x++)
                 {
                     dArray[j][x] = data[j, x];
                 }
             }
-            
+
             Train(dArray);
         }
 
         public void Train(double[][] data)
         {
+            data = data.Transpose();
             this.Means = data.Mean(dimension: 0);
 
             //double[][] matrix = Overwrite ? x : Jagged.CreateAs(x);
             double[][] matrix = true ? data : Jagged.CreateAs(data);
-            data.Subtract(Means, dimension: (VectorType)0, result: matrix);
+            data.Subtract(Means, dimension: (VectorType) 0, result: matrix);
 
             this.StandardDeviations = data.StandardDeviation(Means);
-            matrix.Divide(StandardDeviations, dimension: (VectorType)0, result: matrix);
+            matrix.Divide(StandardDeviations, dimension: (VectorType) 0, result: matrix);
 
             //  The principal components of 'Source' are the eigenvectors of Cov(Source). Thus if we
             //  calculate the SVD of 'matrix' (which is Source standardized), the columns of matrix V
             //  (right side of SVD) will be the principal components of Source.
 
             // Perform the Singular Value Decomposition (SVD) of the matrix
+            Console.WriteLine("Perfoming SVD");
             var svd = new JaggedSingularValueDecomposition(matrix,
                 computeLeftSingularVectors: false,
                 computeRightSingularVectors: true,
@@ -194,19 +194,19 @@ namespace DimensionReduction
             //Model model = new Model(eigen.EigenValues, eigen.EigenVectors, eigenLumps, features, new List<Vector<double>>());
             //model.SaveModelToFile("t.xml");
             //model = new Model(eigen.EigenValues, eigen.EigenVectors, eigenLumps, features, new List<Vector<double>>());
-            
+
             Console.WriteLine("PCA done");
         }
 
         public SparseMatrix MeanSubtraction(double[] matrix)
         {
-            SparseMatrix test = new SparseMatrix(1,matrix.Length);
-            
+            SparseMatrix test = new SparseMatrix(1, matrix.Length);
+
             for (int i = 0; i < matrix.Length; i++)
             {
-                test[0,i] = matrix[i];
+                test[0, i] = matrix[i];
             }
-            
+
             return MeanSubtraction(test);
         }
 
@@ -300,6 +300,5 @@ namespace DimensionReduction
 
             return eigen;
         }
-        
     }
 }

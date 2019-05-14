@@ -13,6 +13,7 @@ using ImagePreprocessing;
 using LibSVMsharp;
 using LibSVMsharp.Extensions;
 using LibSVMsharp.Helpers;
+using MathNet.Numerics.LinearAlgebra.Double;
 using Serializer = Accord.IO.Serializer;
 
 namespace Training
@@ -23,85 +24,31 @@ namespace Training
         {
             //TrainWithDifferentParameters();
            //PrintHighestCrossValidation();
-//            Console.WriteLine(Environment.CurrentDirectory);
-//            if (Configuration.Get("ShouldCreateImages").Equals("1"))
-//            {
-//                List<DdsmImage> trainingSetDdsm = new List<DdsmImage>();
-//                List<DdsmImage> testSetDdsm = new List<DdsmImage>();
-//
-//                (string, List<DdsmImage>)[] paths =
-//                {
-//                    ("massTrainingSetCsvPath", trainingSetDdsm), ("massTestSetCsvPath", testSetDdsm),
-//                    ("calcTrainingSetCsvPath", trainingSetDdsm), ("calcTestSetCsvPath", testSetDdsm)
-//                };
-//
-//
-//                foreach ((string, List<DdsmImage>) path in paths)
-//                {
-//                    path.Item2.AddRange(DdsmImage.GetAllImagesFromCsvFile(Configuration.Get(path.Item1)));
-//                }
-//
-//                Task<List<ImageWithResultModel>> trainTask = Task.Factory.StartNew(
-//                    () => TransformDdsmImageList(trainingSetDdsm),
-//                    TaskCreationOptions.LongRunning);
-//                Task<List<ImageWithResultModel>> testTask = Task.Factory.StartNew(
-//                    () => TransformDdsmImageList(testSetDdsm),
-//                    TaskCreationOptions.LongRunning);
-//                Task.WaitAll(new Task[] {trainTask, testTask});
-//                List<ImageWithResultModel> trainingSet = trainTask.Result;
-//                List<ImageWithResultModel> testSet = testTask.Result;
-//
-//                trainingSet.Save(Configuration.Get("TrainReadyImage"));
-//                testSet.Save(Configuration.Get("TestReadyImage"));
-//            }
-            TrainPcaAndSvm();
-        }
-
-        private static List<ImageWithResultModel> TransformDdsmImageList(List<DdsmImage> images)
-        {
-            List<ImageWithResultModel> result = new List<ImageWithResultModel>();
-            List<DdsmImage> imagesCc = images.Where(x => (x.ImageView == DdsmImage.ImageViewEnum.Cc)).ToList();
-            foreach (DdsmImage image in imagesCc)
+            Console.WriteLine(Environment.CurrentDirectory);
+            if (Configuration.Get("ShouldCreateImages").Equals("1"))
             {
-                Console.WriteLine($"{result.Count * 100 / imagesCc.Count}% done");
-                var imageResult = new ImageWithResultModel
-                {
-                    Result = image.Pathology == DdsmImage.Pathologies.Malignant ? 1 : 0,
-                    Image = Contrast.ApplyHistogramEqualization(
-                        Normalization.GetNormalizedImage(image.DcomOriginalImage,
-                            Normalization.GetTumourPositionFromMask(image.DcomMaskImage),
-                            int.Parse(Configuration.Get("sizeImageToAnalyze"))))
-                };
-                result.Add(imageResult);
+                CreateAndSaveImages();
             }
-
-            return result;
-        }
-
-        private static void TrainPcaAndSvm()
-        {
+            
             List<ImageWithResultModel> imagesToTrainOn =
                 Serializer.Load<List<ImageWithResultModel>>(Configuration.Get("TrainReadyImage"));
             List<ImageWithResultModel> imagesToTestOn =
                 Serializer.Load<List<ImageWithResultModel>>(Configuration.Get("TestReadyImage"));
-            Console.WriteLine(
-                $"{imagesToTrainOn.Where(x => x.Result == 1).ToList().Count * 1.0 / imagesToTrainOn.Where(x => x.Result == 0).ToList().Count}");
 
+            PCA pca = GetPca(imagesToTrainOn);
+
+            TrainAndTestSVM(pca, imagesToTrainOn, imagesToTestOn);
+        }
+
+        private static void TrainAndTestSVM(PCA pca, List<ImageWithResultModel> imagesToTrainOn, List<ImageWithResultModel> imagesToTestOn)
+        {
             SVMProblem trainingSet;
             SVMProblem testSet;
 
             if (Configuration.Get("ShouldCreateSVMSetsWithPCA").Equals("1"))
             {
-                // create the pca MODEL:
-                List<ImageWithResultModel> pcaTrainSet = imagesToTrainOn.DeepClone();
-
-                PrincipalComponentAnalysis pca = newPca.TrainPCA(pcaTrainSet, out var data);
-
-                // with this, then let us create the two svm problems.
-                trainingSet = GetProblemFromImageModelResultList(imagesToTrainOn, pca,
-                    int.Parse(Configuration.Get("componentsToUse")));
-                testSet = GetProblemFromImageModelResultList(imagesToTestOn, pca,
-                    int.Parse(Configuration.Get("componentsToUse")));
+                trainingSet = GetProblemFromImageModelResultList(imagesToTrainOn, pca);
+                testSet = GetProblemFromImageModelResultList(imagesToTestOn, pca);
 
                 testSet.Save(Configuration.Get("TestSetLocation"));
                 trainingSet.Save(Configuration.Get("TrainSetLocation"));
@@ -194,6 +141,80 @@ namespace Training
             }
         }
 
+        private static void CreateAndSaveImages()
+        {
+            List<DdsmImage> trainingSetDdsm = new List<DdsmImage>();
+            List<DdsmImage> testSetDdsm = new List<DdsmImage>();
+
+            (string, List<DdsmImage>)[] paths =
+            {
+                ("massTrainingSetCsvPath", trainingSetDdsm), ("massTestSetCsvPath", testSetDdsm),
+                ("calcTrainingSetCsvPath", trainingSetDdsm), ("calcTestSetCsvPath", testSetDdsm)
+            };
+
+
+            foreach ((string, List<DdsmImage>) path in paths)
+            {
+                path.Item2.AddRange(DdsmImage.GetAllImagesFromCsvFile(Configuration.Get(path.Item1)));
+            }
+
+            Task<List<ImageWithResultModel>> trainTask = Task.Factory.StartNew(
+                () => TransformDdsmImageList(trainingSetDdsm),
+                TaskCreationOptions.LongRunning);
+            Task<List<ImageWithResultModel>> testTask = Task.Factory.StartNew(
+                () => TransformDdsmImageList(testSetDdsm),
+                TaskCreationOptions.LongRunning);
+            Task.WaitAll(new Task[] {trainTask, testTask});
+            List<ImageWithResultModel> trainingSet = trainTask.Result;
+            List<ImageWithResultModel> testSet = testTask.Result;
+
+            trainingSet.Save(Configuration.Get("TrainReadyImage"));
+            testSet.Save(Configuration.Get("TestReadyImage"));
+        }
+
+        private static List<ImageWithResultModel> TransformDdsmImageList(List<DdsmImage> images)
+        {
+            List<ImageWithResultModel> result = new List<ImageWithResultModel>();
+            List<DdsmImage> imagesCc = images.Where(x => (x.ImageView == DdsmImage.ImageViewEnum.Cc)).ToList();
+            foreach (DdsmImage image in imagesCc)
+            {
+                Console.WriteLine($"{result.Count * 100 / imagesCc.Count}% done");
+                var imageResult = new ImageWithResultModel
+                {
+                    Result = image.Pathology == DdsmImage.Pathologies.Malignant ? 1 : 0,
+                    Image = Contrast.ApplyHistogramEqualization(
+                        Normalization.GetNormalizedImage(image.DcomOriginalImage,
+                            Normalization.GetTumourPositionFromMask(image.DcomMaskImage),
+                            int.Parse(Configuration.Get("sizeImageToAnalyze"))))
+                };
+                result.Add(imageResult);
+            }
+
+            return result;
+        }
+
+        private static PCA GetPca(List<ImageWithResultModel> images)
+        {
+            if (File.Exists(Configuration.Get("PcaModelLocation")))
+            {
+                Console.WriteLine("Loaded PCA from file..");
+                return PCA.LoadModelFromFile(Configuration.Get("PcaModelLocation"));
+            }
+            else
+            {
+                //train PCA:
+                PCA pca = new PCA();
+                Console.WriteLine("Training PCA...");
+                List<UShortArrayAsImage> imagesUShort = new List<UShortArrayAsImage>();
+                int i = 0;
+                foreach(var image in images) if(i++ % 1 == 0) imagesUShort.Add(image.Image);
+                pca.Train(imagesUShort);
+                pca.Save(Configuration.Get("PcaModelLocation"));
+                Console.WriteLine("Done training and saving PCA.");
+                return pca;
+            }
+        }
+
         private static void TransformAndSaveImagesWithResultModels(List<DdsmImage> images, string saveLoc)
         {
             ConcurrentBag<ImageWithResultModel> readyImages = new ConcurrentBag<ImageWithResultModel>();
@@ -215,50 +236,34 @@ namespace Training
         }
 
         private static SVMProblem GetProblemFromImageModelResultList(List<ImageWithResultModel> images,
-            PrincipalComponentAnalysis pca, int components)
+            PCA pca)
         {
-            //GetPcaData:
-            //reduce data:
-            int imageCount = 0;
-            var data = new double[images.Count][];
-            foreach (ImageWithResultModel image in images)
-            {
-                data[imageCount] = newPca.GetVectorFromUShortArray(image.Image.PixelArray);
-                imageCount++;
-            }
 
-            Console.WriteLine(pca.Eigenvalues.Length);
-            Console.WriteLine(pca.Components.Count);
-            //data = data.Transpose();
 
-            //double[][] pcaComponents2d = pca.Transform(data);
-            
-            
-            
-            
+            int components = int.Parse(Configuration.Get("componentsToUse"));
+
             SVMProblem problem = new SVMProblem();
             foreach (ImageWithResultModel image in images)
             {
-                double[] vector = newPca.GetVectorFromUShortArray(image.Image.PixelArray);
-                double[] pcaComponents = pca.Transform(vector);
-                double[] pcaDownsizedComponents;
-                if (components >= pcaComponents.Length) pcaDownsizedComponents = pcaComponents;
-                else
+                double[] pcaComponents = pca.GetComponentsFromImage(image.Image,components);
+                bool valid = false;
+                foreach (double x in pcaComponents)
                 {
-                    pcaDownsizedComponents = new double[components];
-                    for (int i = 0; i < pcaDownsizedComponents.Length; i++)
-                        pcaDownsizedComponents[i] = pcaComponents[i];
+                    if (x != 0) valid = true;
                 }
 
-                SVMNode[] svmNodes = new SVMNode[pcaDownsizedComponents.Length];
-                for (int i = 0; i < pcaDownsizedComponents.Length; i++)
+                if (!valid) continue;
+                SVMNode[] svmNodes = new SVMNode[pcaComponents.Length];
+                for (int i = 0; i < pcaComponents.Length; i++)
                 {
                     // index is i+1, because libsvm has index 0 reserved.
-                    svmNodes[i] = new SVMNode(i + 1, pcaDownsizedComponents[i]);
+                    svmNodes[i] = new SVMNode(i + 1, pcaComponents[i]);
                 }
 
                 problem.Add(svmNodes, image.Result);
             }
+
+            Console.WriteLine("Problemis done");
 
             return problem;
         }
