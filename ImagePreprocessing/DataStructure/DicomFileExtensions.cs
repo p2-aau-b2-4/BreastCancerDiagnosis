@@ -13,6 +13,11 @@ namespace ImagePreprocessing
 {
     public static class DicomFileExtensions
     {
+        /// <summary>
+        /// Extracts DICOM file data and saves it as a UShortArrayAsImage.
+        /// </summary>
+        /// <param name="f">A DICOM file</param>
+        /// <returns>A UShortArrayAsImage</returns>
         public static UShortArrayAsImage GetUshortImageInfo(this DicomFile f)
         {
             DicomPixelData pixelData = DicomPixelData.Create(f.Dataset);
@@ -22,7 +27,12 @@ namespace ImagePreprocessing
             byte[] byteData = pixelData.GetFrame(0).Data;
             return new UShortArrayAsImage(byteData, columns, rows);
         }
-
+        
+        /// <summary>
+        /// Extracts DICOM file data and saves it as a UByteArrayAsImage.
+        /// </summary>
+        /// <param name="f">A DICOM file</param>
+        /// <returns>A UByteArrayAsImage</returns>
         public static UByteArrayAsImage GetUByteImageInfo(this DicomFile f)
         {
             DicomPixelData pixelData = DicomPixelData.Create(f.Dataset);

@@ -10,6 +10,9 @@ namespace ImagePreprocessing
     [Serializable]
     public class UShortArrayAsImage : ArrayAsImageAbstract<ushort[,]>
     {
+        /// <summary>
+        /// A 2D ushort array of an image.
+        /// </summary>
         public sealed override ushort[,] PixelArray
         {
             get

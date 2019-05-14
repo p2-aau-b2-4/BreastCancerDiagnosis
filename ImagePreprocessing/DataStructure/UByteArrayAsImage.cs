@@ -11,6 +11,10 @@ namespace ImagePreprocessing
 {
     public class UByteArrayAsImage : ArrayAsImageAbstract<byte[,]>
     {
+        
+        /// <summary>
+        /// A 2D byte array of an image.
+        /// </summary>
         public sealed override byte[,] PixelArray
         {
             get
