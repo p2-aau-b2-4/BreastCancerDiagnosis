@@ -14,11 +14,11 @@ namespace DimensionReduction.Tests
     public class PCATests
     {
         double floatingPointTolerance = 0.0000001;
-        PCA p = new PCA();
 
         [Test, Description("Tests a normal case for MeanSubtraction")]
         public void MeanSubtractionNormalCaseTest()
         {
+            PCA p = new PCA();
             double[,] matrixArray = new double[5,5] {
                     {2.0, 3.4, 0.0, 2.9, 5.1},
                     {3.1, 9.2, 7.9, -2.3, 1.0},
@@ -46,6 +46,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests the edge case where all values are 0 for MeanSubtraction")]
         public void MeanSubtractionEdgeCaseAllZeroTest()
         {
+            PCA p = new PCA();
             double[,] matrixArray = new double[3,3] {
                 {0.0, 0.0, 0.0},
                     {0.0, -0.0, 0.0},
@@ -69,6 +70,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests edge case where values in a column sum up to infinity")]
         public void MeanSubtractionEdgeCaseLargeValuesTest()
         {
+            PCA p = new PCA();
             double[,] matrixArray = new double[5,3] {
                 {Double.MaxValue, Double.MaxValue, Double.MinValue},
                     {Double.MaxValue, Double.MinValue, Double.MinValue},
@@ -84,6 +86,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests a normal case non-square matrix with more rows than columns for CovarianceMatrix")]
         public void CovarianceMatrixNormalCaseNonSquareMoreRowsTest()
         {
+            PCA p = new PCA();
             double[,] matrixArr = new double[10,2] {
                     {0.69, 0.49},
                     {-1.31, -1.21},
@@ -113,6 +116,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests a normal case non-square matrix with more rows than columns for CovarianceMatrix")]
         public void CovarianceMatrixNormalCaseNonSquareMoreRowsTest2()
         {
+            PCA p = new PCA();
             double[,] matrixArr = new double[10,2] 
             {
                 {1.507, 0.988},
@@ -145,6 +149,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests a normal case non-square matrix with more columns than rows for CovarianceMatrix")]
         public void CovarianceMatrixNormalCaseNonSquareMoreColumnsTest()
         {
+            PCA p = new PCA();
             double[,] matrixArr = new double[2,10] {
                     {0.69, 0.49, -1.31, -1.21, 0.39, 0.99, 0.09, 0.29, 1.29, 1.09},
                     {0.49, 0.79, 0.19, -0.31, -0.81, -0.81, -0.31, -0.31, -0.71, -1.01}
@@ -264,6 +269,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests another normal square case for CovarianceMatrix")]
         public void CovarianceMatrixNormalCaseSquareTest()
         {
+            PCA p = new PCA();
             double[,] matrixArr = new double[9, 9] {
                     {-3617,7121,-1770,-3850,-5723,8288,1787,5367,-1375},
                     {-1733,722,946,5770,-399,-5187,-4681,9403,3872},
@@ -374,6 +380,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests CovarainceMatrix for edge case where values are inf")]
         public void CovarianceMatrixMaxValuesTest()
         {
+            PCA p = new PCA();
             double[,] matrixArr = new double[10,2] {
                     {Double.MaxValue, Double.MaxValue},
                     {-Double.MaxValue, -Double.MaxValue},
@@ -394,6 +401,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests PCA training in a normal case")]
         public void Train()
         {
+            PCA p = new PCA();
             double[,] matrix = new double[10,2] {
                 {0.69, 0.49},
                 {-1.31, -1.21},
@@ -428,6 +436,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests GetComponentFromImage in a normal case")]
         public void GetComponentFromImageNormalCase() // Not working 
         {
+            PCA p = new PCA();
             double[,] matrixArr = new double[10,2] 
             {
                 {1.507, 0.988},
@@ -447,9 +456,7 @@ namespace DimensionReduction.Tests
                 {0.677873399, -0.735178656}
             };
             
-            PCA p = new PCA();
-            
-            SparseMatrix res = p.GetComponentsFromImage(matrix, 2);
+            SparseMatrix res = p.GetComponentsFromImage(matrixArr, 2);
             
             CollectionAssert.AreEqual(expectation.ToArray(),
                 res.ToArray(),
