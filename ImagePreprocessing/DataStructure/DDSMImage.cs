@@ -114,7 +114,14 @@ namespace ImagePreprocessing
             //todo maybe check if filename is equal to last element of folders string array.
             return Directory.GetFiles(folderFound)[0];
         }
-
+        
+        /// <summary>
+        /// Gets the DCOM mask and cropped image paths.
+        /// </summary>
+        /// <param name="csvFilePath">CSV file storing the file paths</param>
+        /// <param name="originalPath">The original file paths</param>
+        /// <returns>A set of strings for the two different paths</returns>
+        /// <exception cref="DirectoryNotFoundException"></exception>
         public static ( string, string) GetDcomMaskAndCroppedPathsFromString(string csvFilePath, string originalPath)
         {
             // so the logic is:
