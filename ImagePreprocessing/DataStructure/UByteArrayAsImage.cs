@@ -41,7 +41,11 @@ namespace ImagePreprocessing
         {
             PixelArray = arrayIn;
         }
-
+        
+        /// <summary>
+        /// Creates a memory stream from a bitmap, and uses it to save it as PNG.
+        /// </summary>
+        /// <returns> The memory stream for the PNG </returns>
         public override Stream GetPngAsMemoryStream()
         {
             byte[,] pixelArray = PixelArray;
