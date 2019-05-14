@@ -4,6 +4,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
+using CsvHelper;
 using Dicom;
 
 namespace ImagePreprocessing
@@ -69,26 +70,25 @@ namespace ImagePreprocessing
         public static List<DdsmImage> GetAllImagesFromCsvFile(String csvFilePath)
         {
             List<DdsmImage> imagesToReturn = new List<DdsmImage>();
-            List<String> lines = File.ReadAllLines(csvFilePath).ToList();
-            lines.RemoveAt(0);
-            foreach (String line in lines)
+            
+            TextReader reader = new StreamReader(csvFilePath);
+            var csvReader = new CsvReader(reader);
+            csvReader.Read(); //skip header
+            while (csvReader.Read())
             {
-                String[] informations = line.Split(',');
-                if (informations.Length == 1) continue; // some lines are encoded with no info, lets skip those.
                 ImageViewEnum imageView = ImageViewEnum.Cc;
-                if (informations[3].Equals("MLO")) imageView = ImageViewEnum.Mlo;
-
+                if (csvReader.GetField(3).Equals("MLO")) imageView = ImageViewEnum.Mlo;
+                
                 Pathologies pathology = Pathologies.Benign;
-                if (informations[9].Equals("MALIGNANT")) pathology = Pathologies.Malignant;
-                if (informations[9].Equals("BENIGN_WITHOUT_CALLBACK")) pathology = Pathologies.BenignWithoutCallback;
-
-                String dcomFilePath = GetDcomFilePathFromString(csvFilePath, informations[11]);
+                if (csvReader.GetField(9).Equals("MALIGNANT")) pathology = Pathologies.Malignant;
+                if (csvReader.GetField(9).Equals("BENIGN_WITHOUT_CALLBACK")) pathology = Pathologies.BenignWithoutCallback;
+                
+                String dcomFilePath = GetDcomFilePathFromString(csvFilePath, csvReader.GetField(11));
 
                 var (maskFilePath, croppedFilePath) =
-                    GetDcomMaskAndCroppedPathsFromString(csvFilePath, informations[12]);
+                    GetDcomMaskAndCroppedPathsFromString(csvFilePath, csvReader.GetField(12));
                 imagesToReturn.Add(new DdsmImage(imageView,pathology, dcomFilePath, maskFilePath, croppedFilePath));
             }
-
             return imagesToReturn;
         }
 
@@ -123,7 +123,7 @@ namespace ImagePreprocessing
             csvFilePath = csvFilePath.Substring(0, lastIndexOf + 1);
 
             String[] folders = originalPath.Split("/");
-            String[] foldersInFirstFolder = Directory.GetDirectories(csvFilePath + folders[0]);
+            String[] foldersInFirstFolder = Directory.GetDirectories(csvFilePath + folders[0].Replace("\"",""));
 
             String maskFilePath = null;
             String croppedFilePath = null;
