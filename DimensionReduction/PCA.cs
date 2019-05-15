@@ -117,13 +117,6 @@ namespace DimensionReduction
                 }
             }
 
-            SparseMatrix tmpMatrix = MeanSubtraction(matrix);
-
-            for (int i = 0; i < rows; i++)
-            {
-                matrix[i] = tmpMatrix[0, i];
-            }
-
             double[] res = new double[numberOfComponents];
             // multiply the data matrix by the selected eigenvectors
             // TODO: Use cache-friendly multiplication
