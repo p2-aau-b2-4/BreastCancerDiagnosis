@@ -399,7 +399,7 @@ namespace DimensionReduction.Tests
         }
 
         [Test, Description("Tests PCA training in a normal case")]
-        public void Train()
+        public void Train() // Not working
         {
             PCA p = new PCA();
             double[,] matrix = new double[10,2] {
@@ -416,20 +416,24 @@ namespace DimensionReduction.Tests
             };
             
             double[,] matrix2 = new double[10,2] {
-                {0.399, 0.419},
-                {-1.511, -1.191},
-                {0.189, 1.009},
-                {0.889, 1.309},
-                {1.089, 1.109},
-                {0.289, 0.809},
-                {2.089, -0.391},
-                {-1.011, -0.791},
-                {-1.511, -1.291},
-                {-0.911, -0.991}
+                {1.507, 0.988},
+                {2.107, -9.312},
+                {1.407, 1.798},
+                {1.397, 2.098},
+                {-9.563, 1.988},
+                {0.797, 0.888},
+                {2.607, 0.488},
+                {-0.493, 1.588},
+                {0.627, -0.412},
+                {-0.393, -0.112}
             };
+
+            double[] expectation = {0.74772836, 0.66400475};
             
-            p.MeanSubtraction(SparseMatrix.OfArray(matrix));
-            
+            p.Train(matrix2);
+            CollectionAssert.AreEqual(expectation,
+                p.ComponentVectors[0],
+                new Comparer(floatingPointTolerance));
             
         }
         
