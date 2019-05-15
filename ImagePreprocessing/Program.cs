@@ -16,9 +16,11 @@ namespace ImagePreprocessing
         static void Main(string[] args)
         {
             List<DdsmImage> ddsmImages =
-                DdsmImage.GetAllImagesFromCsvFile(@"e:\brysttest\mass_case_description_train_set.csv");
+                DdsmImage.GetAllImagesFromCsvFile(Configuration.Get("trainingSetCsvPath"));
+            Console.WriteLine(ddsmImages.Count);
+            /*
             Parallel.ForEach(ddsmImages, ddsmImage =>
-            { 
+            {
                 var image = ddsmImage.DcomOriginalImage;
                 Rectangle rectangle = Normalization.GetTumourPositionFromMask(ddsmImage.DcomMaskImage);
                 image = Normalization.GetNormalizedImage(image,
@@ -26,6 +28,11 @@ namespace ImagePreprocessing
                 image = Contrast.ApplyHistogramEqualization(image);
                 image.SaveAsPng("images/ready" + Guid.NewGuid()+ ".png");
             });
+            */
+
+            /*var imgInfo= DicomFile.Open(@"000001.dcm").GetUByteImageInfo();
+            imgInfo.SaveAsPng("eINFO.PNG");
+            *///Normalization.ResizeImage(imgInfo, 6);
         }
 
 

@@ -8,11 +8,18 @@
     <ItemGroup>
       <ProjectReference Include="..\DimensionReduction\DimensionReduction.csproj" />
       <ProjectReference Include="..\ImagePreprocessing\ImagePreprocessing.csproj" />
+      <ProjectReference Include="..\LibSVMsharp\LibSVMsharp.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="Accord.Statistics" Version="3.8.2-alpha" />
-      <PackageReference Include="LibSVMsharp" Version="1.2.5" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="libsvm.dll" />
+      <Resource Include="libsvm.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
     </ItemGroup>
 
 </Project>

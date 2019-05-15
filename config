@@ -1,0 +1,49 @@
+trainingSetCsvPath=C:\BrystTest\mass_case_description_train_set.csv
+testSetCsvPath=C:\BrystTest\mass_case_description_test_set.csv
+sizeImageToAnalyze=100
+componentsToUse=50
+
+
+//////////////////////////////
+/// TRAINING CONFIGURATION ///
+//////////////////////////////
+massTrainingSetCsvPath=C:\BrystTest\mass_case_description_train_set.csv
+massTestSetCsvPath=C:\BrystTest\mass_case_description_test_set.csv
+calcTrainingSetCsvPath=E:\BrystCalc\calc_case_description_train_set.csv
+calcTestSetCsvPath=E:\BrystCalc\calc_case_description_test_set.csv
+
+
+// Should the program create images from dataset? 
+// If enabled, dataset must be configured above. If disabled, files paths beneath should be configured for readyImages binary files.
+ShouldCreateImages=0
+
+// BinaryReadyImageFiles (if empty, wont be included in training/test:
+// if ShouldCreateImages is 1, these files will be overwritten!!
+TrainReadyImage=readyImageModelTrain.bin
+TestReadyImage=readyImageModelTest.bin
+
+// Should Create Train/Test Data
+// if enabled, the training program will generate the test/train datasets from a PCA model and the pictures.
+// if disabled, the model will be tried to be loaded from files defined below.
+ShouldCreateSVMSetsWithPCA=1
+
+// location of where the pca model will be saved/loaded from:
+PcaModelLocation=pca_model.bin
+
+// location of the test-set. Will be overwritten if ShouldCreateSVMSetsWithPCA is 1.
+TestSetLocation=testset.txt
+
+// location of the train-set. Will be overwritten if ShouldCreateSVMSetsWithPCA is 1.
+TrainSetLocation=trainset.txt
+
+// specifised where to load and save the svmmodel
+ModelLocation=svm_model.txt
+
+////
+// SVM PARAMETERS:
+C=1
+Gamma=1
+nFold=5
+
+
+
