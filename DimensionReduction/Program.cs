@@ -65,10 +65,27 @@ namespace DicomDisplayTest
             List<UShortArrayAsImage> imagesToTrainOn = new List<UShortArrayAsImage>();
             imagesToTrainOn = Serializer.Load<List<UShortArrayAsImage>>("readyImagesTrain.bin");
             //imagesToTrainOn.AddRange(Serializer.Load<List<UShortArrayAsImage>>("readyImagesTest.bin"));
+            
             pca2.Train(imagesToTrainOn.GetRange(0,10));
-            SparseMatrix mt = pca2.GetComponentsFromImage(imagesToTrainOn[20],10);
+            SparseMatrix mt = pca2.GetComponentsFromImage(imagesToTrainOn[20],9);
             ;
-
+            double[,] matrix = new double[10,2] 
+            {
+                {1.507, 0.988},
+                {2.107, -9.312},
+                {1.407, 1.798},
+                {1.397, 2.098},
+                {-9.563, 1.988},
+                {0.797, 0.888},
+                {2.607, 0.488},
+                {-0.493, 1.588},
+                {0.627, -0.412},
+                {-0.393, -0.112}
+            };
+            PCA pca3 = new PCA();
+            SparseMatrix res = SparseMatrix.OfArray(matrix);// pca3.MeanSubtraction(SparseMatrix.OfArray(matrix));
+            pca3.Train(res.ToArray());
+            Console.WriteLine(res);
 
             //PrincipalComponentAnalysis pca = TrainPCA(imagesToTrainOn, out var data);
 
