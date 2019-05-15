@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Accord.IO;
 using Accord.Math;
 using Accord.Math.Decompositions;
 using ImagePreprocessing;
@@ -14,7 +15,6 @@ namespace DimensionReduction
     [Serializable]
     public class PCA
     {
-        public Model model { get; set; }
         
         /// <summary>
         /// A private array containing all column means from the Training method 

@@ -1,11 +1,7 @@
 using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Runtime.InteropServices;
-using CSJ2K.j2k.entropy.decoder;
-using Dicom.IO;
 
 namespace ImagePreprocessing
 {
@@ -15,14 +11,14 @@ namespace ImagePreprocessing
         {
             get
             {
-                byte[,] result = new byte[this.Height, this.Width];
+                byte[,] result = new byte[Height, Width];
                 // this uses blockcopy, since data format is the same in byte[] and byte[,]
                 Buffer.BlockCopy(PixelData, 0, result, 0, PixelData.Length);
                 return result;
             }
             set
             {
-                byte[] result = new byte[this.Height * this.Width];
+                byte[] result = new byte[Height * Width];
                 Buffer.BlockCopy(value, 0, result, 0, PixelData.Length);
                 PixelData = result;
             }
@@ -47,7 +43,6 @@ namespace ImagePreprocessing
             unsafe
             {
                 byte* byteArray = (byte*) imgBitmapData.Scan0.ToPointer();
-                int bytes = imgBitmapData.Height * Math.Abs(imgBitmapData.Stride);
                 int position = 0;
 
                 for (int y = 0; y < pixelArray.GetLength(0); y++)

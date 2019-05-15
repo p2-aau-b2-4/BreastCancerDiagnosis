@@ -37,6 +37,7 @@ namespace DicomDisplayTest
     {
         static void Main(string[] args)
         {
+            //this is used for only blackbox..
             PCA pca2 = new PCA();
             //DicomFile.Open("mask.dcm").GetUByteImageInfo().SaveAsPng("test.png");/*
             //PCA pca = new PCA();
