@@ -89,7 +89,7 @@ namespace DimensionReduction
             {
                 for (int j = 0; j < columns; j++)
                 {
-                    matrix[i * columns + i] = image[i, j];
+                    matrix[i * columns + j] = image[i, j];
                 }
             }
 
@@ -104,8 +104,8 @@ namespace DimensionReduction
             // multiply the data matrix by the selected eigenvectors
             // TODO: Use cache-friendly multiplication
             for (int j = 0; j < numberOfComponents; j++)
-            for (int k = 0; k < ComponentVectors[j].Length; k++)
-                res[j] += matrix[k] * ComponentVectors[j][k];
+                for (int k = 0; k < ComponentVectors[j].Length; k++)
+                    res[j] += matrix[k] * ComponentVectors[j][k];
             return res;
         }
 
@@ -144,7 +144,7 @@ namespace DimensionReduction
 
         public void Train(double[,] data)
         {
-            data.ToJagged();
+            //data.ToJagged();
             int rows = data.Rows();
             int columns = data.Columns();
 
