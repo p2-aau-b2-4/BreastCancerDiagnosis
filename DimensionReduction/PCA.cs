@@ -201,7 +201,7 @@ namespace DimensionReduction
         ///<param name=data>a Jagged array to perform training on</param>
         public void Train(double[][] data)
         {
-            data = data.Transpose();
+            //data = data.Transpose();
             this.Means = data.Mean(dimension: 0);
 
             //double[][] matrix = Overwrite ? x : Jagged.CreateAs(x);
