@@ -1,7 +1,7 @@
 trainingSetCsvPath=C:\BrystTest\mass_case_description_train_set.csv
 testSetCsvPath=C:\BrystTest\mass_case_description_test_set.csv
 sizeImageToAnalyze=100
-componentsToUse=200
+componentsToUse=50
 
 
 //////////////////////////////
@@ -25,7 +25,7 @@ TestReadyImage=readyImageModelTest.bin
 // Should Create Train/Test Data
 // if enabled, the training program will generate the test/train datasets from a PCA model and the pictures.
 // if disabled, the model will be tried to be loaded from files defined below.
-ShouldCreateSVMSetsWithPCA=0
+ShouldCreateSVMSetsWithPCA=1
 
 // location of where the pca model will be saved/loaded from:
 PcaModelLocation=pca_model.bin
@@ -41,8 +41,8 @@ ModelLocation=svm_model.txt
 
 ////
 // SVM PARAMETERS:
-C=10000
-Gamma=50
+C=1
+Gamma=1
 nFold=5
 
 
