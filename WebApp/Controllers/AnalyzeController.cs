@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Drawing;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Accord.IO;
-using Accord.Math;
-using Accord.Statistics.Analysis;
 using Dicom;
 using ImagePreprocessing;
 using Microsoft.AspNetCore.Mvc;
@@ -15,8 +11,6 @@ using Microsoft.Extensions.Caching.Memory;
 using DimensionReduction;
 using LibSVMsharp;
 using LibSVMsharp.Extensions;
-using LibSVMsharp.Helpers;
-using Microsoft.Extensions.Primitives;
 using Configuration = ImagePreprocessing.Configuration;
 using Serializer = Accord.IO.Serializer;
 
@@ -104,11 +98,10 @@ namespace WebApp.Controllers
                 new Task(() =>
                 {
                     //PCA
-                    PrincipalComponentAnalysis pca = newPca.LoadPcaFromFile();
+                    PCA pca = PCA.LoadModelFromFile(Configuration.Get("pca_model.bin"));
                     var imageToPca = Serializer
-                        .Load<UShortArrayAsImage>(path + "-croppedContrastBinary").PixelArray;
-                    pca.Transform(newPca.GetVectorFromUShortArray(imageToPca))
-                        .Save(path + "-pcaComponents");
+                        .Load<UShortArrayAsImage>(path + "-croppedContrastBinary");
+                    pca.GetComponentsFromImage(imageToPca,int.Parse(Configuration.Get("componentsToUse"))).Save(path + "-pcaComponents");
                     _cache.Set($"_{imageLoc}-status", pcaImageStatusStr);
                 }),
                 new Task(() =>
@@ -129,8 +122,8 @@ namespace WebApp.Controllers
 
                     SVMModel svmModel = SVM.LoadModel("svmModel.txt");
                     double[] results = svmProblem.PredictProbability(svmModel, out var probabilities);
-                    double[] resultsSaveable = {results[0], probabilities[0][0]};
-                    resultsSaveable.Save(path + "-results");
+                    double[] resultsSavable = {results[0], probabilities[0][0]};
+                    resultsSavable.Save(path + "-results");
                     _cache.Set($"_{imageLoc}-status", svmImageStatusStr);
                 })
             };
@@ -176,46 +169,9 @@ namespace WebApp.Controllers
             ViewBag.Classification = DdsmImage.Pathologies.Benign;
 
             double[] results = Serializer.Load<double[]>(Path.GetTempPath() + filePath + "-results");
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
             ViewBag.Classification = results[0] == 0 ? "Benign" : "Malignant";
             ViewBag.Probability = results[1]*100;
-            //ViewBag.Probability = (new Random().Next() % 1000) / 10.0;
-
-            return View();
-        }
-
-        public IActionResult PcaComponentSelection()
-        {
-            List<double> components = new List<double>();
-            foreach (KeyValuePair<string, StringValues> x in Request.Form)
-            {
-                if (x.Key.StartsWith("component+")) components.Add(double.Parse(x.Value));
-            }
-
-            double[] componentsArr = components.ToArray();
-            // lets render the image, save it, and return the path to the user:
-            string path = Guid.NewGuid().ToString();
-            @ViewBag.ImagePath = path;
-
-            var pca = DimensionReduction.newPca.LoadPcaFromFile();
-            double[] resultVector = pca.ComponentVectors.Transpose().Dot(componentsArr);
-            resultVector = resultVector.Add(pca.Means);
-
-            int sideLength = (int) Math.Sqrt(pca.Means.Length);
-            ushort[,] imageAsUshortArray = new ushort[sideLength, sideLength];
-
-            for (int y = 0; y < sideLength; y++)
-            {
-                for (int x = 0; x < sideLength; x++)
-                {
-                    //if(resultVector[y*100+x] < UInt16.MinValue) Console.WriteLine(resultVector[y*100+x]);
-                    double result = resultVector[y * 100 + x];
-                    imageAsUshortArray[y, x] = (ushort) Math.Round(result);
-                    //Console.WriteLine($"{result} to {imageAsUshortarray[y,x]}");
-                }
-            }
-
-            new UShortArrayAsImage(imageAsUshortArray).SaveAsPng(Path.GetTempPath() + path);
-            @ViewBag.PcaComponents = componentsArr;
 
             return View();
         }
@@ -229,8 +185,6 @@ namespace WebApp.Controllers
             img.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
             ms.Seek(0, 0);
             return new FileStreamResult(ms, "image/png");
-
-            //return new FileStreamResult(DicomFile.Open(path).GetUshortImageInfo().GetPngAsMemoryStream(), "image/png");
         }
     }
 }

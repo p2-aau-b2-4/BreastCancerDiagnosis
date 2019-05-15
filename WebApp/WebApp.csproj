@@ -20,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DimensionReduction\DimensionReduction.csproj" />
     <ProjectReference Include="..\ImagePreprocessing\ImagePreprocessing.csproj" />
+    <ProjectReference Include="..\Training\Training.csproj" />
   </ItemGroup>
 
 

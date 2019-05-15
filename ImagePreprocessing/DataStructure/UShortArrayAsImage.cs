@@ -1,9 +1,7 @@
 using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Runtime.InteropServices;
 
 namespace ImagePreprocessing
 {
@@ -14,14 +12,14 @@ namespace ImagePreprocessing
         {
             get
             {
-                ushort[,] result = new ushort[this.Height, this.Width];
-                // this uses blockcopy, since data format is the same in byte[] and ushort[,]
+                ushort[,] result = new ushort[Height, Width];
+                // this uses blockCopy, since data format is the same in byte[] and ushort[,]
                 Buffer.BlockCopy(PixelData, 0, result, 0, PixelData.Length);
                 return result;
             }
             set
             {
-                byte[] result = new byte[this.Width * this.Height * 2];
+                byte[] result = new byte[Width * Height * 2];
                 Buffer.BlockCopy(value, 0, result, 0, PixelData.Length);
                 PixelData = result;
             }
@@ -63,11 +61,6 @@ namespace ImagePreprocessing
             ApplyOverlays(imgBitmap).Save(ms, ImageFormat.Png);
             ms.Seek(0, SeekOrigin.Begin);
             return ms;
-        }
-        protected static float Map(float s, float a1, float a2, float b1, float b2)
-            // lånt fra https://forum.unity.com/threads/re-map-a-number-from-one-range-to-another.119437/
-        {
-            return b1 + (s - a1) * (b2 - b1) / (a2 - a1);
         }
     }
 }

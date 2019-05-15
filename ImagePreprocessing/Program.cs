@@ -15,7 +15,8 @@ namespace ImagePreprocessing
     {
         static void Main(string[] args)
         {
-            List<DdsmImage> ddsmImages =
+            // used for blackbox testing of imageProcessing:
+            /*List<DdsmImage> ddsmImages =
                 DdsmImage.GetAllImagesFromCsvFile(Configuration.Get("trainingSetCsvPath"));
             Console.WriteLine(ddsmImages.Count);
             /*
