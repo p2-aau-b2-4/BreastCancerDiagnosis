@@ -13,7 +13,11 @@ using ImagePreprocessing;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using DimensionReduction;
+using LibSVMsharp;
+using LibSVMsharp.Extensions;
+using LibSVMsharp.Helpers;
 using Microsoft.Extensions.Primitives;
+using Configuration = ImagePreprocessing.Configuration;
 using Serializer = Accord.IO.Serializer;
 
 namespace WebApp.Controllers
@@ -86,7 +90,7 @@ namespace WebApp.Controllers
                 new Task(() =>
                 {
                     image = Normalization.GetNormalizedImage(image, rectangle,
-                        int.Parse(ConfigurationManager.AppSettings["SizeImageToAnalyze"]));
+                        int.Parse(Configuration.Get("sizeImageToAnalyze")));
                     image.SaveAsPng(path + "-cropped");
                     _cache.Set($"_{imageLoc}-status", croppedImageStatusStr);
                 }),
@@ -110,7 +114,23 @@ namespace WebApp.Controllers
                 new Task(() =>
                 {
                     //SVM
-                    Thread.Sleep(3000);
+                    SVMProblem svmProblem = new SVMProblem();
+
+                    // add all the components to an SVMNode[]
+                    double[] pcaComponents = Serializer.Load<double[]>(path + "-pcaComponents");
+                    int componentsToUse = int.Parse(Configuration.Get("componentsToUse"));
+                    SVMNode[] nodes = new SVMNode[componentsToUse];
+                    for (int i = 0; i < componentsToUse; i++)
+                    {
+                        nodes[i] = new SVMNode(i + 1, pcaComponents[i]);
+                    }
+
+                    svmProblem.Add(nodes, 0);
+
+                    SVMModel svmModel = SVM.LoadModel("svmModel.txt");
+                    double[] results = svmProblem.PredictProbability(svmModel, out var probabilities);
+                    double[] resultsSaveable = {results[0], probabilities[0][0]};
+                    resultsSaveable.Save(path + "-results");
                     _cache.Set($"_{imageLoc}-status", svmImageStatusStr);
                 })
             };
@@ -154,7 +174,11 @@ namespace WebApp.Controllers
 
             ViewBag.PcaComponents = Serializer.Load<double[]>(Path.GetTempPath() + filePath + "-pcaComponents");
             ViewBag.Classification = DdsmImage.Pathologies.Benign;
-            ViewBag.Probability = (new Random().Next() % 1000) / 10.0;
+
+            double[] results = Serializer.Load<double[]>(Path.GetTempPath() + filePath + "-results");
+            ViewBag.Classification = results[0] == 0 ? "Benign" : "Malignant";
+            ViewBag.Probability = results[1]*100;
+            //ViewBag.Probability = (new Random().Next() % 1000) / 10.0;
 
             return View();
         }
