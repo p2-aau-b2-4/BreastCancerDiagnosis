@@ -65,8 +65,8 @@ namespace DicomDisplayTest
             List<UShortArrayAsImage> imagesToTrainOn = new List<UShortArrayAsImage>();
             imagesToTrainOn = Serializer.Load<List<UShortArrayAsImage>>("readyImagesTrain.bin");
             //imagesToTrainOn.AddRange(Serializer.Load<List<UShortArrayAsImage>>("readyImagesTest.bin"));
-            pca2.Train(imagesToTrainOn.GetRange(0,10));
-            //SparseMatrix mt = pca2.GetComponentsFromImage(imagesToTrainOn[20],10);
+            pca2.Train(imagesToTrainOn.GetRange(0,50));
+            double[] mt = pca2.GetComponentsFromImage(imagesToTrainOn[21],9);
             ;
 
 
