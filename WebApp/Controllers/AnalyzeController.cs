@@ -33,7 +33,6 @@ namespace WebApp.Controllers
 
         public IActionResult SelectRegion(String fileName)
         {
-            ViewBag.Derp = _cache.ToString();
             ViewBag.FileName = fileName;
             return View();
         }
@@ -167,7 +166,6 @@ namespace WebApp.Controllers
 
 
             ViewBag.PcaComponents = Serializer.Load<double[]>(Path.GetTempPath() + filePath + "-pcaComponents");
-            ViewBag.Classification = DdsmImage.Pathologies.Benign;
 
             double[] results = Serializer.Load<double[]>(Path.GetTempPath() + filePath + "-results");
             // ReSharper disable once CompareOfFloatsByEqualityOperator
