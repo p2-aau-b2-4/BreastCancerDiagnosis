@@ -39,6 +39,7 @@ namespace Tests
             var result = await _oc.UploadFile(file) as RedirectToActionResult;
             Assert.AreEqual("SelectRegion", result.ActionName);
             Assert.AreEqual("Analyze", result.ControllerName);
+            
         }
 
         [Test]
