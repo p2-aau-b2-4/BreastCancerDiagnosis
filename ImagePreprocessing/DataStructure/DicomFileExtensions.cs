@@ -1,12 +1,4 @@
-using System;
-using System.Text;
-using System.Windows;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.IO;
 using Dicom;
-using Dicom.IO.Buffer;
 using Dicom.Imaging;
 
 namespace ImagePreprocessing

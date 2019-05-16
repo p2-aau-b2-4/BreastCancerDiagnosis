@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Accord.IO;
 using Accord.Math;
 using Accord.Math.Decompositions;
 using ImagePreprocessing;
@@ -14,18 +15,31 @@ namespace DimensionReduction
     [Serializable]
     public class PCA
     {
-        //public Model model { get; set; }
-
+        
+        /// <summary>
+        /// A private array containing all column means from the Training method 
+        /// </summary>
         private double[] columnMeans;
-
+        
+        /// <summary>
+        /// A properties that gets and sets columnMeans
+        /// </summary>
+      
         public double[] Means
         {
             get { return this.columnMeans; }
             set { this.columnMeans = value; }
         }
-
+        
+        /// <summary>
+        /// A private array containing all column standard deviations
+        /// </summary>
         private double[] columnStdDev;
-
+        
+        /// <summary>
+        /// A properties that gets and sets columnStdDev
+        /// </summary>
+      
         public double[] StandardDeviations
         {
             get { return this.columnStdDev; }
@@ -65,6 +79,11 @@ namespace DimensionReduction
             return Serializer.Load<PCA>(path);
         }
 
+        ///<summary>
+        ///Projects a image onto a eigenspace that is made then the method Train is run
+        ///</summary>
+        ///<param name="image">a UShortArrayAsImage to perform projectionn with</param>
+        ///<param name="numberOfComponents">Number of eigenvectors to project image onto</param>
         public double[] GetComponentsFromImage(UShortArrayAsImage image, int numberOfComponents)
         {
             double[,] tmpImage = new double[image.Width, image.Height];
@@ -72,11 +91,16 @@ namespace DimensionReduction
             return GetComponentsFromImage(tmpImage, numberOfComponents);
         }
 
+        ///<summary>
+        ///Projects a image onto a eigenspace that is made then the method Train is run
+        ///</summary>
+        ///<param name="image">a 2D array to perform projectionn with</param>
+        ///<param name="numberOfComponents">Number of eigenvectors to project image onto</param>
         public double[] GetComponentsFromImage(double[,] image, int numberOfComponents)
         {
             if (ComponentVectors.Length <= 0)
             {
-                Console.WriteLine("Run PCA train"); // todo throw exception
+                Console.WriteLine("Run PCA train first"); // todo throw exception
                 return null;
             }
 
@@ -89,26 +113,23 @@ namespace DimensionReduction
             {
                 for (int j = 0; j < columns; j++)
                 {
-                    matrix[i * columns + i] = image[i, j];
+                    matrix[i * columns + j] = image[i, j];
                 }
-            }
-
-            SparseMatrix tmpMatrix = MeanSubtraction(matrix);
-
-            for (int i = 0; i < rows; i++)
-            {
-                matrix[i] = tmpMatrix[0, i];
             }
 
             double[] res = new double[numberOfComponents];
             // multiply the data matrix by the selected eigenvectors
             // TODO: Use cache-friendly multiplication
             for (int j = 0; j < numberOfComponents; j++)
-            for (int k = 0; k < ComponentVectors[j].Length; k++)
-                res[j] += matrix[k] * ComponentVectors[j][k];
+                for (int k = 0; k < ComponentVectors[j].Length; k++)
+                    res[j] += matrix[k] * ComponentVectors[j][k];
             return res;
         }
 
+        ///<summary>
+        ///Trains a PCA model given a set of data
+        ///</summary>
+        ///<param name=images>a List of UShortArrayAsImage to perform training on</param>
         public void Train(List<UShortArrayAsImage> images)
         {
             double[,] allImages = new double[images.Count, images[0].Width * images[0].Height];
@@ -141,10 +162,14 @@ namespace DimensionReduction
 
             Train(allImages);
         }
-
+        
+        ///<summary>
+        ///Trains a PCA model given a set of data
+        ///</summary>
+        ///<param name=data>a 2D array to perform training on</param>
         public void Train(double[,] data)
         {
-            data.ToJagged();
+            //data.ToJagged();
             int rows = data.Rows();
             int columns = data.Columns();
 
@@ -163,9 +188,13 @@ namespace DimensionReduction
             Train(dArray);
         }
 
+        ///<summary>
+        ///Trains a PCA model given a set of data
+        ///</summary>
+        ///<param name=data>a Jagged array to perform training on</param>
         public void Train(double[][] data)
         {
-            data = data.Transpose();
+            //data = data.Transpose();
             this.Means = data.Mean(dimension: 0);
 
             //double[][] matrix = Overwrite ? x : Jagged.CreateAs(x);
@@ -197,7 +226,12 @@ namespace DimensionReduction
 
             Console.WriteLine("PCA done");
         }
-
+        
+        ///<summary>
+        ///Finds the mean of each column in a matrix, then subtracts the mean of
+        ///each column from all its values
+        ///</summary>
+        ///<param name=matrix>a double array to perform MeanSubtraction on</param>
         public SparseMatrix MeanSubtraction(double[] matrix)
         {
             SparseMatrix test = new SparseMatrix(1, matrix.Length);
