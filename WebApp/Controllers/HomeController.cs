@@ -18,6 +18,7 @@ namespace BrysterAsp.Controllers
     {
         public IActionResult Index(bool error)
         {
+            
             ViewBag.error = error;
             return View();
         }

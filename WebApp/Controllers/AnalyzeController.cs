@@ -33,6 +33,7 @@ namespace WebApp.Controllers
 
         public IActionResult SelectRegion(String fileName)
         {
+            ViewBag.Derp = _cache.ToString();
             ViewBag.FileName = fileName;
             return View();
         }

@@ -31,9 +31,9 @@
 
   <ItemGroup>
     <None Remove="libsvm.dll" />
-    <EmbeddedResource Include="libsvm.dll">
+    <Content Include="libsvm.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
+    </Content>
   </ItemGroup>
 
 </Project>

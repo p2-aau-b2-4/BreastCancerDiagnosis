@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Accord;
 using Accord.IO;
 using DimensionReduction;
 using ImagePreprocessing;
@@ -30,6 +31,7 @@ namespace Training
                 Serializer.Load<List<ImageWithResultModel>>(Configuration.Get("TestReadyImage"));
 
             PCA pca = TrainingHelper.GetPca(imagesToTrainOn);
+            
             Console.WriteLine($"{pca.ComponentVectors.Length}x{pca.ComponentVectors[0].Length}");
 
             TrainAndTestSvm(pca, imagesToTrainOn, imagesToTestOn);
@@ -60,6 +62,14 @@ namespace Training
 
             testSet.Save("testNormalized.txt");
             trainingSet.Save("trainNormalized.txt");
+            
+            // find the ratio of malignant:benign cases:
+            double mbTrainRatio = imagesToTrainOn.Where(x => (x.Result == 1)).ToArray().Length * 1F /
+                                  imagesToTrainOn.Where(x => x.Result == 0).ToArray().Length;
+            Console.WriteLine($"MB TRAIN RATIO: {mbTrainRatio}");
+            double mbTestRatio = imagesToTestOn.Where(x => (x.Result == 1)).ToArray().Length * 1F /
+                                  imagesToTestOn.Where(x => x.Result == 0).ToArray().Length;
+            Console.WriteLine($"MB TEST RATIO: {mbTestRatio}");
 
             SVMParameter parameter = new SVMParameter
             {
@@ -67,13 +77,14 @@ namespace Training
                 Kernel = SVMKernelType.RBF,
                 C = double.Parse(Configuration.Get("C")),
                 Gamma = double.Parse(Configuration.Get("Gamma")),
-                Probability = true,
-                WeightLabels = new[] {0, 1},
-                Weights = new[] {1-0.69949494949495, 0.69949494949495}
+                Probability = false,
+                //WeightLabels = new[] {0, 1},
+                //Weights = new[] {1-mbTrainRatio, mbTrainRatio}
             };
 
             parameter = TrainingHelper.FindBestHyperparameters(trainingSet, parameter);
             Console.WriteLine($"Found best parameters: c={parameter.C},gamma={parameter.Gamma}");
+            parameter.Probability = true;
 
             SVMModel model = trainingSet.Train(parameter);
             SVM.SaveModel(model, Configuration.Get("ModelLocation"));
@@ -81,7 +92,7 @@ namespace Training
             // Predict the instances in the test set
             double[] testResults = testSet.Predict(model);
 
-
+            
             // Evaluate the test results
             double testAccuracy =
                 testSet.EvaluateClassificationProblem(testResults, model.Labels, out var confusionMatrix);
@@ -111,7 +122,7 @@ namespace Training
             using (StreamWriter file = new StreamWriter(@"svmData.txt", true))
             {
                 file.WriteLine(
-                    $"C={1.4}, GAMMA={0.3} testAccuracy={testAccuracy}, sensitivity={sensitivity}, specificity={specificity}");
+                    $"C={parameter.C}, GAMMA={parameter.Gamma} testAccuracy={testAccuracy}, sensitivity={sensitivity}, specificity={specificity}");
             }
 
 
@@ -213,7 +224,7 @@ namespace Training
         private static List<ImageWithResultModel> TransformDdsmImageList(List<DdsmImage> images)
         {
             List<ImageWithResultModel> result = new List<ImageWithResultModel>();
-            List<DdsmImage> imagesCc = images.Where(x => (x.ImageView == DdsmImage.ImageViewEnum.Cc)).ToList();
+            List<DdsmImage> imagesCc = images.Where(x => (x.ImageView == DdsmImage.ImageViewEnum.Mlo)).ToList();
             foreach (DdsmImage image in imagesCc)
             {
                 Console.WriteLine($"{result.Count * 100 / imagesCc.Count}% done");
