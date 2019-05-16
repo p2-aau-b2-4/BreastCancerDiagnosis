@@ -338,6 +338,6 @@ ASALocalRun/
 
 # allow 
 !*.Tests/*.dcm
-!*.Test/*.dcm
+!*Test/*.dcm
 Training/App.config
 *.config
