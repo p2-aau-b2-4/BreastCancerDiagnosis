@@ -31,7 +31,7 @@ namespace WebApp.Controllers
                 await formFile.CopyToAsync(stream);
             }
 
-            return Redirect("analyze/selectregion/" + filePath);
+            return RedirectToAction("SelectRegion","Analyze", new { FileName = filePath });
         }
 
         private Boolean IsDcomFileValid(Stream dcomStream)

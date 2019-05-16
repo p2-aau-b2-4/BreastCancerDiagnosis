@@ -1,7 +1,7 @@
 trainingSetCsvPath=C:\BrystTest\mass_case_description_train_set.csv
 testSetCsvPath=C:\BrystTest\mass_case_description_test_set.csv
 sizeImageToAnalyze=100
-componentsToUse=50
+componentsToUse=100
 
 
 //////////////////////////////
@@ -15,7 +15,7 @@ calcTestSetCsvPath=E:\BrystCalc\calc_case_description_test_set.csv
 
 // Should the program create images from dataset? 
 // If enabled, dataset must be configured above. If disabled, files paths beneath should be configured for readyImages binary files.
-ShouldCreateImages=0
+ShouldCreateImages=1
 
 // BinaryReadyImageFiles (if empty, wont be included in training/test:
 // if ShouldCreateImages is 1, these files will be overwritten!!
@@ -41,7 +41,7 @@ ModelLocation=svm_model.txt
 
 ////
 // SVM PARAMETERS:
-C=1
+C=100
 Gamma=1
 nFold=5
 
