@@ -132,6 +132,19 @@ namespace DimensionReduction
         ///<param name=images>a List of UShortArrayAsImage to perform training on</param>
         public void Train(List<UShortArrayAsImage> images)
         {
+            List<UShortArrayAsImage> reduced =new List<UShortArrayAsImage>();
+            int u = 0;
+            foreach (var image in images)
+            {
+                u++;
+                //if (u % 5 != 0) continue;
+                reduced.Add(image);
+                
+            }
+
+            images = reduced;//todo temporary
+            
+            
             double[,] allImages = new double[images.Count, images[0].Width * images[0].Height];
             int i = 0;
             foreach (var image in images)
@@ -209,10 +222,15 @@ namespace DimensionReduction
             //  (right side of SVD) will be the principal components of Source.
 
             // Perform the Singular Value Decomposition (SVD) of the matrix
+            
+            // JAMAs assumption is that we should have more rows than columns in our array.
+            // If not, we can transpose the matrix, and calculate left instead of right singular values.
+
+            
             Console.WriteLine("Perfoming SVD");
             var svd = new JaggedSingularValueDecomposition(matrix,
-                computeLeftSingularVectors: false,
-                computeRightSingularVectors: true,
+                computeLeftSingularVectors: false,//useLeftSingularValues,
+                computeRightSingularVectors: true,//!useLeftSingularValues,
                 autoTranspose: false, inPlace: true);
 
             SingularValues = svd.Diagonal;

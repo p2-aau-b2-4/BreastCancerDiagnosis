@@ -78,8 +78,8 @@ namespace Training
                 C = double.Parse(Configuration.Get("C")),
                 Gamma = double.Parse(Configuration.Get("Gamma")),
                 Probability = false,
-                //WeightLabels = new[] {0, 1},
-                //Weights = new[] {1-mbTrainRatio, mbTrainRatio}
+                WeightLabels = new[] {0, 1},
+                Weights = new[] {1-mbTrainRatio, mbTrainRatio}
             };
 
             parameter = TrainingHelper.FindBestHyperparameters(trainingSet, parameter);
@@ -227,6 +227,7 @@ namespace Training
             List<DdsmImage> imagesCc = images.Where(x => (x.ImageView == DdsmImage.ImageViewEnum.Cc)).ToList();
             foreach (DdsmImage image in imagesCc)
             {
+                if (image.Pathology == DdsmImage.Pathologies.BenignWithoutCallback) continue;
                 Console.WriteLine($"{result.Count * 100 / imagesCc.Count}% done");
                 var imageResult = new ImageWithResultModel
                 {
