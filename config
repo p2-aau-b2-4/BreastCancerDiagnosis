@@ -1,7 +1,7 @@
 trainingSetCsvPath=C:\BrystTest\mass_case_description_train_set.csv
 testSetCsvPath=C:\BrystTest\mass_case_description_test_set.csv
 sizeImageToAnalyze=100
-componentsToUse=100
+componentsToUse=MAX
 
 
 //////////////////////////////
@@ -19,8 +19,8 @@ ShouldCreateImages=1
 
 // BinaryReadyImageFiles (if empty, wont be included in training/test:
 // if ShouldCreateImages is 1, these files will be overwritten!!
-TrainReadyImage=readyImageModelTrain.bin
-TestReadyImage=readyImageModelTest.bin
+TrainReadyImage=Models/ImageWithResultModel-100x100-CC-Train-Mass-WithoutCallback.bin
+TestReadyImage=Models/ImageWithResultModel-100x100-CC-Test-Mass-WithoutCallback.bin
 
 // Should Create Train/Test Data
 // if enabled, the training program will generate the test/train datasets from a PCA model and the pictures.
@@ -28,7 +28,7 @@ TestReadyImage=readyImageModelTest.bin
 ShouldCreateSVMSetsWithPCA=1
 
 // location of where the pca model will be saved/loaded from:
-PcaModelLocation=pca_model.bin
+PcaModelLocation=pca_model-100x100-CC-Train-Mass-WithoutCallback.bin
 
 // location of the test-set. Will be overwritten if ShouldCreateSVMSetsWithPCA is 1.
 TestSetLocation=testset.txt
