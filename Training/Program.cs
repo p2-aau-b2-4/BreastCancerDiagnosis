@@ -198,7 +198,7 @@ namespace Training
             (string, List<DdsmImage>)[] paths =
             {
                 ("massTrainingSetCsvPath", trainingSetDdsm), ("massTestSetCsvPath", testSetDdsm),
-                ("calcTrainingSetCsvPath", trainingSetDdsm), ("calcTestSetCsvPath", testSetDdsm)
+                //("calcTrainingSetCsvPath", trainingSetDdsm), ("calcTestSetCsvPath", testSetDdsm)
             };
 
 
@@ -218,13 +218,13 @@ namespace Training
             List<ImageWithResultModel> testSet = testTask.Result;
 
             trainingSet.Save(Configuration.Get("TrainReadyImage"));
-            testSet.Save(Configuration.Get("TestReadyImage"));
+            testSet.Save(Configuration.Get("TestReadyImage"));     
         }
 
         private static List<ImageWithResultModel> TransformDdsmImageList(List<DdsmImage> images)
         {
             List<ImageWithResultModel> result = new List<ImageWithResultModel>();
-            List<DdsmImage> imagesCc = images.Where(x => (x.ImageView == DdsmImage.ImageViewEnum.Mlo)).ToList();
+            List<DdsmImage> imagesCc = images.Where(x => (x.ImageView == DdsmImage.ImageViewEnum.Cc)).ToList();
             foreach (DdsmImage image in imagesCc)
             {
                 Console.WriteLine($"{result.Count * 100 / imagesCc.Count}% done");
