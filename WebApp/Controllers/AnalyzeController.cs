@@ -68,12 +68,11 @@ namespace WebApp.Controllers
             analysis.Update(currentAnalysis);
         }
 
-        private async Task PerformAnalysis(String imageLoc, Rectangle rectangle)
+        private async Task PerformAnalysis(String path, Rectangle rectangle)
         {
             UShortArrayAsImage image = null;
             double[] pcaComponents = null;
             int tasksComplete = 0;
-            string path = imageLoc;
             UpdateStatus(path, startingImageStatusStr);
             List<Task> tasks = new List<Task>()
             {
