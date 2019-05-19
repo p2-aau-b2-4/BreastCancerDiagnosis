@@ -227,7 +227,7 @@ namespace Training
             List<DdsmImage> imagesCc = images.Where(x => (x.ImageView == DdsmImage.ImageViewEnum.Cc)).ToList();
             foreach (DdsmImage image in imagesCc)
             {
-                if (image.Pathology == DdsmImage.Pathologies.BenignWithoutCallback) continue;
+                //if (image.Pathology == DdsmImage.Pathologies.BenignWithoutCallback) continue; todo
                 Console.WriteLine($"{result.Count * 100 / imagesCc.Count}% done");
                 var imageResult = new ImageWithResultModel
                 {
