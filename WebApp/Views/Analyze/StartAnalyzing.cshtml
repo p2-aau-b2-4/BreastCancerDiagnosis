@@ -1,12 +1,12 @@
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Vent venligst";
     Layout = "_Layout";
 }
 
 <script type="text/javascript">
-    var FileLoc = "@ViewBag.ImageId";
+    var FileLoc = "@ViewBag.Analysis.Id";
 </script>
-<h2 style="margin-bottom: 2em">Vent venligst mens Mark analyserer billedet..</h2>
+<h2 style="margin-bottom: 2em">Vent venligst mens billedet analyseres..</h2>
 <div class="spinner-border center" role="status" style="animation-duration: 2.6s; width: 300px; height: 300px;">
     <span class="sr-only">Loading...</span>
 </div>
@@ -17,6 +17,6 @@
 </div>
 
 <form id="redirect" method="post" enctype="multipart/form-data" asp-controller="Analyze" asp-action="ShowAnalysis">
-    <input type="hidden" name="filePath" value="@ViewBag.ImageId"/>
+    <input type="hidden" name="filePath" value="@ViewBag.Analysis.Id"/>
 </form>
 <script src="~/js/loadingAnalysis.js" asp-append-version="true"></script>

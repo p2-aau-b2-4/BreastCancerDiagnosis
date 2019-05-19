@@ -38,26 +38,26 @@ namespace WebApp.Controllers
 
         public IActionResult SelectRegion(String fileName)
         {
-            ViewBag.FileName = fileName;
+            ViewBag.Analysis = db.GetCollection<Analysis>("analysis").FindById(Guid.Parse(fileName));
             return View();
         }
 
         public IActionResult StartAnalyzing()
         {
-            ViewBag.ImageId = Request.Form["filePath"];
+            ViewBag.Analysis = db.GetCollection<Analysis>("analysis").FindById(Guid.Parse(Request.Form["filePath"]));
 
             Point a = new Point(int.Parse(Request.Form["x1"]), int.Parse(Request.Form["y1"]));
             Point b = new Point(int.Parse(Request.Form["x2"]), int.Parse(Request.Form["y2"]));
-            Rectangle rectangle = new Rectangle(a, new Size(b.X - a.X, b.Y - a.Y));
+            // todo: fix if b is upper left corner
+            Rectangle rectangle = new Rectangle(new Point(Math.Min(a.X,b.X),Math.Min(a.Y,b.Y)), 
+                new Size(Math.Max(a.X,b.X)-Math.Min(a.X,b.X), Math.Max(a.Y,b.Y)-Math.Min(a.Y,b.Y)));
 
             //before returning, lets start the async task of analyzing.
-#pragma warning disable 4014
+#pragma warning disable 4014 // disable warning about starting async task without awaiting. This is not needed here.
             PerformAnalysis(Request.Form["filePath"], rectangle);
 #pragma warning restore 4014
 
             return View();
-            //return Redirect($"~/analyze/showResult/{Request.Form["filePath"]}");
-            //return Ok(new{x1 = Rectangle.Item1,y1=Rectangle.Item2,x2=Rectangle.Item3,y2=Rectangle.Item4, file=Request.Form["filePath"]});
         }
 
         private void UpdateStatus(string path, string status)
@@ -175,22 +175,8 @@ namespace WebApp.Controllers
         public IActionResult ShowAnalysis()
         {
             string filePath = Request.Form["filePath"];
-            string croppedImgSrc = filePath + "-cropped";
-            string contrastImgSrc = filePath + "-croppedContrast";
-
-
-            ViewBag.CroppedImgSrc = croppedImgSrc;
-            ViewBag.ContrastImgSrc = contrastImgSrc;
-
             var analysis = db.GetCollection<Analysis>("analysis");
-            Analysis currentAnalysis = analysis.FindOne(x => x.Id.ToString().Equals(filePath));
-
-            // ReSharper disable once CompareOfFloatsByEqualityOperator
-            ViewBag.Classification = currentAnalysis.Diagnosis;
-            ViewBag.Probability = currentAnalysis.Diagnosis == DdsmImage.Pathologies.Benign
-                ? 1 - currentAnalysis.Certainty
-                : currentAnalysis.Certainty;
-
+            ViewBag.Analysis = analysis.FindOne(x => x.Id.ToString().Equals(filePath));
             return View();
         }
 
