@@ -1,7 +1,7 @@
 trainingSetCsvPath=C:\BrystTest\mass_case_description_train_set.csv
 testSetCsvPath=C:\BrystTest\mass_case_description_test_set.csv
 sizeImageToAnalyze=100
-componentsToUse=MAX
+componentsToUse=100
 
 
 //////////////////////////////

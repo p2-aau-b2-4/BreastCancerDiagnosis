@@ -26,7 +26,6 @@ namespace WebApp
             //    options.CheckConsentNeeded = context => true;
             //    options.MinimumSameSitePolicy = SameSiteMode.None;
             //});
-            services.AddMemoryCache();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
@@ -50,31 +49,30 @@ namespace WebApp
 
             app.UseMvc(routes =>
             {
+                // operationscontroller - upload and showing images
                 routes.MapRoute(
                     "OperationUpload", // Route name
                     "/opr/uploadfile", // URL with parameters
                     new {controller = "Operations", action = "UploadFile"} // Parameter defaults
                 );
                 routes.MapRoute(
+                    "ShowPng",
+                    "/analyze/showPng/{path}",
+                    new {controller = "Operations", action = "ShowSavedPng"},
+                    new {path = @"[\w-]+"});
+                routes.MapRoute(
+                    "ShowSavedPng",
+                    "/analyze/showDcmAsPng/{path}",
+                    new {controller = "Operations", action = "ShowSavedDcmFileAsPng"},
+                    new {path = @"[\w-]+"});
+                
+                //analyze controller:
+                
+                routes.MapRoute(
                     "SelectRegion",
                     "/analyze/selectregion/{FileName}",
                     new {controller = "Analyze", action = "SelectRegion"},
                     new {FileName = @"[\w-]+"});
-                routes.MapRoute(
-                    "ShowPng",
-                    "/analyze/showPng/{path}",
-                    new {controller = "Analyze", action = "GetPngFromTempPath"},
-                    new {path = @"[\w-]+"});
-                routes.MapRoute(
-                    "ShowPng",
-                    "/analyze/showPngAsPng/{path}",
-                    new {controller = "Analyze", action = "ShowPngFromTempPath"},
-                    new {path = @"[\w-]+"});
-                routes.MapRoute(
-                    "ShowSavedPng",
-                    "/analyze/showSavedPng/{path}",
-                    new {controller = "Analyze", action = "GetPngFromSavedTempPath"},
-                    new {path = @"[\w-]+"});
                 routes.MapRoute(
                     "StartAnalyzing",
                     "/analyze/startAnalyze",

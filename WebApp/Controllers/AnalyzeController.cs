@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Accord.IO;
 using Dicom;
@@ -11,6 +13,8 @@ using Microsoft.Extensions.Caching.Memory;
 using DimensionReduction;
 using LibSVMsharp;
 using LibSVMsharp.Extensions;
+using LiteDB;
+using WebApp.Models;
 using Configuration = ImagePreprocessing.Configuration;
 using Serializer = Accord.IO.Serializer;
 
@@ -18,35 +22,24 @@ namespace WebApp.Controllers
 {
     public class AnalyzeController : Controller
     {
-        private IMemoryCache _cache;
-        private static string loadedImageStatusStr = "Loaded Image";
-        private static string croppedImageStatusStr = "Cropped Image";
-        private static string contrastImageStatusStr = "Applied contrast";
-        private static string pcaImageStatusStr = "Ran PCA";
-        private static string svmImageStatusStr = "Ran SVM";
-        private static string doneStatusStr = "done";
+        private static string loadedImageStatusStr = "Indlæste billedet";
+        private static string croppedImageStatusStr = "Normaliserede billedet";
+        private static string contrastImageStatusStr = "Forbedrede konstrasten";
+        private static string pcaImageStatusStr = "Inddelte i komponenter";
+        private static string svmImageStatusStr = "Kørte maskinlæring";
+        private static string doneStatusStr = "Færdig";
+        private static string startingImageStatusStr = "Starter..";
+        private LiteDatabase db;
 
-        public AnalyzeController(IMemoryCache memoryCache)
+        public AnalyzeController()
         {
-            _cache = memoryCache;
+            db = Database.CreateConnection();
         }
 
         public IActionResult SelectRegion(String fileName)
         {
             ViewBag.FileName = fileName;
             return View();
-        }
-
-        public IActionResult GetPngFromTempPath(String path)
-        {
-            path = Path.GetTempPath() + path;
-            return new FileStreamResult(DicomFile.Open(path).GetUshortImageInfo().GetPngAsMemoryStream(), "image/png");
-        }
-
-        public IActionResult GetPngFromSavedTempPath(String path)
-        {
-            path = Path.GetTempPath() + path;
-            return new FileStreamResult(System.IO.File.OpenRead(path), "image/png");
         }
 
         public IActionResult StartAnalyzing()
@@ -67,42 +60,61 @@ namespace WebApp.Controllers
             //return Ok(new{x1 = Rectangle.Item1,y1=Rectangle.Item2,x2=Rectangle.Item3,y2=Rectangle.Item4, file=Request.Form["filePath"]});
         }
 
+        private void UpdateStatus(string path, string status)
+        {
+            var analysis = db.GetCollection<Analysis>("analysis");
+            Analysis currentAnalysis = analysis.FindOne(x => x.Id.ToString().Equals(path));
+            currentAnalysis.Status = status;
+            analysis.Update(currentAnalysis);
+        }
+
         private async Task PerformAnalysis(String imageLoc, Rectangle rectangle)
         {
-            _cache.Set("_imageLoc-status", "Starting");
-
             UShortArrayAsImage image = null;
+            double[] pcaComponents = null;
             int tasksComplete = 0;
-            string path = Path.GetTempPath() + imageLoc;
+            string path = imageLoc;
+            UpdateStatus(path, startingImageStatusStr);
             List<Task> tasks = new List<Task>()
             {
                 new Task(() =>
                 {
-                    image = DicomFile.Open(path).GetUshortImageInfo();
-                    _cache.Set($"_{imageLoc}-status", loadedImageStatusStr);
+                    var file = db.FileStorage.FindById($"images/{path}");
+                    var ms = new MemoryStream();
+                    file.CopyTo(ms);
+                    ms.Seek(0, 0);
+                    image = DicomFile.Open(ms).GetUshortImageInfo();
+
+                    UpdateStatus(path, loadedImageStatusStr);
                 }),
                 new Task(() =>
                 {
                     image = Normalization.GetNormalizedImage(image, rectangle,
                         int.Parse(Configuration.Get("sizeImageToAnalyze")));
-                    image.SaveAsPng(path + "-cropped");
-                    _cache.Set($"_{imageLoc}-status", croppedImageStatusStr);
+                    db.FileStorage.Upload($"images/{path}-cropped", $"{path}-cropped",
+                        image.GetPngAsMemoryStream());
+
+                    UpdateStatus(path, croppedImageStatusStr);
                 }),
                 new Task(() =>
                 {
                     image = Contrast.ApplyHistogramEqualization(image);
-                    image.Save(path + "-croppedContrastBinary");
-                    image.SaveAsPng(path + "-croppedContrast");
-                    _cache.Set($"_{imageLoc}-status", contrastImageStatusStr);
+                    db.FileStorage.Upload($"images/{path}-croppedContrast", $"{path}-croppedContrast",
+                        image.GetPngAsMemoryStream());
+
+                    UpdateStatus(path, contrastImageStatusStr);
                 }),
                 new Task(() =>
                 {
                     //PCA
-                    PCA pca = PCA.LoadModelFromFile(Configuration.Get("pca_model.bin"));
-                    var imageToPca = Serializer
-                        .Load<UShortArrayAsImage>(path + "-croppedContrastBinary");
-                    pca.GetComponentsFromImage(imageToPca,int.Parse(Configuration.Get("componentsToUse"))).Save(path + "-pcaComponents");
-                    _cache.Set($"_{imageLoc}-status", pcaImageStatusStr);
+                    PCA pca = PCA.LoadModelFromFile("pca_model.bin");
+
+                    if (!int.TryParse(Configuration.Get("componentsToUse"), out int components))
+                    {
+                        components = pca.Eigenvalues.Length;
+                    }
+                    pcaComponents = pca.GetComponentsFromImage(image, components);
+                    UpdateStatus(path, pcaImageStatusStr);
                 }),
                 new Task(() =>
                 {
@@ -110,21 +122,29 @@ namespace WebApp.Controllers
                     SVMProblem svmProblem = new SVMProblem();
 
                     // add all the components to an SVMNode[]
-                    double[] pcaComponents = Serializer.Load<double[]>(path + "-pcaComponents");
-                    int componentsToUse = int.Parse(Configuration.Get("componentsToUse"));
-                    SVMNode[] nodes = new SVMNode[componentsToUse];
-                    for (int i = 0; i < componentsToUse; i++)
+                    SVMNode[] nodes = new SVMNode[pcaComponents.Length];
+                    for (int i = 0; i < pcaComponents.Length; i++)
                     {
                         nodes[i] = new SVMNode(i + 1, pcaComponents[i]);
                     }
 
                     svmProblem.Add(nodes, 0);
 
-                    SVMModel svmModel = SVM.LoadModel("svmModel.txt");
-                    double[] results = svmProblem.PredictProbability(svmModel, out var probabilities);
-                    double[] resultsSavable = {results[0], probabilities[0][0]};
-                    resultsSavable.Save(path + "-results");
-                    _cache.Set($"_{imageLoc}-status", svmImageStatusStr);
+                    SVMModel svmModel = SVM.LoadModel("svm_model.txt");
+                    
+                    double results = SVM.PredictProbability(svmModel,nodes, out var probabilities);
+
+                    var analysis = db.GetCollection<Analysis>("analysis");
+                    Analysis currentAnalysis = analysis.FindOne(x => x.Id.ToString().Equals(path));
+                    currentAnalysis.Certainty = probabilities[0]*100;
+                    currentAnalysis.Diagnosis = results == 0
+                        ? DdsmImage.Pathologies.Benign
+                        : DdsmImage.Pathologies
+                            .Malignant;
+                    analysis.Update(currentAnalysis);
+
+
+                    UpdateStatus(path, svmImageStatusStr);
                 })
             };
             foreach (Task task in tasks)
@@ -133,24 +153,22 @@ namespace WebApp.Controllers
                 await task;
 
                 // lets set percentage done:
-                _cache.Set($"_{imageLoc}-percentage", (++tasksComplete * 100) / tasks.Count);
+                var analysis = db.GetCollection<Analysis>("analysis");
+                Analysis currentAnalysis = analysis.FindOne(x => x.Id.ToString().Equals(path));
+                currentAnalysis.PercentageDone = (++tasksComplete * 100) / tasks.Count;
+                analysis.Update(currentAnalysis);
             }
 
-            _cache.Set($"_{imageLoc}-status", doneStatusStr);
+            UpdateStatus(path, doneStatusStr);
         }
 
         public IActionResult GetAnalysisStatus()
         {
             var imageLoc = Request.Form["imageId"];
-            string status = _cache.Get($"_{imageLoc}-status").ToString();
-            string percentage = _cache.Get($"_{imageLoc}-percentage").ToString();
-            if (status.Equals(doneStatusStr))
-            {
-                _cache.Remove($"_{imageLoc}-status");
-                _cache.Remove($"_{imageLoc}-percentage");
-            }
 
-            return Ok(status + "," + percentage);
+            var analysis = db.GetCollection<Analysis>("analysis");
+            Analysis currentAnalysis = analysis.FindOne(x => x.Id.ToString().Equals(imageLoc));
+            return Ok(currentAnalysis.Status + "," + currentAnalysis.PercentageDone);
         }
 
 
@@ -164,13 +182,14 @@ namespace WebApp.Controllers
             ViewBag.CroppedImgSrc = croppedImgSrc;
             ViewBag.ContrastImgSrc = contrastImgSrc;
 
+            var analysis = db.GetCollection<Analysis>("analysis");
+            Analysis currentAnalysis = analysis.FindOne(x => x.Id.ToString().Equals(filePath));
 
-            ViewBag.PcaComponents = Serializer.Load<double[]>(Path.GetTempPath() + filePath + "-pcaComponents");
-
-            double[] results = Serializer.Load<double[]>(Path.GetTempPath() + filePath + "-results");
             // ReSharper disable once CompareOfFloatsByEqualityOperator
-            ViewBag.Classification = results[0] == 0 ? "Benign" : "Malignant";
-            ViewBag.Probability = results[1]*100;
+            ViewBag.Classification = currentAnalysis.Diagnosis;
+            ViewBag.Probability = currentAnalysis.Diagnosis == DdsmImage.Pathologies.Benign
+                ? 1 - currentAnalysis.Certainty
+                : currentAnalysis.Certainty;
 
             return View();
         }

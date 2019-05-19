@@ -1,11 +1,9 @@
-@model object
-
 @{
     ViewBag.Title = "Vælg knude";
     Layout = "_Layout";
 }
 <script type="text/javascript">
-    var imgSrc = "/analyze/showPng/@ViewBag.FileName";
+    var imgSrc = "@Url.Action("ShowSavedDcmFileAsPng","Operations", new{ path = ViewBag.FileName})";
 </script>
 <script src="~/js/selectRegion.js"></script>
 
