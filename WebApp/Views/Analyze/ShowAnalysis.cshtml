@@ -1,12 +1,10 @@
-@model object
-
 @{
     ViewBag.Title = "Resultater";
     Layout = "_Layout";
 }
 
-<h2 class="center">Klassificering: @ViewBag.Classification</h2>
-<h4 class="center">Sikkerhed: @ViewBag.Probability%</h4>
+<h2 class="center">Klassificering: @ViewBag.Analysis.Diagnosis</h2>
+<h4 class="center">Sikkerhed: @(Math.Round(ViewBag.Analysis.Certainty,2))%</h4>
 
-<br/><img class="center" src="@Url.Action("ShowPngFromTempPath","Analyze")/@ViewBag.CroppedImgSrc" alt="The cropped image by your selection"/>
-<br/><img class="center" src="@Url.Action("ShowPngFromTempPath","Analyze")/@ViewBag.ContrastImgSrc" alt="The image with contrast applied"/>
+<br/><img class="center" src="@Url.Action("ShowSavedPng","Operations", new{ path = ViewBag.Analysis.Id.ToString()+"-cropped"})" alt="The cropped image by your selection"/>
+<br/><img class="center" src="@Url.Action("ShowSavedPng","Operations", new{ path = ViewBag.Analysis.Id.ToString()+"-croppedContrast"})"  alt="The image with contrast applied"/>

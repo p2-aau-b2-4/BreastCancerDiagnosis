@@ -1,23 +1,22 @@
-@model object
-
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Vent venligst";
     Layout = "_Layout";
 }
 
 <script type="text/javascript">
-    var FileLoc = "@ViewBag.ImageId";
+    var FileLoc = "@ViewBag.Analysis.Id";
 </script>
-<h2 style="margin-bottom: 2em">Vent venligst mens Mark analyserer billedet..</h2>
-<div class="spinner-border center" role="status" style="animation-duration: 2.6s; width: 500px; height: 500px;">
+<h2 style="margin-bottom: 2em">Vent venligst mens billedet analyseres..</h2>
+<div class="spinner-border center" role="status" style="animation-duration: 2.6s; width: 300px; height: 300px;">
     <span class="sr-only">Loading...</span>
 </div>
-<div class="progress">
+
+<h1 class="result display-3" align="center"></h1>
+<div style="margin-top:10px" class="progress">
     <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
 </div>
-<div class="result"></div>
 
 <form id="redirect" method="post" enctype="multipart/form-data" asp-controller="Analyze" asp-action="ShowAnalysis">
-    <input type="hidden" name="filePath" value="@ViewBag.ImageId"/>
+    <input type="hidden" name="filePath" value="@ViewBag.Analysis.Id"/>
 </form>
 <script src="~/js/loadingAnalysis.js" asp-append-version="true"></script>

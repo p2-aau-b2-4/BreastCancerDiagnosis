@@ -1,17 +1,23 @@
-$(function() {
+$(function () {
     // run this on documentload:
     var canvas = $("#canvas");
-    
+
     //hooks
-    canvas.mousemove(function(e) { handleMouseMove(e); });
-    canvas.mousedown(function(e) { handleMouseDown(e); });
-    canvas.mouseup(function(e) { handleMouseUp(e); });
-    
+    canvas.mousemove(function (e) {
+        handleMouseMove(e);
+    });
+    canvas.mousedown(function (e) {
+        handleMouseDown(e);
+    });
+    canvas.mouseup(function (e) {
+        handleMouseUp(e);
+    });
+
     var ctx = canvas[0].getContext("2d");
     var resizedWidth = 0.0;
 
     var img = new Image();
-    img.onload = function() {
+    img.onload = function () {
         // hook this onload
         canvas[0].width = img.width;
         resizedWidth = img.width / canvas[0].offsetWidth;
@@ -67,8 +73,10 @@ $(function() {
 
     function handleMouseUp() {
         mousePressed = false;
-        updateDiv();
-        updateForm();
+        if (!(x1 === x2 && y1 === y2)) {
+            updateDiv();
+            updateForm();
+        }
     }
 
     function updateDiv() {

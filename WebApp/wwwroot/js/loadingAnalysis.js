@@ -8,10 +8,10 @@ window.setInterval(function(){
         $( ".result" ).html( dataSplitted[0] );
         $(".progress-bar").css("width",dataSplitted[1]+"%");
         
-        if(dataSplitted[0] === ("done")){
+        if(dataSplitted[1] === ("100")){ //100% done
             $("#redirect").submit();
         }
     });
     
     
-}, 200);
+}, 500);
