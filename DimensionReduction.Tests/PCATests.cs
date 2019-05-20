@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Accord;
 using Accord.Math;
+using Accord.Statistics;
 using Accord.Statistics.Distributions.Univariate;
 using NUnit.Framework;
 using MathNet.Numerics;
@@ -107,7 +109,7 @@ namespace DimensionReduction.Tests
 
             SparseMatrix matrix = SparseMatrix.OfArray(matrixArr);
             SparseMatrix expectationMatrix = SparseMatrix.OfArray(expectation);
-            matrix = p.CovarianceMatrix(matrix);
+            matrix = SparseMatrix.OfArray(p.CovarianceMatrix(matrix.ToArray()));
             CollectionAssert.AreEqual(expectationMatrix.ToArray(),
                     matrix.ToArray(),
                     new Comparer(floatingPointTolerance));
@@ -136,12 +138,10 @@ namespace DimensionReduction.Tests
                 {-3.41102889, 11.44519556}
             };
             
-            SparseMatrix matrix = SparseMatrix.OfArray(matrixArr);
             SparseMatrix expectationMatrix = SparseMatrix.OfArray(expectation);
-            //matrix = p.MeanSubtraction(matrix);
-            matrix = p.CovarianceMatrix(matrix);
+            var matrixTest = p.CovarianceMatrix(matrixArr);
             CollectionAssert.AreEqual(expectationMatrix.ToArray(),
-                matrix.ToArray(),
+                matrixTest,
                 new Comparer(floatingPointTolerance));
             
         }
@@ -261,10 +261,14 @@ namespace DimensionReduction.Tests
             SparseMatrix matrix = SparseMatrix.OfArray(matrixArr);
             SparseMatrix expectationMatrix = SparseMatrix.OfArray(expectation);
             matrix = p.MeanSubtraction(matrix);
-            matrix = p.CovarianceMatrix(matrix);
+            matrix = SparseMatrix.OfArray(p.CovarianceMatrix(matrix.ToArray()));
             CollectionAssert.AreEqual(expectationMatrix.ToArray(),
                     matrix.ToArray(),
                     new Comparer(floatingPointTolerance));
+
+            double[,] ourCov = matrix.ToArray();
+            double[,] cov = matrixArr.Covariance();
+            CollectionAssert.AreEqual(expectationMatrix.ToArray(),cov, new Comparer(floatingPointTolerance));
         }
         [Test, Description("Tests another normal square case for CovarianceMatrix")]
         public void CovarianceMatrixNormalCaseSquareTest()
@@ -372,31 +376,12 @@ namespace DimensionReduction.Tests
             SparseMatrix expectationMatrix = SparseMatrix.OfArray(expectation);
 
             matrix = p.MeanSubtraction(matrix);
-            matrix = p.CovarianceMatrix(matrix);
+            matrix = SparseMatrix.OfArray(p.CovarianceMatrix(matrix.ToArray()));
             CollectionAssert.AreEqual(expectationMatrix.ToArray(),
                     matrix.ToArray(),
                     new Comparer(floatingPointTolerance));
         }
-        [Test, Description("Tests CovarainceMatrix for edge case where values are inf")]
-        public void CovarianceMatrixMaxValuesTest()
-        {
-            PCA p = new PCA();
-            double[,] matrixArr = new double[10,2] {
-                    {Double.MaxValue, Double.MaxValue},
-                    {-Double.MaxValue, -Double.MaxValue},
-                    {Double.MaxValue, Double.MaxValue},
-                    {Double.MaxValue, Double.MaxValue},
-                    {Double.MaxValue, Double.MaxValue},
-                    {Double.MaxValue, Double.MaxValue},
-                    {Double.MaxValue, -Double.MaxValue},
-                    {-Double.MaxValue, -Double.MaxValue},
-                    {-Double.MaxValue, -Double.MaxValue},
-                    {-Double.MaxValue, -Double.MaxValue}
-            };
-
-            SparseMatrix matrix = SparseMatrix.OfArray(matrixArr);
-            Assert.Throws<NotFiniteNumberException>(() => p.CovarianceMatrix(matrix));
-        }
+        
 
         //[Test, Description("Tests PCA training in a normal case")]
         [Test, Description("Tests PCA training where number of components is tested")]
