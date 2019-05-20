@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Numerics;
 using System.Threading.Tasks;
 using Accord.IO;
 using Accord.Math;
@@ -351,6 +352,61 @@ namespace DimensionReduction
             }*/
 
             return eigen;
+        }
+        
+        public double[,] CovarianceMatrix(double[,] matrix)
+        {
+            double[,] scArrayMatrix = new double[matrix.Columns(), matrix.Columns()];
+            double[,] tmpArrayMatrix = matrix;
+            Parallel.For(0, matrix.Columns(),
+                x =>
+                {
+                    for (int i = 0; i < matrix.Rows(); i++)
+                    {
+                        for (int y = 0; y < matrix.Columns(); y++)
+                        {
+                            scArrayMatrix[x, y] +=
+                                (tmpArrayMatrix[i, x] * tmpArrayMatrix[i, y]) / (matrix.Rows() - 1);
+                        }
+                    }
+                });
+            return scArrayMatrix;
+        }
+        
+        public Evd<double> SolveForEigen(double[,] matrix)
+        {
+            if (matrix.Rows() != matrix.Columns())
+                throw new ArgumentException();
+
+            var eigen = matrix.Evd();
+
+            List<Complex> eigenValues = new List<Complex>();
+            for (int i = 0; i < eigen.EigenValues.Count; i++)
+            {
+                //EigenValues2[i] = eigenValue;
+            }
+            for (int i = 0; i < matrix.Columns(); i++)
+            {
+                //EigenVectors.Add(eigen.EigenVectors.Column(i));
+            }
+
+            return eigen;
+        }
+        
+        private double[] _eigenvalues2;
+
+        public double[] Eigenvalues2
+        {
+            get { return this._eigenvalues2; }
+            protected set { this._eigenvalues2 = value; }
+        }
+
+        private double[][] _eigenvectors2;
+
+        public double[][] ComponentVectors2
+        {
+            get { return this._eigenvectors2; }
+            protected set { this._eigenvectors2 = value; }
         }
     }
 }
