@@ -77,12 +77,12 @@ namespace DimensionReduction
         ///</summary>
         ///<param name="image">a 2D array to perform projectionn with</param>
         ///<param name="numberOfComponents">Number of eigenvectors to project image onto</param>
-        public double[] GetComponentsFromImage(double[,] image, int numberOfComponents)
+        public double[] GetComponentsFromImage(double[,] image, int numberOfDimensions)
         {
             if (ComponentVectors.Length <= 0)
             {
-                Console.WriteLine("Run PCA train first"); // todo throw exception
-                return null;
+                Console.WriteLine("Run PCA train first");
+                throw new Exception();
             }
 
             int columns = image.Columns();
@@ -98,12 +98,17 @@ namespace DimensionReduction
                 }
             }
 
-            double[] res = new double[numberOfComponents];
-            // multiply the data matrix by the selected eigenvectors
-            // TODO: Use cache-friendly multiplication
-            for (int j = 0; j < numberOfComponents; j++)
-                for (int k = 0; k < ComponentVectors[j].Length; k++)
-                    res[j] += matrix[k] * ComponentVectors[j][k];
+            double[] res = new double[numberOfDimensions];
+
+            for (int i = 0; i < numberOfDimensions; i++)
+            {
+                for (int j = 0; j < ComponentVectors[i].Length; j++)
+                {
+                    res[i] += matrix[j] * ComponentVectors[i][j];
+                }
+            }
+            
+            
             return res;
         }
 
