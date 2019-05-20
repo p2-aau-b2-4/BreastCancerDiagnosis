@@ -254,7 +254,7 @@ namespace DimensionReduction
             if (matrix.Rows() != matrix.Columns())
                 throw new ArgumentException("Must be quadratic");
             
-            EigenvalueDecomposition evd = new EigenvalueDecomposition(matrix,true,true);
+            EigenvalueDecomposition evd = new EigenvalueDecomposition(matrix,true,true,true);
 
             ComponentVectors = evd.Eigenvectors.ToJagged();
             Eigenvalues = evd.RealEigenvalues;
