@@ -145,8 +145,9 @@ namespace Training
             SVMProblem problem, SVMParameter parameter, bool returnFromValuesAsAnswer = false)
         {
             int nFold = int.Parse(Configuration.Get("nFold"));
-            int logTo = 8;
-            int logFrom = -6;
+            int logTo = int.Parse(Configuration.Get("logTo"));
+            int logFrom = int.Parse(Configuration.Get("logFrom"));
+            
             BlockingCollection<ParameterResult> results = new BlockingCollection<ParameterResult>();
             List<Task> tasks = new List<Task>();
             for (double cLog = logFrom; cLog <= logTo; cLog++)

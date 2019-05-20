@@ -13,9 +13,9 @@ calcTrainingSetCsvPath=E:\BrystCalc\calc_case_description_train_set.csv
 calcTestSetCsvPath=E:\BrystCalc\calc_case_description_test_set.csv
 
 
-// Should the program create images from dataset? 
+// Should the program create images from dataset?
 // If enabled, dataset must be configured above. If disabled, files paths beneath should be configured for readyImages binary files.
-ShouldCreateImages=1
+ShouldCreateImages=0
 
 // BinaryReadyImageFiles (if empty, wont be included in training/test:
 // if ShouldCreateImages is 1, these files will be overwritten!!
@@ -28,22 +28,21 @@ TestReadyImage=Models/ImageWithResultModel-100x100-CC-Test-MassCalc-BI.bin
 ShouldCreateSVMSetsWithPCA=1
 
 // location of where the pca model will be saved/loaded from:
-PcaModelLocation=pca_model-100x100-Mlo-Train-MassCalc-BI.bin
+PcaModelLocation=pca_model-100x100-CC-Train-MassCalc-BI.bin
 
 // location of the test-set. Will be overwritten if ShouldCreateSVMSetsWithPCA is 1.
-TestSetLocation=testset-100x100-Mlo-MassCalc-BI.txt
+TestSetLocation=testset-100x100-MassCalc-BI-100components.txt
 
 // location of the train-set. Will be overwritten if ShouldCreateSVMSetsWithPCA is 1.
-TrainSetLocation=trainset-100x100-Mlo-MassCalc-BI.txt
+TrainSetLocation=trainset-100x100-MassCalc-BI-100components.txt
 
 // specifised where to load and save the svmmodel
-ModelLocation=svm_model-100x100-Mlo-MassCalc-BI.txt
+ModelLocation=svm_model-100x100-MassCalc-BI-100components.txt
 
 ////
 // SVM PARAMETERS:
 C=2
 Gamma=1
 nFold=5
-
-
-
+logTo=8
+logFrom=-6
