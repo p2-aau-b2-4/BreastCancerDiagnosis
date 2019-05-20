@@ -184,7 +184,6 @@ namespace WebApp.Controllers
             path = Path.GetTempPath() + path;
             Image img = new Bitmap(path);
             MemoryStream ms = new MemoryStream();
-
             img.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
             ms.Seek(0, 0);
             return new FileStreamResult(ms, "image/png");
