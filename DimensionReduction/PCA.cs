@@ -21,17 +21,13 @@ namespace DimensionReduction
         /// A private array containing all column means from the Training method 
         /// </summary>
         private double[] columnMeans;
-        
+
         /// <summary>
         /// A properties that gets and sets columnMeans
         /// </summary>
-      
-        public double[] Means
-        {
-            get { return this.columnMeans; }
-            set { this.columnMeans = value; }
-        }
-        
+
+        public double[] Means { get; set; }
+
         /// <summary>
         /// A private array containing all column standard deviations
         /// </summary>
@@ -113,19 +109,38 @@ namespace DimensionReduction
         ///<param name=images>a List of UShortArrayAsImage to perform training on</param>
         public void Train(List<UShortArrayAsImage> images)
         {
-            List<UShortArrayAsImage> reduced =new List<UShortArrayAsImage>();
-            int u = 0;
+            double[,] allImages = new double[images.Count, images[0].Width * images[0].Height];
+            int i = 0;
             foreach (var image in images)
             {
-                u++;
-                //if (u % 5 != 0) continue;
-                reduced.Add(image);
-                
-            }
+                double[,] tempI = new double[image.Width, image.Height];
+                Array.Copy(image.PixelArray, tempI, image.PixelArray.Length);
+                double[] dImage = new double[image.Width * image.Height];
+                for (int y = 0; y < image.Height; y++)
+                {
+                    for (int x = 0; x < image.Width; x++)
+                    {
+                        //dImage[y * image.Width + x] = image.GetPixel(x,y).R;
+                        dImage[y * image.Width + x] = tempI[x, y];
+                    }
+                }
 
-            images = reduced;//todo temporary
+                for (int y = 0; y < image.Height; y++)
+                {
+                    for (int x = 0; x < image.Width; x++)
+                    {
+                        allImages[i, y * image.Width + x] = dImage[y * image.Width + x];
+                    }
+                }
+                i++;
+            }
             
-            
+
+            Train(allImages);
+        }
+
+        public static double[,] GetMatrixFromImage(List<UShortArrayAsImage> images)
+        {
             double[,] allImages = new double[images.Count, images[0].Width * images[0].Height];
             int i = 0;
             foreach (var image in images)
@@ -151,10 +166,9 @@ namespace DimensionReduction
                 }
 
                 i++;
-                Console.WriteLine($"Copied image #{i}");
             }
-
-            Train(allImages);
+            Console.WriteLine($"Training on #{allImages.Length} images");
+            return allImages;
         }
         
         ///<summary>
@@ -163,7 +177,6 @@ namespace DimensionReduction
         ///<param name=data>a 2D array to perform training on</param>
         public void Train(double[,] data)
         {
-            //data.ToJagged();
             int rows = data.Rows();
             int columns = data.Columns();
 
@@ -191,9 +204,7 @@ namespace DimensionReduction
             SparseMatrix convertedToSparse = SparseMatrix.OfArray(data.ToMatrix());
             double[,] centeredData = MeanSubtraction(convertedToSparse).ToArray();
             double[,] covarianceMatrix = CovarianceMatrix(centeredData);
-            SolveForEigen(covarianceMatrix);
-            
-
+            SolveForEigen(covarianceMatrix.ToJagged());
             Console.WriteLine("PCA done");
         }
 
@@ -249,14 +260,12 @@ namespace DimensionReduction
             return scArrayMatrix;
         }
         
-        public void SolveForEigen(double[,] matrix)
+        public void SolveForEigen(double[][] matrix)
         {
             if (matrix.Rows() != matrix.Columns())
                 throw new ArgumentException("Must be quadratic");
-            
-            EigenvalueDecomposition evd = new EigenvalueDecomposition(matrix,true,true,true);
-
-            ComponentVectors = evd.Eigenvectors.ToJagged();
+            JaggedEigenvalueDecomposition evd = new JaggedEigenvalueDecomposition(matrix,true,false,true);
+            ComponentVectors = evd.Eigenvectors.Transpose();
             Eigenvalues = evd.RealEigenvalues;
         }
     }
