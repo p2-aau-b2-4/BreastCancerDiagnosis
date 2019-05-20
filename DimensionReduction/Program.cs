@@ -27,7 +27,9 @@ using Matrix = Extreme.Mathematics.Matrix;
 using Vector = Accord.Math.Vector;
 using Accord.IO;
 using Accord.Math;
+using Accord.Statistics;
 using Accord.Statistics.Analysis;
+using Accord.Statistics.Kernels;
 using MathNet.Numerics.LinearAlgebra.Double;
 
 
@@ -64,9 +66,18 @@ namespace DicomDisplayTest
             //readyImages.Save("readyImagesTest.bin");*/
 
             List<UShortArrayAsImage> imagesToTrainOn = new List<UShortArrayAsImage>();
+            List<UShortArrayAsImage> imagesToTrainOnn = new List<UShortArrayAsImage>();
             imagesToTrainOn = Serializer.Load<List<UShortArrayAsImage>>("readyImagesTrain.bin");
             //imagesToTrainOn.AddRange(Serializer.Load<List<UShortArrayAsImage>>("readyImagesTest.bin"));
-            pca2.Train(imagesToTrainOn.GetRange(0,50));
+            imagesToTrainOn.GetRange(0, 10);
+
+            foreach (var VAR in imagesToTrainOn)
+            {
+                imagesToTrainOnn.Add(Normalization.ResizeImage(VAR, 5));
+            }
+            
+            pca2.Train(imagesToTrainOnn.GetRange(0,10));
+            
             double[] mt = pca2.GetComponentsFromImage(imagesToTrainOn[21],9);
             ;
             double[,] matrix = new double[10,2] 
@@ -82,6 +93,42 @@ namespace DicomDisplayTest
                 {0.627, -0.412},
                 {-0.393, -0.112}
             };
+            
+            
+            PrincipalComponentAnalysis pca4 = new PrincipalComponentAnalysis(PrincipalComponentMethod.CovarianceMatrix);
+
+            var images = imagesToTrainOnn;
+            double[,] allImages = new double[images.Count, images[0].Width * images[0].Height];
+            int i = 0;
+            foreach (var image in images)
+            {
+                double[,] tempI = new double[image.Width, image.Height];
+                Array.Copy(image.PixelArray, tempI, image.PixelArray.Length);
+                double[] dImage = new double[image.Width * image.Height];
+                for (int y = 0; y < image.Height; y++)
+                {
+                    for (int x = 0; x < image.Width; x++)
+                    {
+                        //dImage[y * image.Width + x] = image.GetPixel(x,y).R;
+                        dImage[y * image.Width + x] = tempI[x, y];
+                    }
+                }
+
+                for (int y = 0; y < image.Height; y++)
+                {
+                    for (int x = 0; x < image.Width; x++)
+                    {
+                        allImages[i, y * image.Width + x] = dImage[y * image.Width + x];
+                    }
+                }
+
+                i++;
+                Console.WriteLine($"Copied image #{i}");
+            }
+
+
+            pca4.Learn(allImages.Covariance().ToJagged());
+            
             PCA pca3 = new PCA();
             SparseMatrix res = SparseMatrix.OfArray(matrix);// pca3.MeanSubtraction(SparseMatrix.OfArray(matrix));
             pca3.Train(res.ToArray());
