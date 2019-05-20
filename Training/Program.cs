@@ -33,20 +33,24 @@ namespace Training
             PCA pca = TrainingHelper.GetPca(imagesToTrainOn);
 
             Console.WriteLine($"{pca.ComponentVectors.Length}x{pca.ComponentVectors[0].Length}");
-
-            TrainAndTestSvm(pca, imagesToTrainOn, imagesToTestOn);
+            int[] componentsArr = new[] {50, 100, 200, pca.Eigenvalues.Length};
+            foreach (int components in componentsArr)
+            {
+                TrainAndTestSvm(pca, imagesToTrainOn, imagesToTestOn, components);
+            }
         }
 
         private static void TrainAndTestSvm(PCA pca, List<ImageWithResultModel> imagesToTrainOn,
-            List<ImageWithResultModel> imagesToTestOn)
+            List<ImageWithResultModel> imagesToTestOn, int components)
         {
+            Console.WriteLine($"Training with #{components}...");
             SVMProblem trainingSet;
             SVMProblem testSet;
 
             if (Configuration.Get("ShouldCreateSVMSetsWithPCA").Equals("1"))
             {
-                trainingSet = GetProblemFromImageModelResultList(imagesToTrainOn, pca);
-                testSet = GetProblemFromImageModelResultList(imagesToTestOn, pca);
+                trainingSet = GetProblemFromImageModelResultList(imagesToTrainOn, pca,components);
+                testSet = GetProblemFromImageModelResultList(imagesToTestOn, pca,components);
 
                 testSet.Save(Configuration.Get("TestSetLocation"));
                 trainingSet.Save(Configuration.Get("TrainSetLocation"));
@@ -63,27 +67,6 @@ namespace Training
 
             testSet.Save("testNormalized.txt");
             trainingSet.Save("trainNormalized.txt");
-
-            string line;
-            int benign = 0;
-            int malignant = 0;
-            StreamReader derp = new StreamReader(@"testset.txt");  
-            while(( line = derp.ReadLine()) != null)
-            {
-                if (line.StartsWith("0")) benign++;
-                if (line.StartsWith("1")) malignant++;
-            }
-
-            Console.WriteLine($"test benign/malignant {benign}/{malignant}={benign*100F/(malignant+benign)}");
-            derp = new StreamReader(@"trainset.txt");
-            benign = 0;
-            malignant = 0;
-            while(( line = derp.ReadLine()) != null)
-            {
-                if (line.StartsWith("0")) benign++;
-                if (line.StartsWith("1")) malignant++;
-            }
-            Console.WriteLine($"train benign/malignant {benign}/{malignant}={benign*100F/(malignant+benign)}");
 
             // find the ratio of malignant:benign cases:
             double mbTrainRatio = trainingSet.Y.Where(x => x == 0).ToArray().Length*1F/trainingSet.Y.Count;
@@ -104,9 +87,8 @@ namespace Training
 
             parameter = TrainingHelper.FindBestHyperparameters(trainingSet, parameter);
             Console.WriteLine($"Found best parameters: c={parameter.C},gamma={parameter.Gamma}");
-            parameter.Probability = true;
 
-
+            // lets silence libsvm..
             SVMModel model = trainingSet.Train(parameter);
             SVM.SaveModel(model, Configuration.Get("ModelLocation"));
 
@@ -143,7 +125,7 @@ namespace Training
             using (StreamWriter file = new StreamWriter(@"svmData.txt", true))
             {
                 file.WriteLine(
-                    $"C={parameter.C}, GAMMA={parameter.Gamma} testAccuracy={testAccuracy}, sensitivity={sensitivity}, specificity={specificity}");
+                    $"PCACOMPONENTS={components} C={parameter.C}, GAMMA={parameter.Gamma} testAccuracy={testAccuracy}, sensitivity={sensitivity}, specificity={specificity}");
             }
 
 
@@ -163,60 +145,7 @@ namespace Training
                 Console.WriteLine(
                     $"{results[i]} | {probabilities[i][0]} | {probabilities[i][1]} | {testSet.Y[i]} | {x}");
             }
-
-            Console.WriteLine($"Accuracy: {errors*100F/probabilities.Count}");
         }
-/*
-        private static SVMProblem OwnNormalize(SVMProblem problem)
-        {
-            // (x-u)/s where u is the mean, and s is the standard deviation
-            List<SVMNode[]> data = problem.X;
-            
-            // loop through every dimension:
-            // calculate mean:
-            double[] means = new double[data[0].Length];
-            for (int i = 0; i < data[0].Length; i++)
-            {
-                int count = 0;
-                double amount = 0;
-                foreach (SVMNode[] nodeArr in data)
-                {
-                    amount += nodeArr[i].Value;
-                    count++;
-                }
-                means[i] = amount / count;
-            }
-            
-            // calculate standard deviation:
-            double[] standardDeviations = new double[data[0].Length];
-            for (int i = 0; i < data[0].Length; i++)
-            {
-                double u = 0;
-                foreach (SVMNode[] nodeArr in data)
-                {
-                    u += Math.Pow(nodeArr[i].Value-means[i],2);
-                }
-                
-                standardDeviations[i] = Math.Sqrt((1F / (data[0].Length)) * u);
-            }
-            
-            // now we can calculate each problem:
-            SVMProblem result = new SVMProblem();
-            int nodeIndex = 0;
-            foreach (var node in data)
-            {
-                SVMNode[] nodeToAdd = new SVMNode[node.Length];
-                for (int i = 0; i < node.Length; i++)
-                {   
-                    nodeToAdd[i] = new SVMNode(node[i].Index,(node[i].Value-means[i])/standardDeviations[i]);
-                }
-                result.Add(nodeToAdd, problem.Y[nodeIndex]);
-
-                nodeIndex++;
-            }
-            return result;
-        }
-*/
 
         private static void CreateAndSaveImages()
         {
@@ -252,7 +181,7 @@ namespace Training
         private static List<ImageWithResultModel> TransformDdsmImageList(List<DdsmImage> images)
         {
             List<ImageWithResultModel> result = new List<ImageWithResultModel>();
-            List<DdsmImage> imagesCc = images.Where(x => (x.ImageView == DdsmImage.ImageViewEnum.Cc)).ToList();
+            List<DdsmImage> imagesCc = images.Where(x => (x.ImageView == DdsmImage.ImageViewEnum.Mlo)).ToList();
             foreach (DdsmImage image in imagesCc)
             {
                 //if (image.Pathology == DdsmImage.Pathologies.BenignWithoutCallback) continue; todo
@@ -273,12 +202,12 @@ namespace Training
 
 
         private static SVMProblem GetProblemFromImageModelResultList(List<ImageWithResultModel> images,
-            PCA pca)
+            PCA pca,int components)
         {
-            if (!int.TryParse(Configuration.Get("componentsToUse"), out int components))
-            {
-                components = pca.Eigenvalues.Length;
-            }
+//            if (!int.TryParse(Configuration.Get("componentsToUse"), out int components))
+//            {
+//                components = pca.Eigenvalues.Length;
+//            }
 
             SVMProblem problem = new SVMProblem();
             foreach (ImageWithResultModel image in images)

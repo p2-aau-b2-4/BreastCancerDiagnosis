@@ -18,7 +18,7 @@ namespace ImagePreprocessing
                 squareTumour = new Rectangle(tumour.X - (tumour.Height-tumour.Width)/2, tumour.Y, tumour.Height, tumour.Height);
             }
 
-            return BilinearInterpoliation.ResizeImageBilinearInterpolation(Crop(squareTumour, image), size);
+            return ResizeImage(Crop(squareTumour, image), size);
 
 
         }
