@@ -4,12 +4,9 @@ namespace ImagePreprocessing
 {
     public class BilinearInterpoliation
     {
-        // attempt to use bilinearinterpolation instead of nearest neighboor to reisze an image:
+        // this is an attempt to use bilinearinterpolation instead of nearest neighboor to reisze an image:
         //https://en.wikipedia.org/wiki/Bilinear_interpolation
-        public static ushort FindNearest(double x, double y, ushort[,] image)
-        {
-            return image[(int) y, (int) x];
-        }
+
 
         public static UShortArrayAsImage ResizeImageBilinearInterpolation(UShortArrayAsImage uShortArrayAsImageIn,
             int size)
@@ -22,8 +19,8 @@ namespace ImagePreprocessing
                 for (int y = 0; y < size; y++)
                 {
                     // for every pixel in the new image, do this:
-                    double xPos = Normalization.Map(x, 0, size, 0, oldImage.GetLength(1));
-                    double yPos = Normalization.Map(y, 0, size, 0, oldImage.GetLength(0));
+                    double xPos = Normalization.Map(x, 0, size-1, 0, oldImage.GetLength(1)-1);
+                    double yPos = Normalization.Map(y, 0, size-1, 0, oldImage.GetLength(0)-1);
 
                     // ReSharper disable once CompareOfFloatsByEqualityOperator
                     double xLeftFactor;

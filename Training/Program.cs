@@ -24,20 +24,21 @@ namespace Training
             {
                 CreateAndSaveImages();
             }
-            
+
             List<ImageWithResultModel> imagesToTrainOn =
                 Serializer.Load<List<ImageWithResultModel>>(Configuration.Get("TrainReadyImage"));
             List<ImageWithResultModel> imagesToTestOn =
                 Serializer.Load<List<ImageWithResultModel>>(Configuration.Get("TestReadyImage"));
 
             PCA pca = TrainingHelper.GetPca(imagesToTrainOn);
-            
+
             Console.WriteLine($"{pca.ComponentVectors.Length}x{pca.ComponentVectors[0].Length}");
 
             TrainAndTestSvm(pca, imagesToTrainOn, imagesToTestOn);
         }
 
-        private static void TrainAndTestSvm(PCA pca, List<ImageWithResultModel> imagesToTrainOn, List<ImageWithResultModel> imagesToTestOn)
+        private static void TrainAndTestSvm(PCA pca, List<ImageWithResultModel> imagesToTrainOn,
+            List<ImageWithResultModel> imagesToTestOn)
         {
             SVMProblem trainingSet;
             SVMProblem testSet;
@@ -62,13 +63,32 @@ namespace Training
 
             testSet.Save("testNormalized.txt");
             trainingSet.Save("trainNormalized.txt");
-            
+
+            string line;
+            int benign = 0;
+            int malignant = 0;
+            StreamReader derp = new StreamReader(@"testset.txt");  
+            while(( line = derp.ReadLine()) != null)
+            {
+                if (line.StartsWith("0")) benign++;
+                if (line.StartsWith("1")) malignant++;
+            }
+
+            Console.WriteLine($"test benign/malignant {benign}/{malignant}={benign*100F/(malignant+benign)}");
+            derp = new StreamReader(@"trainset.txt");
+            benign = 0;
+            malignant = 0;
+            while(( line = derp.ReadLine()) != null)
+            {
+                if (line.StartsWith("0")) benign++;
+                if (line.StartsWith("1")) malignant++;
+            }
+            Console.WriteLine($"train benign/malignant {benign}/{malignant}={benign*100F/(malignant+benign)}");
+
             // find the ratio of malignant:benign cases:
-            double mbTrainRatio = imagesToTrainOn.Where(x => (x.Result == 1)).ToArray().Length * 1F /
-                                  imagesToTrainOn.Where(x => x.Result == 0).ToArray().Length;
+            double mbTrainRatio = trainingSet.Y.Where(x => x == 0).ToArray().Length*1F/trainingSet.Y.Count;
             Console.WriteLine($"MB TRAIN RATIO: {mbTrainRatio}");
-            double mbTestRatio = imagesToTestOn.Where(x => (x.Result == 1)).ToArray().Length * 1F /
-                                  imagesToTestOn.Where(x => x.Result == 0).ToArray().Length;
+            double mbTestRatio = testSet.Y.Where(x => x == 0).ToArray().Length * 1F / testSet.Y.Count;
             Console.WriteLine($"MB TEST RATIO: {mbTestRatio}");
 
             SVMParameter parameter = new SVMParameter
@@ -77,14 +97,15 @@ namespace Training
                 Kernel = SVMKernelType.RBF,
                 C = double.Parse(Configuration.Get("C")),
                 Gamma = double.Parse(Configuration.Get("Gamma")),
-                Probability = false,
+                Probability = true,
                 WeightLabels = new[] {0, 1},
-                Weights = new[] {1-mbTrainRatio, mbTrainRatio}
+                Weights = new[] {(1 - mbTrainRatio)/mbTrainRatio, 1}
             };
 
             parameter = TrainingHelper.FindBestHyperparameters(trainingSet, parameter);
             Console.WriteLine($"Found best parameters: c={parameter.C},gamma={parameter.Gamma}");
             parameter.Probability = true;
+
 
             SVMModel model = trainingSet.Train(parameter);
             SVM.SaveModel(model, Configuration.Get("ModelLocation"));
@@ -92,7 +113,7 @@ namespace Training
             // Predict the instances in the test set
             double[] testResults = testSet.Predict(model);
 
-            
+
             // Evaluate the test results
             double testAccuracy =
                 testSet.EvaluateClassificationProblem(testResults, model.Labels, out var confusionMatrix);
@@ -116,7 +137,7 @@ namespace Training
             }
 
             double sensitivity = confusionMatrix[0, 0] * 1.0 /
-                                   (confusionMatrix[0, 1] + confusionMatrix[0, 0]);
+                                 (confusionMatrix[0, 1] + confusionMatrix[0, 0]);
             double specificity = confusionMatrix[1, 1] * 1.0 /
                                  (confusionMatrix[1, 1] + confusionMatrix[1, 0]);
             using (StreamWriter file = new StreamWriter(@"svmData.txt", true))
@@ -128,15 +149,22 @@ namespace Training
 
             double[] results = testSet.PredictProbability(model, out var probabilities);
 
-
+            int errors = 0;
             for (int i = 0; i < probabilities.Count; i++)
             {
                 String x = "";
                 // ReSharper disable once CompareOfFloatsByEqualityOperator
-                if (results[i] != testSet.Y[i]) x = " FUCKED UP!!! ";
+                if (results[i] != testSet.Y[i])
+                {
+                    x = " FUCKED UP!!! ";
+                    errors++;
+                }
+
                 Console.WriteLine(
                     $"{results[i]} | {probabilities[i][0]} | {probabilities[i][1]} | {testSet.Y[i]} | {x}");
             }
+
+            Console.WriteLine($"Accuracy: {errors*100F/probabilities.Count}");
         }
 /*
         private static SVMProblem OwnNormalize(SVMProblem problem)
@@ -198,7 +226,7 @@ namespace Training
             (string, List<DdsmImage>)[] paths =
             {
                 ("massTrainingSetCsvPath", trainingSetDdsm), ("massTestSetCsvPath", testSetDdsm),
-                //("calcTrainingSetCsvPath", trainingSetDdsm), ("calcTestSetCsvPath", testSetDdsm)
+                ("calcTrainingSetCsvPath", trainingSetDdsm), ("calcTestSetCsvPath", testSetDdsm)
             };
 
 
@@ -218,7 +246,7 @@ namespace Training
             List<ImageWithResultModel> testSet = testTask.Result;
 
             trainingSet.Save(Configuration.Get("TrainReadyImage"));
-            testSet.Save(Configuration.Get("TestReadyImage"));     
+            testSet.Save(Configuration.Get("TestReadyImage"));
         }
 
         private static List<ImageWithResultModel> TransformDdsmImageList(List<DdsmImage> images)
@@ -244,18 +272,18 @@ namespace Training
         }
 
 
-
         private static SVMProblem GetProblemFromImageModelResultList(List<ImageWithResultModel> images,
             PCA pca)
         {
-
-
-            int components = int.Parse(Configuration.Get("componentsToUse"));
+            if (!int.TryParse(Configuration.Get("componentsToUse"), out int components))
+            {
+                components = pca.Eigenvalues.Length;
+            }
 
             SVMProblem problem = new SVMProblem();
             foreach (ImageWithResultModel image in images)
             {
-                double[] pcaComponents = pca.GetComponentsFromImage(image.Image,components);
+                double[] pcaComponents = pca.GetComponentsFromImage(image.Image, components);
                 bool valid = false;
                 foreach (double x in pcaComponents)
                 {
