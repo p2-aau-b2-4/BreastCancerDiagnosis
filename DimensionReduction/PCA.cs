@@ -9,6 +9,7 @@ using Accord.Math.Decompositions;
 using ImagePreprocessing;
 using MathNet.Numerics.LinearAlgebra.Factorization;
 using Accord.Statistics;
+using Accord.Statistics.Kernels;
 using SparseMatrix = MathNet.Numerics.LinearAlgebra.Double.SparseMatrix;
 
 namespace DimensionReduction
@@ -16,7 +17,6 @@ namespace DimensionReduction
     [Serializable]
     public class PCA
     {
-        
         /// <summary>
         /// A private array containing all column means from the Training method 
         /// </summary>
@@ -36,40 +36,20 @@ namespace DimensionReduction
         /// A private array containing all column standard deviations
         /// </summary>
         private double[] columnStdDev;
-        
+
         /// <summary>
         /// A properties that gets and sets columnStdDev
         /// </summary>
-      
-        public double[] StandardDeviations
-        {
-            get { return this.columnStdDev; }
-            set { this.columnStdDev = value; }
-        }
 
-        private double[] singularValues;
+        public double[] StandardDeviations { get; set; }
 
-        public double[] SingularValues
-        {
-            get { return singularValues; }
-            protected set { singularValues = value; }
-        }
 
-        private double[] eigenvalues;
+        public double[] SingularValues { get; set; }
 
-        public double[] Eigenvalues
-        {
-            get { return eigenvalues; }
-            protected set { eigenvalues = value; }
-        }
+        public double[] Eigenvalues { get; set; }
 
-        private double[][] eigenvectors;
 
-        public double[][] ComponentVectors
-        {
-            get { return this.eigenvectors; }
-            protected set { this.eigenvectors = value; }
-        }
+        public double[][] ComponentVectors { get; set; }
 
         public PCA()
         {
@@ -208,59 +188,13 @@ namespace DimensionReduction
         ///<param name=data>a Jagged array to perform training on</param>
         public void Train(double[][] data)
         {
-            //data = data.Transpose();
-            this.Means = data.Mean(dimension: 0);
-
-            //double[][] matrix = Overwrite ? x : Jagged.CreateAs(x);
-            double[][] matrix = true ? data : Jagged.CreateAs(data);
-            data.Subtract(Means, dimension: (VectorType) 0, result: matrix);
-
-            this.StandardDeviations = data.StandardDeviation(Means);
-            matrix.Divide(StandardDeviations, dimension: (VectorType) 0, result: matrix);
-
-            //  The principal components of 'Source' are the eigenvectors of Cov(Source). Thus if we
-            //  calculate the SVD of 'matrix' (which is Source standardized), the columns of matrix V
-            //  (right side of SVD) will be the principal components of Source.
-
-            // Perform the Singular Value Decomposition (SVD) of the matrix
+            SparseMatrix convertedToSparse = SparseMatrix.OfArray(data.ToMatrix());
+            double[,] centeredData = MeanSubtraction(convertedToSparse).ToArray();
+            double[,] covarianceMatrix = CovarianceMatrix(centeredData);
+            SolveForEigen(covarianceMatrix);
             
-            // JAMAs assumption is that we should have more rows than columns in our array.
-            // If not, we can transpose the matrix, and calculate left instead of right singular values.
-
-            
-            Console.WriteLine("Perfoming SVD");
-            var svd = new JaggedSingularValueDecomposition(matrix,
-                computeLeftSingularVectors: false,//useLeftSingularValues,
-                computeRightSingularVectors: true,//!useLeftSingularValues,
-                autoTranspose: false, inPlace: true);
-
-            SingularValues = svd.Diagonal;
-            Eigenvalues = SingularValues.Pow(2);
-            Eigenvalues.Divide(data.Rows() - 1, result: Eigenvalues);
-            ComponentVectors = svd.RightSingularVectors.Transpose();
-
-            //Model model = new Model(eigen.EigenValues, eigen.EigenVectors, eigenLumps, features, new List<Vector<double>>());
-            //model.SaveModelToFile("t.xml");
-            //model = new Model(eigen.EigenValues, eigen.EigenVectors, eigenLumps, features, new List<Vector<double>>());
 
             Console.WriteLine("PCA done");
-        }
-        
-        ///<summary>
-        ///Finds the mean of each column in a matrix, then subtracts the mean of
-        ///each column from all its values
-        ///</summary>
-        ///<param name=matrix>a double array to perform MeanSubtraction on</param>
-        public SparseMatrix MeanSubtraction(double[] matrix)
-        {
-            SparseMatrix test = new SparseMatrix(1, matrix.Length);
-
-            for (int i = 0; i < matrix.Length; i++)
-            {
-                test[0, i] = matrix[i];
-            }
-
-            return MeanSubtraction(test);
         }
 
         ///<summary>
@@ -268,7 +202,7 @@ namespace DimensionReduction
         ///each column from all its values
         ///</summary>
         ///<param name=matrix>a SparseMatrix to perform MeanSubtraction on</param>
-        public SparseMatrix MeanSubtraction(SparseMatrix matrix)
+        public SparseMatrix MeanSubtraction(SparseMatrix matrix) //todo make native double
         {
             var sums = matrix.ColumnSums();
             int index = 0;
@@ -295,64 +229,6 @@ namespace DimensionReduction
             SparseMatrix sMatrix = SparseMatrix.OfColumnVectors(vectors);
             return sMatrix;
         }
-
-        ///<summary>
-        ///Finds the covariance matrix of a SparseMatrix
-        ///</summary>
-        ///<param name=matrix>input matrix</param>
-        public SparseMatrix CovarianceMatrix(SparseMatrix matrix)
-        {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            double[,] scArrayMatrix = new double[matrix.ColumnCount, matrix.ColumnCount];
-            double[,] tmpArrayMatrix = matrix.ToArray();
-
-            Parallel.For(0, matrix.ColumnCount,
-                x =>
-                {
-                    // the middle for loop is parallized. The first cannot, since it would not be atomic, the third is not parallized, due to overhead. (was 68% faster without)
-
-                    for (int i = 0; i < matrix.RowCount; i++)
-                    {
-                        for (int y = 0; y < matrix.ColumnCount; y++)
-
-                        {
-                            scArrayMatrix[x, y] +=
-                                (tmpArrayMatrix[i, x] * tmpArrayMatrix[i, y]) / (matrix.RowCount - 1);
-                        }
-                    }
-                });
-
-
-            sw.Stop();
-            Console.WriteLine($"Took {sw.ElapsedMilliseconds}ms");
-            return SparseMatrix.OfArray(scArrayMatrix);
-        }
-
-        ///<summary>
-        ///Finds the eigen values and vectors of a matrix.
-        ///</summary>
-        ///<param name=matrix>input matrix. Must be square</param>
-        public Evd<double> SolveForEigen(SparseMatrix matrix)
-        {
-            if (matrix.RowCount != matrix.ColumnCount)
-                throw new ArgumentException();
-
-            var eigen = matrix.Evd();
-
-            /*List<Complex> eigenValues = new List<Complex>();
-            for (int i = 0; i < evd.EigenValues.Count; i++)
-            {
-                model.EigenValues.Add(eigenValue);
-            }
-
-            for (int i = 0; i < matrix.ColumnCount; i++)
-            {
-                model.EigenVectors.Add(eigen.EigenVectors.Column(i));
-            }*/
-
-            return eigen;
-        }
         
         public double[,] CovarianceMatrix(double[,] matrix)
         {
@@ -373,40 +249,15 @@ namespace DimensionReduction
             return scArrayMatrix;
         }
         
-        public Evd<double> SolveForEigen(double[,] matrix)
+        public void SolveForEigen(double[,] matrix)
         {
             if (matrix.Rows() != matrix.Columns())
-                throw new ArgumentException();
+                throw new ArgumentException("Must be quadratic");
+            
+            EigenvalueDecomposition evd = new EigenvalueDecomposition(matrix,true,true);
 
-            var eigen = matrix.Evd();
-
-            List<Complex> eigenValues = new List<Complex>();
-            for (int i = 0; i < eigen.EigenValues.Count; i++)
-            {
-                //EigenValues2[i] = eigenValue;
-            }
-            for (int i = 0; i < matrix.Columns(); i++)
-            {
-                //EigenVectors.Add(eigen.EigenVectors.Column(i));
-            }
-
-            return eigen;
-        }
-        
-        private double[] _eigenvalues2;
-
-        public double[] Eigenvalues2
-        {
-            get { return this._eigenvalues2; }
-            protected set { this._eigenvalues2 = value; }
-        }
-
-        private double[][] _eigenvectors2;
-
-        public double[][] ComponentVectors2
-        {
-            get { return this._eigenvectors2; }
-            protected set { this._eigenvectors2 = value; }
+            ComponentVectors = evd.Eigenvectors.ToJagged();
+            Eigenvalues = evd.RealEigenvalues;
         }
     }
 }
