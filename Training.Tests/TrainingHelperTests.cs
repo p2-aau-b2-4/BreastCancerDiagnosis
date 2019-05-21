@@ -2,9 +2,9 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using CsvHelper.Configuration;
 using NUnit.Framework;
 using System.Linq;
+using ImagePreprocessing;
 using LibSVMsharp;
 
 namespace Training.Tests
@@ -14,32 +14,54 @@ namespace Training.Tests
     {
 
         [TestCase]
-        public void GetPcaLoadTest()
-        {
-            
-        }
-
-        [TestCase]
         public void FindBestHyperparametersTest()
         {
             SVMProblem problem = new SVMProblem();
-            SVMNode[] svmNodes = new SVMNode[];
-            svmNodes[0] = new SVMNode(1, 5);
-            svmNodes[1] = new SVMNode(2, 7);
+            problem.Add(new SVMNode[]
+            {
+                new SVMNode(1, 5),
+                new SVMNode(2, 10),
+                new SVMNode(3, 72),
+                new SVMNode(4, 55),
+                new SVMNode(5, 1),
+            },1);
             
+            problem.Add(new SVMNode[]
+            {
+                new SVMNode(1, 62),
+                new SVMNode(2, 10),
+                new SVMNode(3, 2),
+                new SVMNode(4, 95),
+                new SVMNode(5, 16),
+            },1);
             
-            SVMNode[] svmNodes1 = new SVMNode[2];
-            svmNodes1[0] = new SVMNode(3, 10);
-            svmNodes1[1] = new SVMNode(4, 15);
-
+            problem.Add(new SVMNode[]
+            {
+                new SVMNode(1, 11),
+                new SVMNode(2, 12),
+                new SVMNode(3, 13),
+                new SVMNode(4, 14),
+                new SVMNode(5, 15),
+            },1);
             
-            SVMNode[] svmNodes2 = new SVMNode[2];
-            svmNodes2[0] = new SVMNode(5, 0);
-            svmNodes2[1] = new SVMNode(6, 3);
+            problem.Add(new SVMNode[]
+            {
+                new SVMNode(1, 69),
+                new SVMNode(2, 13),
+                new SVMNode(3, 37),
+                new SVMNode(4, 4),
+                new SVMNode(5, 18),
+            },0);
             
-            problem.Add(svmNodes, 1);
-            problem.Add(svmNodes1, 0);
-            problem.Add(svmNodes2, 0);
+            problem.Add(new SVMNode[]
+            {
+                new SVMNode(1, 50),
+                new SVMNode(2, 100),
+                new SVMNode(3, 720),
+                new SVMNode(4, 550),
+                new SVMNode(5, 10),
+            },0);
+            
             
             //Setup test SVMParameter
             SVMParameter parameter = new SVMParameter
@@ -54,31 +76,75 @@ namespace Training.Tests
             
             var actualParameter = TrainingHelper.FindBestHyperparameters(problem, parameter);
 
-            
-            // Actual parameter
-            List<double> gammaValues = new List<double> {0.015625, 0.5, 0.25};
-
-            List<double> cValues = new List<double>
+            Assert.AreEqual(0.015625d, actualParameter.C);
+            Assert.AreEqual(0.015625d, actualParameter.Gamma);
+        }
+        
+        [TestCase]
+        public void FindBestHyperparametersGivenAnswersTest()
+        {
+            SVMProblem problem = new SVMProblem();
+            problem.Add(new SVMNode[]
             {
-                2,
-                1,
-                0.0625,
-                0.5,
-                0.03125,
-                0.25,
-                0.125,
-                0.015625
+                new SVMNode(1, 1),
+                new SVMNode(2, 10),
+                new SVMNode(3, 72),
+                new SVMNode(4, 55),
+                new SVMNode(5, 1),
+            },1);
+            
+            problem.Add(new SVMNode[]
+            {
+                new SVMNode(1, 1),
+                new SVMNode(2, 10),
+                new SVMNode(3, 2),
+                new SVMNode(4, 95),
+                new SVMNode(5, 16),
+            },1);
+            
+            problem.Add(new SVMNode[]
+            {
+                new SVMNode(1, 1),
+                new SVMNode(2, 12),
+                new SVMNode(3, 13),
+                new SVMNode(4, 14),
+                new SVMNode(5, 15),
+            },1);
+            
+            problem.Add(new SVMNode[]
+            {
+                new SVMNode(1, 0),
+                new SVMNode(2, 13),
+                new SVMNode(3, 37),
+                new SVMNode(4, 4),
+                new SVMNode(5, 18),
+            },0);
+            
+            problem.Add(new SVMNode[]
+            {
+                new SVMNode(1, 0),
+                new SVMNode(2, 100),
+                new SVMNode(3, 720),
+                new SVMNode(4, 550),
+                new SVMNode(5, 10),
+            },0);
+            
+            
+            //Setup test SVMParameter
+            SVMParameter parameter = new SVMParameter
+            {
+                Type = SVMType.C_SVC,
+                Kernel = SVMKernelType.RBF,
+                C = 2,
+                Gamma = 1,
+                Probability = true,
             };
 
+            
+            var actualParameter = TrainingHelper.FindBestHyperparameters(problem, parameter);
 
-            if (cValues.Contains(actualParameter.C) && gammaValues.Contains(actualParameter.Gamma))
-            {
-                Assert.Pass();
-            }
-            else
-            {
-                Assert.Fail();
-            }
+            Assert.AreEqual(0.015625d, actualParameter.C);
+            Assert.AreEqual(0.125d, actualParameter.Gamma);
         }
 
         [TestCase]
@@ -89,8 +155,8 @@ namespace Training.Tests
             BlockingCollection<TrainingHelper.ParameterResult> results =
                 new BlockingCollection<TrainingHelper.ParameterResult>();
             
-            int logTo = 8;
-            int logFrom = -6;
+            int logTo = int.Parse(Configuration.Get("logTo"));
+            int logFrom = int.Parse(Configuration.Get("logFrom"));
 
             for (double cLog = logFrom; cLog <= logTo; cLog++)
             {
@@ -114,6 +180,21 @@ namespace Training.Tests
             
             
             FileAssert.AreEqual(expectedFile, actualFile);
+        }
+        
+        
+        [TestCase]
+        public void SaveToCsvOutOfBoundsTest()
+        {
+            
+            // Setup results
+            BlockingCollection<TrainingHelper.ParameterResult> results =
+                new BlockingCollection<TrainingHelper.ParameterResult>();
+            
+            
+            File.Delete(@"svmDataActual.txt");
+
+            Assert.Throws<IndexOutOfRangeException>(() => TrainingHelper.SaveToCsv(results, "svmDataActual.txt"));
         }
     }
 }

@@ -38,12 +38,12 @@ namespace ImagePreprocessing
         public String DcomMaskFilePath { get; }
         public String DcomCroppedFilePath { get; }
 
-        public UShortArrayAsImage DcomOriginalImage
+        public virtual UShortArrayAsImage DcomOriginalImage
         {
             get { return DicomFile.Open(DcomFilePath).GetUshortImageInfo(); }
         }
 
-        public UByteArrayAsImage DcomMaskImage
+        public virtual UByteArrayAsImage DcomMaskImage
         {
             get { return DicomFile.Open(DcomMaskFilePath).GetUByteImageInfo(); }
         }
@@ -64,6 +64,7 @@ namespace ImagePreprocessing
             DcomMaskFilePath = dcomMaskFilePath;
             DcomCroppedFilePath = dcomCroppedFilePath;
         }
+        public DdsmImage(){}
 
         public static List<DdsmImage> GetAllImagesFromCsvFile(String csvFilePath)
         {
