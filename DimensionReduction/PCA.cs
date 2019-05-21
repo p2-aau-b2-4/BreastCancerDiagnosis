@@ -1,16 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Numerics;
 using System.Threading.Tasks;
 using Accord.IO;
 using Accord.Math;
 using Accord.Math.Decompositions;
 using ImagePreprocessing;
-using MathNet.Numerics.LinearAlgebra.Factorization;
-using Accord.Statistics;
-using Accord.Statistics.Kernels;
-using SparseMatrix = MathNet.Numerics.LinearAlgebra.Double.SparseMatrix;
 
 namespace DimensionReduction
 {
@@ -206,8 +200,7 @@ namespace DimensionReduction
         ///<param name=data>a Jagged array to perform training on</param>
         public void Train(double[][] data)
         {
-            SparseMatrix convertedToSparse = SparseMatrix.OfArray(data.ToMatrix());
-            double[,] centeredData = MeanSubtraction(convertedToSparse).ToArray();
+            double[,] centeredData = MeanSubtraction(data.ToMatrix());
             double[,] covarianceMatrix = CovarianceMatrix(centeredData);
             SolveForEigen(covarianceMatrix.ToJagged());
             Console.WriteLine("PCA done");
@@ -217,33 +210,42 @@ namespace DimensionReduction
         ///Finds the mean of each column in a matrix, then subtracts the mean of
         ///each column from all its values
         ///</summary>
-        ///<param name=matrix>a SparseMatrix to perform MeanSubtraction on</param>
-        public SparseMatrix MeanSubtraction(SparseMatrix matrix) //todo make native double
+        ///<param name=matrix>a 2D double array to perform MeanSubtraction on</param>
+        public double[,] MeanSubtraction(double[,] matrix) //todo make native double
         {
-            var sums = matrix.ColumnSums();
-            int index = 0;
-            SparseMatrix tmpMatrix = new SparseMatrix(matrix.RowCount, matrix.ColumnCount);
-            List<MathNet.Numerics.LinearAlgebra.Vector<double>> vectors =
-                new List<MathNet.Numerics.LinearAlgebra.Vector<double>>();
-            matrix.CopyTo(tmpMatrix);
-            foreach (var sum in sums)
+            int columns = matrix.Columns();
+            int rows = matrix.Rows();
+            
+            double[] sums = new double[columns];
+            
+            matrix.Transpose();
+
+            for (int y = 0; y < columns; y++)
             {
-                if (Double.IsNegativeInfinity(sum) || Double.IsInfinity(sum))
-                    throw new NotFiniteNumberException(sum);
-
-                double xI = sum / matrix.RowCount;
-
-                var tmpVector = matrix.Column(index);
-                tmpVector = tmpVector.Subtract(xI);
-                vectors.Add(tmpVector);
-
-                //model.MeanSums[index].Add(xI);
-
-                index += 1;
+                for (int x = 0; x < rows; x++)
+                {
+                    sums[y] += matrix[x, y];
+                    if (Double.IsNegativeInfinity(sums[y]) || Double.IsInfinity(sums[y]))
+                        throw new NotFiniteNumberException(sums[y]);
+                }
             }
 
-            SparseMatrix sMatrix = SparseMatrix.OfColumnVectors(vectors);
-            return sMatrix;
+            for (int i = 0; i < columns; i++)
+            {
+                sums[i] /= rows;
+            }
+            
+            for (int y = 0; y < columns; y++)
+            {
+                for (int x = 0; x < rows; x++)
+                {
+                    matrix[x, y] -= sums[y];
+                }
+            }
+
+            matrix.Transpose();
+            
+            return matrix;
         }
         
         public double[,] CovarianceMatrix(double[,] matrix)
