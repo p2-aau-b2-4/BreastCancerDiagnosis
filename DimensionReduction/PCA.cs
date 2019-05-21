@@ -41,8 +41,7 @@ namespace DimensionReduction
         {
             if (ComponentVectors.Length <= 0)
             {
-                Console.WriteLine("Run PCA train first");
-                throw new Exception();
+                throw new NullReferenceException("Run PCA train first");
             }
 
             int columns = image.Columns();
