@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using DimensionReduction;
 using ImagePreprocessing;
 using LibSVMsharp;
 using Moq;
@@ -55,6 +57,31 @@ namespace Training.Tests
             }
 
             Assert.True(!foundError);
+
+        }
+
+        [TestCase]
+        public void GetProblemFromImageModelResultListTest()
+        {
+            var images = new List<ImageWithResultModel>();
+
+            var ddsmImageMock = new Mock<ImageWithResultModel>();
+            ushort[,] imageBefore = new ushort[,]
+            {
+                {1,2,3,4,5},
+                {6,7,8,9,10},
+                {11,8,9,10,11},
+                {16,13,14,15,16},
+                {21,2,23,24,25},
+            };
+            
+            ddsmImageMock.SetupGet(x => x.Image).Returns(new UShortArrayAsImage(imageBefore));
+            
+            images.Add(ddsmImageMock.Object);
+
+            PCA pca = TrainingHelper.GetPca(images);
+            
+            ProblemHandler.GetProblemFromImageModelResultList(images, pca,10);
 
         }
 
