@@ -22,6 +22,9 @@ namespace Training
             Console.WriteLine(Environment.CurrentDirectory);
             if (Configuration.Get("ShouldCreateImages").Equals("1"))
             {
+                
+                
+                
                 CreateAndSaveImages();
             }
 
