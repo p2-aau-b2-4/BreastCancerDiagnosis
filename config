@@ -44,5 +44,7 @@ ModelLocation=svm_model-100x100-MassCalc-BI-100components.txt
 C=2
 Gamma=1
 nFold=5
+
+
 logTo=8
 logFrom=-6

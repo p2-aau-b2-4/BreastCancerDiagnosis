@@ -24,7 +24,7 @@ namespace Training
             public double ToGamma { get; set; }
         }
 
-        private class ParameterResult
+        public class ParameterResult
         {
             public double Accuracy { get; set; }
             public double C { get; set; }
@@ -91,7 +91,7 @@ namespace Training
             return fineParameterRange;
         }
 
-        private static void SaveToCSV(BlockingCollection<ParameterResult> results)
+        public static void SaveToCSV(BlockingCollection<ParameterResult> results)
         {
             int logTo = int.Parse(Configuration.Get("logTo"));
             int logFrom = int.Parse(Configuration.Get("logFrom"));
