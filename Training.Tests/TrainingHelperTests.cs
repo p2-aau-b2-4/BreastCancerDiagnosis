@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using CsvHelper.Configuration;
 using NUnit.Framework;
@@ -11,15 +12,82 @@ namespace Training.Tests
     [TestFixture]
     public class TrainingHelperTests
     {
-        [SetUp]
-        public void Setup()
-        {
 
+        [TestCase]
+        public void GetPcaLoadTest()
+        {
+            
         }
 
         [TestCase]
-        public void HighestScoreTest()
+        public void FindBestHyperparametersTest()
         {
+            SVMProblem problem = new SVMProblem();
+            SVMNode[] svmNodes = new SVMNode[2];
+            svmNodes[0] = new SVMNode(1, 5);
+            svmNodes[1] = new SVMNode(2, 7);
+            
+            
+            SVMNode[] svmNodes1 = new SVMNode[2];
+            svmNodes1[0] = new SVMNode(3, 10);
+            svmNodes1[1] = new SVMNode(4, 15);
+
+            
+            SVMNode[] svmNodes2 = new SVMNode[2];
+            svmNodes2[0] = new SVMNode(5, 0);
+            svmNodes2[1] = new SVMNode(6, 3);
+            
+            problem.Add(svmNodes, 1);
+            problem.Add(svmNodes1, 0);
+            problem.Add(svmNodes2, 0);
+            
+            //Setup test SVMParameter
+            SVMParameter parameter = new SVMParameter
+            {
+                Type = SVMType.C_SVC,
+                Kernel = SVMKernelType.RBF,
+                C = 2,
+                Gamma = 1,
+                Probability = true,
+                WeightLabels = new[] {0, 1},
+                Weights = new[] {(1 - 0.69) / 0.69, 1}
+            };
+
+            
+            var actualParameter = TrainingHelper.FindBestHyperparameters(problem, parameter);
+
+            
+            // Actual parameter
+            List<double> gammaValues = new List<double>();
+            gammaValues.Add(0.015625);
+            gammaValues.Add(0.5);
+            gammaValues.Add(0.25);
+
+            List<double> cValues = new List<double>();
+            cValues.Add(2);
+            cValues.Add(1);
+            cValues.Add(0.0625);
+            cValues.Add(0.5);
+            cValues.Add(0.03125);
+            cValues.Add(0.25);
+            cValues.Add(0.125);
+            cValues.Add(0.015625);
+            
+
+            if (cValues.Contains(actualParameter.C) && gammaValues.Contains(actualParameter.Gamma))
+            {
+                Assert.Pass();
+            }
+            else
+            {
+                Assert.Fail();
+            }
+        }
+
+        [TestCase]
+        public void SaveToCSVTest()
+        {
+            
             // Setup results
             BlockingCollection<TrainingHelper.ParameterResult> results =
                 new BlockingCollection<TrainingHelper.ParameterResult>();
@@ -43,40 +111,6 @@ namespace Training.Tests
             File.Delete(@"svmDataActual.txt");
             
             TrainingHelper.SaveToCSV(results, "svmDataActual.txt");
-            }
-            
-            //Setup func and revFunc
-            Func<double, double> func = (x) => Math.Pow(x, 2);
-            Func<double, double> revFunc = (x) => (Math.Log(x, 2));
-            
-            //Setup test SVMParameter
-            SVMParameter parameter = new SVMParameter
-            {
-                Type = SVMType.C_SVC,
-                Kernel = SVMKernelType.RBF,
-                C = 2,
-                Gamma = 1,
-                Probability = true,
-                WeightLabels = new[] {0, 1},
-                Weights = new[] {(1 - 0.69)/0.69, 1}
-            };
-            
-            // Expected parameterRange
-            var realValue = new TrainingHelper.ParameterRange()
-            {
-                FromC = 0, ToC = 0, FromGamma = 0, ToGamma = 0
-            };
-            
-            // Actual parameterRange
-            var actualValue = TrainingHelper.HighestScore(results, func, revFunc, parameter);
-            
-            Assert.AreEqual(realValue, actualValue);
-
-        }
-
-        [TestCase]
-        public void SaveToCSVTest()
-        {
 
             FileInfo expectedFile = new FileInfo(@"svmDataExpected.txt");
             FileInfo actualFile = new FileInfo(@"svmDataActual.txt");

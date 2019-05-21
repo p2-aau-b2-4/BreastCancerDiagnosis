@@ -122,7 +122,7 @@ namespace Training
             }
         }
 
-        public static ParameterRange HighestScore(BlockingCollection<ParameterResult> results, Func<double, double> func,
+        private static ParameterRange HighestScore(BlockingCollection<ParameterResult> results, Func<double, double> func,
                       Func<double, double> revFunc, SVMParameter parameter, bool returnFromValuesAsAnswer = false)
         {
             //find the highest score:
