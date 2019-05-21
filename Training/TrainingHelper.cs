@@ -86,19 +86,19 @@ namespace Training
             ParameterRange fineParameterRange =
                 HighestScore(results, func, revFunc, parameter, returnFromValuesAsAnswer);
             
-            SaveToCSV(results);
+            SaveToCSV(results, "svmData");
 
             return fineParameterRange;
         }
 
-        public static void SaveToCSV(BlockingCollection<ParameterResult> results)
+        public static void SaveToCSV(BlockingCollection<ParameterResult> results, string name)
         {
             int logTo = int.Parse(Configuration.Get("logTo"));
             int logFrom = int.Parse(Configuration.Get("logFrom"));
             
             // lets save the dictionary to a csv file:
             // loop through every c value and create a header, then for every gamma value, create a sideheader and insert values:
-            using (StreamWriter file = new StreamWriter(@"svmData.txt", true))
+            using (StreamWriter file = new StreamWriter(name, true))
             {
                 //createheader:
                 file.Write($@"{"C\\G",5}"); // empty topleft corner
