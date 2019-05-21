@@ -36,7 +36,37 @@ namespace Training
             int[] componentsArr = new[] {50, 100, 200, pca.Eigenvalues.Length};
             foreach (int components in componentsArr)
             {
-                ProblemHandler.TrainAndTestSvm(pca, imagesToTrainOn, imagesToTestOn, components);
+                Console.WriteLine($"Training with #{components}...");
+                SVMProblem trainingSet;
+                SVMProblem testSet;
+                if (Configuration.Get("ShouldCreateSVMSetsWithPCA").Equals("1"))
+                {
+                    trainingSet = ProblemHandler.GetProblemFromImageModelResultList(imagesToTrainOn, pca, components);
+                    testSet = ProblemHandler.GetProblemFromImageModelResultList(imagesToTestOn, pca, components);
+
+                    testSet.Save(Configuration.Get("TestSetLocation"));
+                    trainingSet.Save(Configuration.Get("TrainSetLocation"));
+                }
+                else
+                {
+                    trainingSet = SVMProblemHelper.Load(Configuration.Get("TrainSetLocation"));
+                    testSet = SVMProblemHelper.Load(Configuration.Get("TestSetLocation"));
+                }
+
+
+                trainingSet = trainingSet.Normalize(SVMNormType.L2);
+                testSet = testSet.Normalize(SVMNormType.L2);
+
+                testSet.Save("testNormalized.txt");
+                trainingSet.Save("trainNormalized.txt");
+
+
+                ProblemHandler.SvmResult result = ProblemHandler.TrainAndTestSvm(trainingSet, testSet);
+                using (StreamWriter file = new StreamWriter(@"svmData.txt", true))
+                {
+                    file.WriteLine(
+                        $"PCACOMPONENTS={components}, C={result.C}, GAMMA={result.Gamma} testAccuracy={result.TestAccuracy}, sensitivity={result.Sensitivity}, specificity={result.Specificity}");
+                }
             }
         }
     }

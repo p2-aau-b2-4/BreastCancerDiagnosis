@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Accord;
 using Accord.IO;
+using Accord.Math;
 using DimensionReduction;
 using ImagePreprocessing;
 using LibSVMsharp;
@@ -16,34 +17,17 @@ namespace Training
 {
     public static class ProblemHandler
     {
-        
-        public static void TrainAndTestSvm(PCA pca, List<ImageWithResultModel> imagesToTrainOn,
-            List<ImageWithResultModel> imagesToTestOn, int components)
+        public class SvmResult
         {
-            Console.WriteLine($"Training with #{components}...");
-            SVMProblem trainingSet;
-            SVMProblem testSet;
-
-            if (Configuration.Get("ShouldCreateSVMSetsWithPCA").Equals("1"))
-            {
-                trainingSet = GetProblemFromImageModelResultList(imagesToTrainOn, pca,components);
-                testSet = GetProblemFromImageModelResultList(imagesToTestOn, pca,components);
-
-                testSet.Save(Configuration.Get("TestSetLocation"));
-                trainingSet.Save(Configuration.Get("TrainSetLocation"));
-            }
-            else
-            {
-                trainingSet = SVMProblemHelper.Load(Configuration.Get("TrainSetLocation"));
-                testSet = SVMProblemHelper.Load(Configuration.Get("TestSetLocation"));
-            }
-
-
-            trainingSet = trainingSet.Normalize(SVMNormType.L2);
-            testSet = testSet.Normalize(SVMNormType.L2);
-
-            testSet.Save("testNormalized.txt");
-            trainingSet.Save("trainNormalized.txt");
+            public double C { get; set; }
+            public double Gamma { get; set; }
+            public double TestAccuracy { get; set; }
+            public double Sensitivity { get; set; }
+            public double Specificity { get; set; }
+        }
+        
+        public static SvmResult TrainAndTestSvm(SVMProblem trainingSet, SVMProblem testSet)
+        {
 
             // find the ratio of malignant:benign cases:
             double mbTrainRatio = trainingSet.Y.Where(x => x == 0).ToArray().Length*1F/trainingSet.Y.Count;
@@ -102,11 +86,7 @@ namespace Training
                                  (confusionMatrix[0, 1] + confusionMatrix[0, 0]);
             double specificity = confusionMatrix[1, 1] * 1.0 /
                                  (confusionMatrix[1, 1] + confusionMatrix[1, 0]);
-            using (StreamWriter file = new StreamWriter(@"svmData.txt", true))
-            {
-                file.WriteLine(
-                    $"PCACOMPONENTS={components}, C={parameter.C}, GAMMA={parameter.Gamma} testAccuracy={testAccuracy}, sensitivity={sensitivity}, specificity={specificity}");
-            }
+            
 
 
             double[] results = testSet.PredictProbability(model, out var probabilities);
@@ -116,6 +96,12 @@ namespace Training
                 String x = results[i] != testSet.Y[i] ? "MISPREDICTION" :"";
                 Console.WriteLine($"{results[i]} | {probabilities[i][0]} | {probabilities[i][1]} | {testSet.Y[i]} | {x}");
             }
+
+            return new SvmResult()
+            {
+                C = parameter.C, Gamma = parameter.Gamma, TestAccuracy = testAccuracy, Sensitivity = sensitivity,
+                Specificity = specificity
+            };
         }
 
         public static void CreateAndSaveImages()
@@ -171,7 +157,7 @@ namespace Training
         }
 
 
-        private static SVMProblem GetProblemFromImageModelResultList(List<ImageWithResultModel> images,
+        public static SVMProblem GetProblemFromImageModelResultList(List<ImageWithResultModel> images,
             PCA pca,int components)
         {
             SVMProblem problem = new SVMProblem();

@@ -23,7 +23,7 @@ namespace Training.Tests
         public void FindBestHyperparametersTest()
         {
             SVMProblem problem = new SVMProblem();
-            SVMNode[] svmNodes = new SVMNode[2];
+            SVMNode[] svmNodes = new SVMNode[];
             svmNodes[0] = new SVMNode(1, 5);
             svmNodes[1] = new SVMNode(2, 7);
             
