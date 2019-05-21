@@ -16,7 +16,7 @@ namespace Training
 {
     public static class TrainingHelper
     {
-        private class ParameterRange
+        public class ParameterRange
         {
             public double FromC { get; set; }
             public double ToC { get; set; }
@@ -122,7 +122,7 @@ namespace Training
             }
         }
 
-        private static ParameterRange HighestScore(BlockingCollection<ParameterResult> results, Func<double, double> func,
+        public static ParameterRange HighestScore(BlockingCollection<ParameterResult> results, Func<double, double> func,
                       Func<double, double> revFunc, SVMParameter parameter, bool returnFromValuesAsAnswer = false)
         {
             //find the highest score:
