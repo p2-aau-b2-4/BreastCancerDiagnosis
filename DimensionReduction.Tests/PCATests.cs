@@ -516,13 +516,12 @@ namespace DimensionReduction.Tests
                 {-0.393, -0.112}
             };
             
-            double[,] expectation = new double[2,2] {
-                {-0.735178656, -0.677873399},
-                {0.677873399, -0.735178656}
-            };
+            double[] expectation = new double[1] {0.083723606};
+            
+            double[,] img = new double[1,2] {{1,1}};
 
             p.Train(matrixArr);
-            double[] res = p.GetComponentsFromImage(matrixArr, 2);
+            double[] res = p.GetComponentsFromImage(img, 1);
             Console.WriteLine(res.Length);
             CollectionAssert.AreEqual(expectation,
                 res,
