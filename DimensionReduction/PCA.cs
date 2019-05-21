@@ -11,39 +11,9 @@ namespace DimensionReduction
     [Serializable]
     public class PCA
     {
-        /// <summary>
-        /// A private array containing all column means from the Training method 
-        /// </summary>
-        private double[] columnMeans;
-
-        /// <summary>
-        /// A properties that gets and sets columnMeans
-        /// </summary>
-
-        public double[] Means { get; set; }
-
-        /// <summary>
-        /// A private array containing all column standard deviations
-        /// </summary>
-        private double[] columnStdDev;
-
-        /// <summary>
-        /// A properties that gets and sets columnStdDev
-        /// </summary>
-
-        public double[] StandardDeviations { get; set; }
-
-
-        public double[] SingularValues { get; set; }
-
         public double[] Eigenvalues { get; set; }
 
-
         public double[][] ComponentVectors { get; set; }
-
-        public PCA()
-        {
-        }
 
         public static PCA LoadModelFromFile(string path)
         {
@@ -211,7 +181,7 @@ namespace DimensionReduction
         ///each column from all its values
         ///</summary>
         ///<param name=matrix>a 2D double array to perform MeanSubtraction on</param>
-        public double[,] MeanSubtraction(double[,] matrix) //todo make native double
+        public double[,] MeanSubtraction(double[,] matrix)
         {
             int columns = matrix.Columns();
             int rows = matrix.Rows();
@@ -228,11 +198,8 @@ namespace DimensionReduction
                     if (Double.IsNegativeInfinity(sums[y]) || Double.IsInfinity(sums[y]))
                         throw new NotFiniteNumberException(sums[y]);
                 }
-            }
 
-            for (int i = 0; i < columns; i++)
-            {
-                sums[i] /= rows;
+                sums[y] /= rows;
             }
             
             for (int y = 0; y < columns; y++)
