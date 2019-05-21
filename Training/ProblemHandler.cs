@@ -65,10 +65,12 @@ namespace Training
             parameter = TrainingHelper.FindBestHyperparameters(trainingSet, parameter);
             Console.WriteLine($"Found best parameters: c={parameter.C},gamma={parameter.Gamma}");
 
-            // lets silence libsvm..
             SVMModel model = trainingSet.Train(parameter);
             SVM.SaveModel(model, Configuration.Get("ModelLocation"));
 
+            // The following evaluation has code from:
+            // https://csharp.hotexamples.com/examples/LibSVMsharp/SVMParameter/-/php-svmparameter-class-examples.html
+            
             // Predict the instances in the test set
             double[] testResults = testSet.Predict(model);
 
@@ -83,6 +85,7 @@ namespace Training
 
 
             // Print formatted confusion matrix
+            
             Console.Write($"{"",6}");
             for (int i = 0; i < model.Labels.Length; i++)
                 Console.Write($"{"(" + model.Labels[i] + ")",5}");
@@ -102,25 +105,16 @@ namespace Training
             using (StreamWriter file = new StreamWriter(@"svmData.txt", true))
             {
                 file.WriteLine(
-                    $"PCACOMPONENTS={components} C={parameter.C}, GAMMA={parameter.Gamma} testAccuracy={testAccuracy}, sensitivity={sensitivity}, specificity={specificity}");
+                    $"PCACOMPONENTS={components}, C={parameter.C}, GAMMA={parameter.Gamma} testAccuracy={testAccuracy}, sensitivity={sensitivity}, specificity={specificity}");
             }
 
 
             double[] results = testSet.PredictProbability(model, out var probabilities);
-
-            int errors = 0;
             for (int i = 0; i < probabilities.Count; i++)
             {
-                String x = "";
                 // ReSharper disable once CompareOfFloatsByEqualityOperator
-                if (results[i] != testSet.Y[i])
-                {
-                    x = " FUCKED UP!!! ";
-                    errors++;
-                }
-
-                Console.WriteLine(
-                    $"{results[i]} | {probabilities[i][0]} | {probabilities[i][1]} | {testSet.Y[i]} | {x}");
+                String x = results[i] != testSet.Y[i] ? "MISPREDICTION" :"";
+                Console.WriteLine($"{results[i]} | {probabilities[i][0]} | {probabilities[i][1]} | {testSet.Y[i]} | {x}");
             }
         }
 
@@ -161,7 +155,6 @@ namespace Training
             List<DdsmImage> imagesCc = images.Where(x => (x.ImageView == DdsmImage.ImageViewEnum.Mlo)).ToList();
             foreach (DdsmImage image in imagesCc)
             {
-                //if (image.Pathology == DdsmImage.Pathologies.BenignWithoutCallback) continue; todo
                 Console.WriteLine($"{result.Count * 100 / imagesCc.Count}% done");
                 var imageResult = new ImageWithResultModel
                 {
@@ -181,11 +174,6 @@ namespace Training
         private static SVMProblem GetProblemFromImageModelResultList(List<ImageWithResultModel> images,
             PCA pca,int components)
         {
-//            if (!int.TryParse(Configuration.Get("componentsToUse"), out int components))
-//            {
-//                components = pca.Eigenvalues.Length;
-//            }
-
             SVMProblem problem = new SVMProblem();
             foreach (ImageWithResultModel image in images)
             {

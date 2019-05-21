@@ -49,8 +49,6 @@ namespace Training.Tests
                 C = 2,
                 Gamma = 1,
                 Probability = true,
-                WeightLabels = new[] {0, 1},
-                Weights = new[] {(1 - 0.69) / 0.69, 1}
             };
 
             
@@ -58,21 +56,20 @@ namespace Training.Tests
 
             
             // Actual parameter
-            List<double> gammaValues = new List<double>();
-            gammaValues.Add(0.015625);
-            gammaValues.Add(0.5);
-            gammaValues.Add(0.25);
+            List<double> gammaValues = new List<double> {0.015625, 0.5, 0.25};
 
-            List<double> cValues = new List<double>();
-            cValues.Add(2);
-            cValues.Add(1);
-            cValues.Add(0.0625);
-            cValues.Add(0.5);
-            cValues.Add(0.03125);
-            cValues.Add(0.25);
-            cValues.Add(0.125);
-            cValues.Add(0.015625);
-            
+            List<double> cValues = new List<double>
+            {
+                2,
+                1,
+                0.0625,
+                0.5,
+                0.03125,
+                0.25,
+                0.125,
+                0.015625
+            };
+
 
             if (cValues.Contains(actualParameter.C) && gammaValues.Contains(actualParameter.Gamma))
             {
@@ -110,7 +107,7 @@ namespace Training.Tests
             
             File.Delete(@"svmDataActual.txt");
             
-            TrainingHelper.SaveToCSV(results, "svmDataActual.txt");
+            TrainingHelper.SaveToCsv(results, "svmDataActual.txt");
 
             FileInfo expectedFile = new FileInfo(@"svmDataExpected.txt");
             FileInfo actualFile = new FileInfo(@"svmDataActual.txt");
