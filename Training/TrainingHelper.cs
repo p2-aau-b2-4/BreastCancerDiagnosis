@@ -59,11 +59,10 @@ namespace Training
                     }
                 }));
             }
-
+            Task.WaitAll(tasks.ToArray());
+            
             var resultList = results.ToList();
             resultList.Sort();
-
-            Task.WaitAll(tasks.ToArray());
 
             ParameterResult bestParameter =
                 HighestScore(resultList);
