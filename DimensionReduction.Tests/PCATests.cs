@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using Accord.Math;
 using Accord.Statistics;
+using ImagePreprocessing;
 using NUnit.Framework;
 
 namespace DimensionReduction.Tests
@@ -512,5 +515,115 @@ namespace DimensionReduction.Tests
                 res,
                 new Comparer(floatingPointTolerance));
         }
+        
+        [Test, Description("Tests GetComponentFromImage in a normal case ushortarray")]
+        public void GetComponentFromImageNormalCaseUShortArray()
+        {
+            PCA p = new PCA();
+            byte[] matrixArr = new byte[16] 
+            {
+                10, 20, 59, 223, 
+                24, 80, 99, 31, 
+                54, 113, 215, 70, 
+                167, 131, 200, 101
+            };
+            byte[] matrixArr2 = new byte[16] 
+            {
+                10, 20, 59, 223, 
+                24, 80, 99, 31, 
+                54, 113, 215, 70, 
+                167, 131, 200, 101
+            };
+            
+            double[] expectation = new double[1] {5130};
+            
+            byte[] imgArr = new byte[16] {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+            
+            List<UShortArrayAsImage> img = new List<UShortArrayAsImage>();
+            img.Add(new UShortArrayAsImage(matrixArr,4,4));
+            img.Add(new UShortArrayAsImage(matrixArr2,4,4));
+
+            
+
+            p.Train(img);
+            double[] res = p.GetComponentsFromImage(img[0], 1);
+            Console.WriteLine(res.Length);
+            CollectionAssert.AreEqual(expectation,
+                res,
+                new Comparer(floatingPointTolerance));
+        }
+
+        [Test, Description("Tests GetMatrixFromImage where Train has not run")]
+        public void GetComponentFromImageException()
+        {
+            PCA p = new PCA();
+            double[,] image = new double[2,2] {{5,10},{10,5}};
+            Assert.Throws<NullReferenceException>(() => p.GetComponentsFromImage(image, 1));
+        }
+
+        [Test, Description("Tests GetMatrixFromImage in a normal case ushortarray to double[,]")]
+        public void GetMatrixFromImageNormalTest()
+        {
+            PCA p = new PCA();
+            byte[] matrixArr = new byte[16] 
+            {
+                10, 20, 59, 223, 
+                24, 80, 99, 31, 
+                54, 113, 215, 70, 
+                167, 131, 200, 101
+            };
+            
+            double[,] expectation = new double[1,16]
+            {
+                {5130, 28982, 0, 0, 
+                57147, 18135, 0, 0, 
+                20504, 33703, 0, 0, 
+                8035, 26056, 0, 0}
+            };
+            
+            List<UShortArrayAsImage> img = new List<UShortArrayAsImage>();
+            img.Add(new UShortArrayAsImage(matrixArr,4,4));
+            
+            double[,] imgDoubles = PCA.GetMatrixFromImage(img);
+            
+            CollectionAssert.AreEqual(expectation,
+                imgDoubles,
+                new Comparer(floatingPointTolerance));
+            
+        }
+
+        [Test, Description("Tests SolvForEigen where a exception is expected")]
+        public void SolvForEigenException()
+        {
+            PCA p = new PCA();
+            double[,] matrixArr = new double[10,2] 
+            {
+                {1.507, 0.988},
+                {2.107, -9.312},
+                {1.407, 1.798},
+                {1.397, 2.098},
+                {-9.563, 1.988},
+                {0.797, 0.888},
+                {2.607, 0.488},
+                {-0.493, 1.588},
+                {0.627, -0.412},
+                {-0.393, -0.112}
+            };
+
+            Assert.Throws<ArgumentException>(() => p.SolveForEigen(matrixArr.ToJagged()));
+        }
+
+        [Test, Description("Tests LoadModelFromFile where a exception is expected")]
+        public void LoadModelFromFileException()
+        {
+            Assert.Throws<FileNotFoundException>(() => PCA.LoadModelFromFile("FileNotFound.bin"));
+        }
+        
+        /*[Test, Description("Tests LoadModelFromFile normal case")]
+        public void LoadModelFromFileNormal()
+        {
+            PCA.LoadModelFromFile("ImageWithResultModel-100x100-CC-Test-Mass.bin");
+            Assert.Pass();
+        }*/
     }
 }
