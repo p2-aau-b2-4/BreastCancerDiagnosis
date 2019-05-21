@@ -39,28 +39,28 @@ namespace DicomDisplayTest
     {
         static void Main(string[] args)
         {
-            PCA pca2 = new PCA();
-
-            List<UShortArrayAsImage> imagesToTrainOn = new List<UShortArrayAsImage>();
-            List<UShortArrayAsImage> imagesToTrainOnn = new List<UShortArrayAsImage>();
-            imagesToTrainOn = Serializer.Load<List<UShortArrayAsImage>>("readyImagesTrain.bin");
-            imagesToTrainOn.GetRange(0, 10);
-
-            foreach (var VAR in imagesToTrainOn)
-            {
-                imagesToTrainOnn.Add(Normalization.ResizeImage(VAR, 30));
-            }
-            
-            pca2.Train(imagesToTrainOnn.GetRange(0,10));
-
-
-            PrincipalComponentAnalysis pca4 = new PrincipalComponentAnalysis(PrincipalComponentMethod.CovarianceMatrix);
-
-
-            double[,] allImages = PCA.GetMatrixFromImage(imagesToTrainOnn.GetRange(0,10));
-            var covar = allImages.Covariance();
-            //pca4.Learn(covar.ToJagged());
-            
+//            PCA pca2 = new PCA();
+//
+//            List<UShortArrayAsImage> imagesToTrainOn = new List<UShortArrayAsImage>();
+//            List<UShortArrayAsImage> imagesToTrainOnn = new List<UShortArrayAsImage>();
+//            imagesToTrainOn = Serializer.Load<List<UShortArrayAsImage>>("readyImagesTrain.bin");
+//            imagesToTrainOn.GetRange(0, 10);
+//
+//            foreach (var VAR in imagesToTrainOn)
+//            {
+//                imagesToTrainOnn.Add(Normalization.ResizeImage(VAR, 30));
+//            }
+//            
+//            pca2.Train(imagesToTrainOnn.GetRange(0,10));
+//
+//
+//            PrincipalComponentAnalysis pca4 = new PrincipalComponentAnalysis(PrincipalComponentMethod.CovarianceMatrix);
+//
+//
+//            double[,] allImages = PCA.GetMatrixFromImage(imagesToTrainOnn.GetRange(0,10));
+//            var covar = allImages.Covariance();
+//            //pca4.Learn(covar.ToJagged());
+//            
         }
     }
 }

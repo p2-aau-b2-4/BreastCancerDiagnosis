@@ -9,15 +9,15 @@ using ImagePreprocessing;
 namespace DimensionReduction
 {
     [Serializable]
-    public class PCA
+    public class Pca
     {
         public double[] Eigenvalues { get; set; }
 
         public double[][] ComponentVectors { get; set; }
 
-        public static PCA LoadModelFromFile(string path)
+        public static Pca LoadModelFromFile(string path)
         {
-            return Serializer.Load<PCA>(path);
+            return Serializer.Load<Pca>(path);
         }
 
         ///<summary>
@@ -36,7 +36,7 @@ namespace DimensionReduction
         ///Projects a image onto a eigenspace that is made then the method Train is run
         ///</summary>
         ///<param name="image">a 2D array to perform projectionn with</param>
-        ///<param name="numberOfComponents">Number of eigenvectors to project image onto</param>
+        ///<param name="numberOfDimensions">Number of eigenvectors to project image onto</param>
         public double[] GetComponentsFromImage(double[,] image, int numberOfDimensions)
         {
             if (ComponentVectors.Length <= 0)
@@ -75,7 +75,7 @@ namespace DimensionReduction
         ///<summary>
         ///Trains a PCA model given a set of data
         ///</summary>
-        ///<param name=images>a List of UShortArrayAsImage to perform training on</param>
+        ///<param name="images">a List of UShortArrayAsImage to perform training on</param>
         public void Train(List<UShortArrayAsImage> images)
         {
             double[,] allImages = new double[images.Count, images[0].Width * images[0].Height];
@@ -89,7 +89,6 @@ namespace DimensionReduction
                 {
                     for (int x = 0; x < image.Width; x++)
                     {
-                        //dImage[y * image.Width + x] = image.GetPixel(x,y).R;
                         dImage[y * image.Width + x] = tempI[x, y];
                     }
                 }
@@ -121,7 +120,6 @@ namespace DimensionReduction
                 {
                     for (int x = 0; x < image.Width; x++)
                     {
-                        //dImage[y * image.Width + x] = image.GetPixel(x,y).R;
                         dImage[y * image.Width + x] = tempI[x, y];
                     }
                 }
@@ -143,7 +141,7 @@ namespace DimensionReduction
         ///<summary>
         ///Trains a PCA model given a set of data
         ///</summary>
-        ///<param name=data>a 2D array to perform training on</param>
+        ///<param name="data">a 2D array to perform training on</param>
         public void Train(double[,] data)
         {
             int rows = data.Rows();
@@ -167,7 +165,7 @@ namespace DimensionReduction
         ///<summary>
         ///Trains a PCA model given a set of data
         ///</summary>
-        ///<param name=data>a Jagged array to perform training on</param>
+        ///<param name="data">a Jagged array to perform training on</param>
         public void Train(double[][] data)
         {
             double[,] centeredData = MeanSubtraction(data.ToMatrix());
@@ -176,11 +174,11 @@ namespace DimensionReduction
             Console.WriteLine("PCA done");
         }
 
-        ///<summary>
-        ///Finds the mean of each column in a matrix, then subtracts the mean of
-        ///each column from all its values
-        ///</summary>
-        ///<param name=matrix>a 2D double array to perform MeanSubtraction on</param>
+        /// <summary>
+        /// Finds the mean of each column in a matrix, then subtracts the mean of
+        /// each column from all its values
+        /// </summary>
+        /// <param name="matrix">a 2D double array to perform MeanSubtraction on</param>
         public double[,] MeanSubtraction(double[,] matrix)
         {
             int columns = matrix.Columns();

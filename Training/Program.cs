@@ -30,7 +30,7 @@ namespace Training
             List<ImageWithResultModel> imagesToTestOn =
                 Serializer.Load<List<ImageWithResultModel>>(Configuration.Get("TestReadyImage"));
 
-            PCA pca = TrainingHelper.GetPca(imagesToTrainOn);
+            Pca pca = TrainingHelper.GetPca(imagesToTrainOn);
 
             Console.WriteLine($"{pca.ComponentVectors.Length}x{pca.ComponentVectors[0].Length}");
             int[] componentsArr = new[] {50, 100, 200, pca.Eigenvalues.Length};
@@ -40,7 +40,7 @@ namespace Training
             }
         }
 
-        private static void TrainAndTestSvm(PCA pca, List<ImageWithResultModel> imagesToTrainOn,
+        private static void TrainAndTestSvm(Pca pca, List<ImageWithResultModel> imagesToTrainOn,
             List<ImageWithResultModel> imagesToTestOn, int components)
         {
             Console.WriteLine($"Training with #{components}...");
@@ -181,7 +181,7 @@ namespace Training
         private static List<ImageWithResultModel> TransformDdsmImageList(List<DdsmImage> images)
         {
             List<ImageWithResultModel> result = new List<ImageWithResultModel>();
-            List<DdsmImage> imagesCc = images.Where(x => (x.ImageView == DdsmImage.ImageViewEnum.Mlo)).ToList();
+            List<DdsmImage> imagesCc = images.Where(x => (x.ImageView == DdsmImage.ImageViewEnum.Cc)).ToList();
             foreach (DdsmImage image in imagesCc)
             {
                 //if (image.Pathology == DdsmImage.Pathologies.BenignWithoutCallback) continue; todo
@@ -202,7 +202,7 @@ namespace Training
 
 
         private static SVMProblem GetProblemFromImageModelResultList(List<ImageWithResultModel> images,
-            PCA pca,int components)
+            Pca pca,int components)
         {
 //            if (!int.TryParse(Configuration.Get("componentsToUse"), out int components))
 //            {
