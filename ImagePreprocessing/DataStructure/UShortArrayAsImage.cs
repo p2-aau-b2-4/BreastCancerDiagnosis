@@ -8,6 +8,9 @@ namespace ImagePreprocessing
     [Serializable]
     public class UShortArrayAsImage : ArrayAsImageAbstract<ushort[,]>
     {
+        /// <summary>
+        /// A 2D ushort array of an image.
+        /// </summary>
         public sealed override ushort[,] PixelArray
         {
             get
@@ -33,7 +36,11 @@ namespace ImagePreprocessing
         {
             PixelArray = arrayIn; 
         }
-
+        
+        /// <summary>
+        /// Creates a memory stream from a bitmap, and uses it to save it as PNG.
+        /// </summary>
+        /// <returns> The memory stream for the PNG </returns>
         public override Stream GetPngAsMemoryStream()
         {
             var pixelArray = PixelArray;

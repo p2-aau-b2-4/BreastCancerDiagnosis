@@ -9,8 +9,19 @@ namespace ImagePreprocessing
     [Serializable]
     public abstract class ArrayAsImageAbstract<T>
     {
+        /// <summary>
+        /// The Width of an image.
+        /// </summary>
         public int Width { get; }
+        
+        /// <summary>
+        /// The Height of an image.
+        /// </summary>
         public int Height { get; }
+        
+        /// <summary>
+        /// The Pixel Data defined by the classes.
+        /// </summary>
         protected byte[] PixelData { get; set; } // up to class to interpret byte array;
 
         public abstract T PixelArray { get; set; }
@@ -29,7 +40,11 @@ namespace ImagePreprocessing
         {
             _overlays.Add(overlay);
         }
-
+        
+        /// <summary>
+        /// Saves an image as type PNG.
+        /// </summary>
+        /// <param name="saveLoc"> The location to save the file </param>
         public void SaveAsPng(String saveLoc)
         {
             using (FileStream file = new FileStream(saveLoc, FileMode.Create))
@@ -38,7 +53,7 @@ namespace ImagePreprocessing
             }
         }
 
-
+        
         protected Bitmap ApplyOverlays(Bitmap bitmapIn)
         {
             Graphics g = Graphics.FromImage(bitmapIn);

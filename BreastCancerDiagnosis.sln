@@ -17,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Training", "Training\Traini
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibSVMsharp", "LibSVMsharp\LibSVMsharp.csproj", "{AC04337C-E542-4BE9-8DBD-5B44535299E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAppTest", "WebAppTest\WebAppTest.csproj", "{FB9B2AF2-432C-449F-B385-CDB2014F9BDD}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -116,17 +114,5 @@ Global
 		{AC04337C-E542-4BE9-8DBD-5B44535299E2}.Release|x64.Build.0 = Release|Any CPU
 		{AC04337C-E542-4BE9-8DBD-5B44535299E2}.Release|x86.ActiveCfg = Release|Any CPU
 		{AC04337C-E542-4BE9-8DBD-5B44535299E2}.Release|x86.Build.0 = Release|Any CPU
-		{FB9B2AF2-432C-449F-B385-CDB2014F9BDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FB9B2AF2-432C-449F-B385-CDB2014F9BDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FB9B2AF2-432C-449F-B385-CDB2014F9BDD}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{FB9B2AF2-432C-449F-B385-CDB2014F9BDD}.Debug|x64.Build.0 = Debug|Any CPU
-		{FB9B2AF2-432C-449F-B385-CDB2014F9BDD}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{FB9B2AF2-432C-449F-B385-CDB2014F9BDD}.Debug|x86.Build.0 = Debug|Any CPU
-		{FB9B2AF2-432C-449F-B385-CDB2014F9BDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FB9B2AF2-432C-449F-B385-CDB2014F9BDD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FB9B2AF2-432C-449F-B385-CDB2014F9BDD}.Release|x64.ActiveCfg = Release|Any CPU
-		{FB9B2AF2-432C-449F-B385-CDB2014F9BDD}.Release|x64.Build.0 = Release|Any CPU
-		{FB9B2AF2-432C-449F-B385-CDB2014F9BDD}.Release|x86.ActiveCfg = Release|Any CPU
-		{FB9B2AF2-432C-449F-B385-CDB2014F9BDD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

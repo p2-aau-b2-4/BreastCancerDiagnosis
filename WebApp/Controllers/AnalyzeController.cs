@@ -106,7 +106,7 @@ namespace WebApp.Controllers
                 new Task(() =>
                 {
                     //PCA
-                    PCA pca = PCA.LoadModelFromFile("pca_model.bin");
+                    Pca pca = Pca.LoadModelFromFile("pca_model.bin");
 
                     if (!int.TryParse(Configuration.Get("componentsToUse"), out int components))
                     {
@@ -129,7 +129,7 @@ namespace WebApp.Controllers
 
                     svmProblem.Add(nodes, 0);
 
-                    SVMModel svmModel = SVM.LoadModel("svm_model.txt");
+                    SVMModel svmModel = SVM.LoadModel(Configuration.Get("ModelLocation"));
                     
                     double results = SVM.PredictProbability(svmModel,nodes, out var probabilities);
 

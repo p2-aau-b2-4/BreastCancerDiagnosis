@@ -232,17 +232,17 @@ namespace Training
         
         
 
-        public static PCA GetPca(List<ImageWithResultModel> images)
+        public static Pca GetPca(List<ImageWithResultModel> images)
         {
             if (File.Exists(Configuration.Get("PcaModelLocation")))
             {
                 Console.WriteLine("Loaded PCA from file..");
-                return PCA.LoadModelFromFile(Configuration.Get("PcaModelLocation"));
+                return Pca.LoadModelFromFile(Configuration.Get("PcaModelLocation"));
             }
             else
             {
                 //train PCA:
-                PCA pca = new PCA();
+                Pca pca = new Pca();
                 Console.WriteLine("Training PCA...");
                 List<UShortArrayAsImage> imagesUShort = new List<UShortArrayAsImage>();
                 int i = 0;

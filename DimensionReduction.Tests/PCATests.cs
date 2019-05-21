@@ -16,7 +16,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests a normal case for MeanSubtraction")]
         public void MeanSubtractionNormalCaseTest()
         {
-            PCA p = new PCA();
+            Pca p = new Pca();
             double[,] matrixArray = new double[5,5] {
                     {2.0, 3.4, 0.0, 2.9, 5.1},
                     {3.1, 9.2, 7.9, -2.3, 1.0},
@@ -42,7 +42,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests a normal case non square for MeanSubtraction")]
         public void MeanSubtractionNormalCaseTestNonSquare()
         {
-            PCA p = new PCA();
+            Pca p = new Pca();
             double[,] matrixArray = new double[3,5] {
                 {2.0, 3.4, 0.0, 2.9, 5.1},
                 {3.1, 9.2, 7.9, -2.3, 1.0},
@@ -64,7 +64,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests the edge case where all values are 0 for MeanSubtraction")]
         public void MeanSubtractionEdgeCaseAllZeroTest()
         {
-            PCA p = new PCA();
+            Pca p = new Pca();
             double[,] matrixArray = new double[3,3] {
                 {0.0, 0.0, 0.0},
                     {0.0, -0.0, 0.0},
@@ -86,7 +86,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests edge case where values in a column sum up to infinity")]
         public void MeanSubtractionEdgeCaseLargeValuesTest()
         {
-            PCA p = new PCA();
+            Pca p = new Pca();
             double[,] matrixArray = new double[5,3] {
                 {Double.MaxValue, Double.MaxValue, Double.MinValue},
                     {Double.MaxValue, Double.MinValue, Double.MinValue},
@@ -101,7 +101,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests a normal case non-square matrix with more rows than columns for CovarianceMatrix")]
         public void CovarianceMatrixNormalCaseNonSquareMoreRowsTest()
         {
-            PCA p = new PCA();
+            Pca p = new Pca();
             double[,] matrixArr = new double[10,2] {
                     {0.69, 0.49},
                     {-1.31, -1.21},
@@ -129,7 +129,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests a normal case non-square matrix with more rows than columns for CovarianceMatrix")]
         public void CovarianceMatrixNormalCaseNonSquareMoreRowsTest2()
         {
-            PCA p = new PCA();
+            Pca p = new Pca();
             double[,] matrixArr = new double[10,2] 
             {
                 {1.507, 0.988},
@@ -159,7 +159,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests a normal case non-square matrix with more columns than rows for CovarianceMatrix")]
         public void CovarianceMatrixNormalCaseNonSquareMoreColumnsTest()
         {
-            PCA p = new PCA();
+            Pca p = new Pca();
             double[,] matrixArr = new double[2,10] {
                     {0.69, 0.49, -1.31, -1.21, 0.39, 0.99, 0.09, 0.29, 1.29, 1.09},
                     {0.49, 0.79, 0.19, -0.31, -0.81, -0.81, -0.31, -0.31, -0.71, -1.01}
@@ -284,7 +284,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests another normal square case for CovarianceMatrix")]
         public void CovarianceMatrixNormalCaseSquareTest()
         {
-            PCA p = new PCA();
+            Pca p = new Pca();
             double[,] matrixArr = new double[9, 9] {
                     {-3617,7121,-1770,-3850,-5723,8288,1787,5367,-1375},
                     {-1733,722,946,5770,-399,-5187,-4681,9403,3872},
@@ -392,7 +392,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests PCA training where number of components is tested")]
         public void TrainNumberOfComponents()
         {
-            PCA p = new PCA();
+            Pca p = new Pca();
             
             double[,] matrix2 = new double[10,2] {
                 {1.507, 0.988},
@@ -416,7 +416,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests PCA training in a normal case")]
         public void TrainNormalCase()
         {
-            PCA p = new PCA();
+            Pca p = new Pca();
             double[,] matrix = new double[10,2] {
                 {0.69, 0.49},
                 {-1.31, -1.21},
@@ -441,7 +441,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests PCA training and the eigenvalues")]
         public void TrainNormalCaseEigenValues()
         {
-            PCA p = new PCA();
+            Pca p = new Pca();
             double[,] matrix = new double[10,2] {
                 {0.69, 0.49},
                 {-1.31, -1.21},
@@ -465,7 +465,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests PCA training in a normal case jagged array")]
         public void TrainNormalCaseJaggedArray()
         {
-            PCA p = new PCA();
+            Pca p = new Pca();
             double[][] matrix = new double[10][];
             matrix[0] = new double[] {0.69, 0.49};
             matrix[1] = new double[] {-1.31, -1.21};
@@ -489,7 +489,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests GetComponentFromImage in a normal case")]
         public void GetComponentFromImageNormalCase()
         {
-            PCA p = new PCA();
+            Pca p = new Pca();
             double[,] matrixArr = new double[10,2] 
             {
                 {1.507, 0.988},
