@@ -435,6 +435,30 @@ namespace DimensionReduction.Tests
                 new Comparer(floatingPointTolerance));
         }
         
+        [Test, Description("Tests PCA training and the eigenvalues")]
+        public void TrainNormalCaseEigenValues()
+        {
+            PCA p = new PCA();
+            double[,] matrix = new double[10,2] {
+                {0.69, 0.49},
+                {-1.31, -1.21},
+                {0.39, 0.99},
+                {0.09, 0.29},
+                {1.29, 1.09},
+                {0.49, 0.79},
+                {0.19, -0.31},
+                {-0.81, -0.81},
+                {-0.31, -0.31},
+                {-0.71, -1.01}
+            };
+            
+            double expectation = 1.28402771; // Verified with octave
+            
+            p.Train(matrix);
+            Assert.AreEqual(expectation,
+                p.Eigenvalues[0], floatingPointTolerance);
+        }
+        
         [Test, Description("Tests PCA training in a normal case jagged array")]
         public void TrainNormalCaseJaggedArray()
         {
