@@ -64,7 +64,11 @@ namespace ImagePreprocessing
             DcomMaskFilePath = dcomMaskFilePath;
             DcomCroppedFilePath = dcomCroppedFilePath;
         }
-
+        /// <summary>
+        /// Get all images from CSV file.
+        /// </summary>
+        /// <param name="csvFilePath"> The path to the CSV file </param>
+        /// <returns> List of all DDSM images to return </returns>
         public static List<DdsmImage> GetAllImagesFromCsvFile(String csvFilePath)
         {
             List<DdsmImage> imagesToReturn = new List<DdsmImage>();
@@ -89,7 +93,13 @@ namespace ImagePreprocessing
             }
             return imagesToReturn;
         }
-
+        
+        /// <summary>
+        /// Locate filepath for DCOM images, based on string.
+        /// </summary>
+        /// <param name="csvFilePath"> The filepath to the CSV file </param>
+        /// <param name="s"> String used to locate DCOM images </param>
+        /// <returns></returns>
         private static string GetDcomFilePathFromString(string csvFilePath, string s)
         {
             csvFilePath = csvFilePath.Substring(0, csvFilePath.LastIndexOf(@"\", StringComparison.Ordinal) + 1);
@@ -102,7 +112,14 @@ namespace ImagePreprocessing
             //todo maybe check if filename is equal to last element of folders string array.
             return Directory.GetFiles(folderFound)[0];
         }
-
+        
+        /// <summary>
+        /// Gets the DCOM mask and cropped image paths.
+        /// </summary>
+        /// <param name="csvFilePath">CSV file storing the file paths</param>
+        /// <param name="originalPath">The original file paths</param>
+        /// <returns>A set of strings for the two different paths</returns>
+        /// <exception cref="DirectoryNotFoundException"></exception>
         public static ( string, string) GetDcomMaskAndCroppedPathsFromString(string csvFilePath, string originalPath)
         {
             // so the logic is:

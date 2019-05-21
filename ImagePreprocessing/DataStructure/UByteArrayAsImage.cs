@@ -7,6 +7,10 @@ namespace ImagePreprocessing
 {
     public class UByteArrayAsImage : ArrayAsImageAbstract<byte[,]>
     {
+        
+        /// <summary>
+        /// A 2D byte array of an image.
+        /// </summary>
         public sealed override byte[,] PixelArray
         {
             get
@@ -33,7 +37,11 @@ namespace ImagePreprocessing
         {
             PixelArray = arrayIn;
         }
-
+        
+        /// <summary>
+        /// Creates a memory stream from a bitmap, and uses it to save it as PNG.
+        /// </summary>
+        /// <returns> The memory stream for the PNG </returns>
         public override Stream GetPngAsMemoryStream()
         {
             byte[,] pixelArray = PixelArray;
