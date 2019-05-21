@@ -387,7 +387,7 @@ namespace DimensionReduction.Tests
         }
         
         [Test, Description("Tests PCA training where number of components is tested")]
-        public void TrainNumberOfComponents() // Not working
+        public void TrainNumberOfComponents()
         {
             PCA p = new PCA();
             
