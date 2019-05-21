@@ -382,8 +382,6 @@ namespace DimensionReduction.Tests
                     new Comparer(floatingPointTolerance));
         }
         
-
-        //[Test, Description("Tests PCA training in a normal case")]
         [Test, Description("Tests PCA training where number of components is tested")]
         public void TrainNumberOfComponents() // Not working
         {
@@ -414,15 +412,10 @@ namespace DimensionReduction.Tests
                 {-0.393, -0.112}
             };
 
-            //double[] expectation = {0.74772836, 0.66400475};
             int expectation = 2; 
             
             p.Train(matrix2);
-            /*CollectionAssert.AreEqual(expectation,
-                p.ComponentVectors[0],
-                new Comparer(floatingPointTolerance));*/
             Assert.AreEqual(expectation,p.ComponentVectors.Length);
-            
         }
         
         [Test, Description("Tests PCA training in a normal case")]
@@ -456,14 +449,11 @@ namespace DimensionReduction.Tests
             };
 
             double[] expectation = {0.6778734, 0.73517866}; // Verified with octave
-            //int expectation = 2; 
             
             p.Train(matrix);
             CollectionAssert.AreEqual(expectation,
                 p.ComponentVectors[0],
                 new Comparer(floatingPointTolerance));
-            //Assert.AreEqual(expectation,p.ComponentVectors.Length);
-            
         }
         
         [Test, Description("Tests PCA training in a normal case jagged array")]
@@ -497,14 +487,11 @@ namespace DimensionReduction.Tests
             };
 
             double[] expectation = {0.6778734, 0.73517866}; // Verified with octave
-            //int expectation = 2; 
             
             p.Train(matrix);
             CollectionAssert.AreEqual(expectation,
                 p.ComponentVectors[0],
                 new Comparer(floatingPointTolerance));
-            //Assert.AreEqual(expectation,p.ComponentVectors.Length);
-            
         }
         
         [Test, Description("Tests GetComponentFromImage in a normal case")]
