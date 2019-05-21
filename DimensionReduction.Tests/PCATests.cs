@@ -1,14 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Accord;
 using Accord.Math;
 using Accord.Statistics;
-using Accord.Statistics.Distributions.Univariate;
 using NUnit.Framework;
-using MathNet.Numerics;
-using MathNet.Numerics.LinearAlgebra.Double;
-using DimensionReduction;
 
 namespace DimensionReduction.Tests
 {
@@ -124,11 +117,9 @@ namespace DimensionReduction.Tests
                     {0.6154444444, 0.7165555556}
             };
 
-            SparseMatrix matrix = SparseMatrix.OfArray(matrixArr);
-            SparseMatrix expectationMatrix = SparseMatrix.OfArray(expectation);
-            matrix = SparseMatrix.OfArray(p.CovarianceMatrix(matrix.ToArray()));
-            CollectionAssert.AreEqual(expectationMatrix.ToArray(),
-                    matrix.ToArray(),
+            matrixArr = p.CovarianceMatrix(matrixArr);
+            CollectionAssert.AreEqual(expectation,
+                    matrixArr,
                     new Comparer(floatingPointTolerance));
         }
         
@@ -155,10 +146,9 @@ namespace DimensionReduction.Tests
                 {-3.41102889, 11.44519556}
             };
             
-            SparseMatrix expectationMatrix = SparseMatrix.OfArray(expectation);
-            var matrixTest = p.CovarianceMatrix(matrixArr);
-            CollectionAssert.AreEqual(expectationMatrix.ToArray(),
-                matrixTest,
+            matrixArr = p.CovarianceMatrix(matrixArr);
+            CollectionAssert.AreEqual(expectation,
+                matrixArr,
                 new Comparer(floatingPointTolerance));
             
         }
