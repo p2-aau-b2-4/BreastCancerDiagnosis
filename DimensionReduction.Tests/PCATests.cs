@@ -460,7 +460,7 @@ namespace DimensionReduction.Tests
         }
         
         [Test, Description("Tests GetComponentFromImage in a normal case")]
-        public void GetComponentFromImageNormalCase() // Not working 
+        public void GetComponentFromImageNormalCase()
         {
             PCA p = new PCA();
             double[,] matrixArr = new double[10,2] 
