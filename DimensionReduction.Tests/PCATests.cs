@@ -466,6 +466,47 @@ namespace DimensionReduction.Tests
             
         }
         
+        [Test, Description("Tests PCA training in a normal case jagged array")]
+        public void TrainNormalCaseJaggedArray()
+        {
+            PCA p = new PCA();
+            double[][] matrix = new double[10][];
+            matrix[0] = new double[] {0.69, 0.49};
+            matrix[1] = new double[] {-1.31, -1.21};
+            matrix[2] = new double[] {0.39, 0.99};
+            matrix[3] = new double[] {0.09, 0.29};
+            matrix[4] = new double[] {1.29, 1.09};
+            matrix[5] = new double[] {0.49, 0.79};
+            matrix[6] = new double[] {0.19, -0.31};
+            matrix[7] = new double[] {-0.81, -0.81};
+            matrix[8] = new double[] {-0.31, -0.31};
+            matrix[9] = new double[] {-0.71, -1.01};
+            
+            
+            double[,] matrix2 = new double[10,2] {
+                {1.507, 0.988},
+                {2.107, -9.312},
+                {1.407, 1.798},
+                {1.397, 2.098},
+                {-9.563, 1.988},
+                {0.797, 0.888},
+                {2.607, 0.488},
+                {-0.493, 1.588},
+                {0.627, -0.412},
+                {-0.393, -0.112}
+            };
+
+            double[] expectation = {0.6778734, 0.73517866}; // Verified with octave
+            //int expectation = 2; 
+            
+            p.Train(matrix);
+            CollectionAssert.AreEqual(expectation,
+                p.ComponentVectors[0],
+                new Comparer(floatingPointTolerance));
+            //Assert.AreEqual(expectation,p.ComponentVectors.Length);
+            
+        }
+        
         [Test, Description("Tests GetComponentFromImage in a normal case")]
         public void GetComponentFromImageNormalCase() // Not working 
         {
