@@ -82,7 +82,7 @@ namespace Training.Tests
         }
 
         [TestCase]
-        public void SaveToCSVTest()
+        public void SaveToCsvTest()
         {
             
             // Setup results

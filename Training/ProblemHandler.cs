@@ -14,7 +14,7 @@ using Serializer = Accord.IO.Serializer;
 
 namespace Training
 {
-    public class ProblemHandler
+    public static class ProblemHandler
     {
         
         public static void TrainAndTestSvm(PCA pca, List<ImageWithResultModel> imagesToTrainOn,
@@ -149,7 +149,7 @@ namespace Training
             testSet.Save(Configuration.Get("TestReadyImage"));
         }
 
-        private static List<ImageWithResultModel> TransformDdsmImageList(List<DdsmImage> images)
+        public static List<ImageWithResultModel> TransformDdsmImageList(List<DdsmImage> images)
         {
             List<ImageWithResultModel> result = new List<ImageWithResultModel>();
             List<DdsmImage> imagesCc = images.Where(x => (x.ImageView == DdsmImage.ImageViewEnum.Mlo)).ToList();

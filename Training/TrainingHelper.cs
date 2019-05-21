@@ -127,12 +127,7 @@ namespace Training
                 //train PCA:
                 PCA pca = new PCA();
                 Console.WriteLine("Training PCA...");
-                List<UShortArrayAsImage> imagesUShort = new List<UShortArrayAsImage>();
-                int i = 0;
-                foreach (var image in images)
-                    if (i++ % 1 == 0)
-                        imagesUShort.Add(image.Image);
-                pca.Train(imagesUShort);
+                pca.Train(images.Select(x => x.Image).ToList());
                 pca.Save(Configuration.Get("PcaModelLocation"));
                 Console.WriteLine("Done training and saving PCA.");
                 return pca;
