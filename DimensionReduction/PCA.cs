@@ -9,15 +9,15 @@ using ImagePreprocessing;
 namespace DimensionReduction
 {
     [Serializable]
-    public class Pca
+    public class PCA
     {
         public double[] Eigenvalues { get; set; }
 
         public double[][] ComponentVectors { get; set; }
 
-        public static Pca LoadModelFromFile(string path)
+        public static PCA LoadModelFromFile(string path)
         {
-            return Serializer.Load<Pca>(path);
+            return Serializer.Load<PCA>(path);
         }
 
         ///<summary>

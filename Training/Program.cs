@@ -30,7 +30,7 @@ namespace Training
             List<ImageWithResultModel> imagesToTestOn =
                 Serializer.Load<List<ImageWithResultModel>>(Configuration.Get("TestReadyImage"));
 
-            Pca pca = TrainingHelper.GetPca(imagesToTrainOn);
+            PCA pca = TrainingHelper.GetPca(imagesToTrainOn);
 
             Console.WriteLine($"{pca.ComponentVectors.Length}x{pca.ComponentVectors[0].Length}");
             int[] componentsArr = new[] {50, 100, 200, pca.Eigenvalues.Length};

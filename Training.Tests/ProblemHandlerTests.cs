@@ -99,8 +99,8 @@ namespace Training.Tests
             
             File.Delete(@"pca_model-100x100-CC-Train-MassCalc-BI.bin");
             
-            Pca pca = TrainingHelper.GetPca(images);
-            Pca pca2 = TrainingHelper.GetPca(images);
+            PCA pca = TrainingHelper.GetPca(images);
+            PCA pca2 = TrainingHelper.GetPca(images);
             
             SVMProblem problem = ProblemHandler.GetProblemFromImageModelResultList(images, pca,10);
             
