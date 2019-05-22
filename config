@@ -7,20 +7,20 @@ componentsToUse=100
 //////////////////////////////
 /// TRAINING CONFIGURATION ///
 //////////////////////////////
-massTrainingSetCsvPath=E:\BrystTest\mass_case_description_train_set.csv
-massTestSetCsvPath=E:\BrystTest\mass_case_description_test_set.csv
+massTrainingSetCsvPath=C:\BrystTest\mass_case_description_train_set.csv
+massTestSetCsvPath=C:\BrystTest\mass_case_description_test_set.csv
 calcTrainingSetCsvPath=E:\BrystCalc\calc_case_description_train_set.csv
 calcTestSetCsvPath=E:\BrystCalc\calc_case_description_test_set.csv
 
 
-// Should the program create images from dataset? 
+// Should the program create images from dataset?
 // If enabled, dataset must be configured above. If disabled, files paths beneath should be configured for readyImages binary files.
-ShouldCreateImages=1
+ShouldCreateImages=0
 
 // BinaryReadyImageFiles (if empty, wont be included in training/test:
 // if ShouldCreateImages is 1, these files will be overwritten!!
-TrainReadyImage=FinishedModels/ImageWithResultModel-100x100-CC-Train-MassCalc-BI.bin
-TestReadyImage=FinishedModels/ImageWithResultModel-100x100-CC-Test-MassCalc-BI.bin
+TrainReadyImage=Models/ImageWithResultModel-100x100-CC-Train-MassCalc-BI.bin
+TestReadyImage=Models/ImageWithResultModel-100x100-CC-Test-MassCalc-BI.bin
 
 // Should Create Train/Test Data
 // if enabled, the training program will generate the test/train datasets from a PCA model and the pictures.
@@ -28,16 +28,16 @@ TestReadyImage=FinishedModels/ImageWithResultModel-100x100-CC-Test-MassCalc-BI.b
 ShouldCreateSVMSetsWithPCA=1
 
 // location of where the pca model will be saved/loaded from:
-PcaModelLocation=FinishedModels/pca_model-100x100-CC-Train-MassCalc-BI.bin
+PcaModelLocation=pca_model-100x100-CC-Train-MassCalc-BI.bin
 
 // location of the test-set. Will be overwritten if ShouldCreateSVMSetsWithPCA is 1.
-TestSetLocation=FinishedModels/testset-100x100-CC-MassCalc-BI.txt
+TestSetLocation=testset-100x100-MassCalc-BI-100components.txt
 
 // location of the train-set. Will be overwritten if ShouldCreateSVMSetsWithPCA is 1.
-TrainSetLocation=FinishedModels/testset-100x100-CC--MassCalc-BI.txt
+TrainSetLocation=trainset-100x100-MassCalc-BI-100components.txt
 
 // specifised where to load and save the svmmodel
-ModelLocation=FinishedModels/svm_model-100x100-CC-MassCalc-BI.txt
+ModelLocation=svm_model-100x100-MassCalc-BI-100components.txt
 
 ////
 // SVM PARAMETERS:
@@ -46,4 +46,5 @@ Gamma=1
 nFold=5
 
 
-
+logTo=8
+logFrom=-6

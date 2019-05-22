@@ -1,3 +1,4 @@
+using System;
 using System.Drawing;
 
 namespace ImagePreprocessing
@@ -125,6 +126,9 @@ namespace ImagePreprocessing
 
             if (right == -1) right = mask.GetLength(1) - 1;
             if (bottom == -1) bottom = mask.GetLength(0) - 1;
+
+            if (left == -1 || top == -1) // no pixels found
+                throw (new ArgumentException("No mask found in mask.."));
 
             return new Rectangle(left, top, right - left, bottom - top);
         }
