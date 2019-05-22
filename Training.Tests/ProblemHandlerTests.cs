@@ -63,10 +63,16 @@ namespace Training.Tests
         [TestCase]
         public void GetProblemFromImageModelResultListTest()
         {
-            var images = new List<ImageWithResultModel>();
+            ushort[,] image1 = new ushort[,]
+            {
+                {1,2,3,4,5},
+                {6,2,8,9,10},
+                {11,8,2,10,11},
+                {16,13,11,15,16},
+                {21,2,1,1,25},
+            };
 
-            var ddsmImageMock = new Mock<ImageWithResultModel>();
-            ushort[,] imageBefore = new ushort[,]
+            ushort[,] image2 = new ushort[,]
             {
                 {1,2,3,4,5},
                 {6,7,8,9,10},
@@ -74,15 +80,60 @@ namespace Training.Tests
                 {16,13,14,15,16},
                 {21,2,23,24,25},
             };
-            
-            ddsmImageMock.SetupGet(x => x.Image).Returns(new UShortArrayAsImage(imageBefore));
-            
-            images.Add(ddsmImageMock.Object);
 
+            ImageWithResultModel resultImage1 = new ImageWithResultModel();
+            resultImage1.Image = new UShortArrayAsImage(image1);
+            resultImage1.Result = 1;
+            
+            
+            ImageWithResultModel resultImage2 = new ImageWithResultModel();
+            resultImage2.Image = new UShortArrayAsImage(image2);
+            resultImage2.Result = 0;
+
+            var images = new List<ImageWithResultModel>()
+            {
+                resultImage1,
+                resultImage2
+            };
+
+            
             PCA pca = TrainingHelper.GetPca(images);
             
-            ProblemHandler.GetProblemFromImageModelResultList(images, pca,10);
+            SVMProblem problem = ProblemHandler.GetProblemFromImageModelResultList(images, pca,10);
+            
+            //Expected value
+            SVMProblem realValue = new SVMProblem();
+            
+            realValue.Add(new SVMNode[]
+            {
+                new SVMNode(1, Double.NaN), 
+                new SVMNode(2, Double.NaN), 
+                new SVMNode(3, 1), 
+                new SVMNode(4, Double.NaN), 
+                new SVMNode(5, Double.NaN), 
+                new SVMNode(6, Double.NaN), 
+                new SVMNode(7, Double.NaN), 
+                new SVMNode(8, Double.NaN), 
+                new SVMNode(9, Double.NaN), 
+                new SVMNode(10, Double.NaN), 
+            }, 0);
+            
+            realValue.Add(new SVMNode[]
+            {
+                new SVMNode(1, Double.NaN), 
+                new SVMNode(2, Double.NaN), 
+                new SVMNode(3, 1), 
+                new SVMNode(4, Double.NaN), 
+                new SVMNode(5, Double.NaN), 
+                new SVMNode(6, Double.NaN), 
+                new SVMNode(7, Double.NaN), 
+                new SVMNode(8, Double.NaN), 
+                new SVMNode(9, Double.NaN), 
+                new SVMNode(10, Double.NaN), 
+            }, 1);
 
+            Assert.AreEqual(realValue, problem);
+            
         }
 
         [TestCase]
