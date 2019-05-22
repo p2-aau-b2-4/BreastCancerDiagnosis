@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Accord.IO;
 using DimensionReduction;
+using Extreme.DataAnalysis.Models;
 using ImagePreprocessing;
 using LibSVMsharp;
 using LibSVMsharp.Extensions;
@@ -15,6 +16,7 @@ namespace Training
     public static class TrainingHelper
     {
 
+        [Serializable]
         public class ParameterResult : IComparable
         {
             public double Accuracy { get; set; }
@@ -30,7 +32,7 @@ namespace Training
             }
         }
 
-        public static SVMParameter FindBestHyperparameters(SVMProblem problem, SVMParameter parameter)
+        public static SVMParameter FindBestHyperparameters(SVMProblem problem, SVMParameter parameter, bool testing = false)
         {
             int nFold = int.Parse(Configuration.Get("nFold"));
             int logTo = int.Parse(Configuration.Get("logTo"));
@@ -45,11 +47,20 @@ namespace Training
                 {
                     for (double gammaLog = logFrom; gammaLog <= logTo; gammaLog++)
                     {
-                        SVMParameter parameterUnderTest = parameter.Clone();
+                        SVMParameter parameterUnderTest = parameter.Clone();;
                         parameterUnderTest.C = c;
                         parameterUnderTest.Gamma = Math.Pow(2, gammaLog);
-                        problem.CrossValidation(parameterUnderTest, nFold, out var crossValidationResults);
-                        double crossValidationAccuracy = problem.EvaluateClassificationProblem(crossValidationResults);
+                        double crossValidationAccuracy;
+                        if (!testing)
+                        {
+                            problem.CrossValidation(parameterUnderTest, nFold, out var crossValidationResults);
+                            crossValidationAccuracy =
+                                problem.EvaluateClassificationProblem(crossValidationResults);
+                        }
+                        else
+                        {
+                            crossValidationAccuracy = c * parameterUnderTest.Gamma;
+                        }
 
                         results.Add(new ParameterResult()
                         {
@@ -67,7 +78,7 @@ namespace Training
             ParameterResult bestParameter =
                 HighestScore(resultList);
 
-            SaveToCsv(results, "svmData.txt");
+           // SaveToCsv(results, "svmData.txt");
             SVMParameter returnValue = parameter.Clone();
             returnValue.C = bestParameter.C;
             returnValue.Gamma = bestParameter.Gamma;

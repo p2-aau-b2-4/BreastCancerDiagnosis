@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 using System.Linq;
+using System.Threading.Tasks;
 using ImagePreprocessing;
 using LibSVMsharp;
 
@@ -74,10 +75,10 @@ namespace Training.Tests
             };
 
             
-            var actualParameter = TrainingHelper.FindBestHyperparameters(problem, parameter);
+            var actualParameter = TrainingHelper.FindBestHyperparameters(problem, parameter, true);
 
-            Assert.AreEqual(0.015625d, actualParameter.C);
-            Assert.AreEqual(0.015625d, actualParameter.Gamma);
+            Assert.AreEqual(256, actualParameter.C);
+            Assert.AreEqual(256, actualParameter.Gamma);
         }
         
         [TestCase]
@@ -140,11 +141,10 @@ namespace Training.Tests
                 Probability = true,
             };
 
-            
-            var actualParameter = TrainingHelper.FindBestHyperparameters(problem, parameter);
+            var actualParameter = TrainingHelper.FindBestHyperparameters(problem, parameter, true);
 
-            Assert.AreEqual(0.015625d, actualParameter.C);
-            Assert.AreEqual(0.125d, actualParameter.Gamma);
+            Assert.AreEqual(256, actualParameter.C);
+            Assert.AreEqual(256, actualParameter.Gamma);
         }
 
         [TestCase]
