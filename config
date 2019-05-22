@@ -15,7 +15,7 @@ calcTestSetCsvPath=E:\BrystCalc\calc_case_description_test_set.csv
 
 // Should the program create images from dataset? 
 // If enabled, dataset must be configured above. If disabled, files paths beneath should be configured for readyImages binary files.
-ShouldCreateImages=1
+ShouldCreateImages=0
 
 // BinaryReadyImageFiles (if empty, wont be included in training/test:
 // if ShouldCreateImages is 1, these files will be overwritten!!
