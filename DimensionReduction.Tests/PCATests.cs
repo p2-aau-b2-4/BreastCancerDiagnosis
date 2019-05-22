@@ -17,7 +17,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests a normal case for MeanSubtraction")]
         public void MeanSubtractionNormalCaseTest()
         {
-            Pca p = new Pca();
+            PCA p = new PCA();
             double[,] matrixArray = new double[5,5] {
                     {2.0, 3.4, 0.0, 2.9, 5.1},
                     {3.1, 9.2, 7.9, -2.3, 1.0},
@@ -43,7 +43,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests a normal case non square for MeanSubtraction")]
         public void MeanSubtractionNormalCaseTestNonSquare()
         {
-            Pca p = new Pca();
+            PCA p = new PCA();
             double[,] matrixArray = new double[3,5] {
                 {2.0, 3.4, 0.0, 2.9, 5.1},
                 {3.1, 9.2, 7.9, -2.3, 1.0},
@@ -65,7 +65,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests the edge case where all values are 0 for MeanSubtraction")]
         public void MeanSubtractionEdgeCaseAllZeroTest()
         {
-            Pca p = new Pca();
+            PCA p = new PCA();
             double[,] matrixArray = new double[3,3] {
                 {0.0, 0.0, 0.0},
                     {0.0, -0.0, 0.0},
@@ -87,7 +87,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests edge case where values in a column sum up to infinity")]
         public void MeanSubtractionEdgeCaseLargeValuesTest()
         {
-            Pca p = new Pca();
+            PCA p = new PCA();
             double[,] matrixArray = new double[5,3] {
                 {Double.MaxValue, Double.MaxValue, Double.MinValue},
                     {Double.MaxValue, Double.MinValue, Double.MinValue},
@@ -102,7 +102,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests a normal case non-square matrix with more rows than columns for CovarianceMatrix")]
         public void CovarianceMatrixNormalCaseNonSquareMoreRowsTest()
         {
-            Pca p = new Pca();
+            PCA p = new PCA();
             double[,] matrixArr = new double[10,2] {
                     {0.69, 0.49},
                     {-1.31, -1.21},
@@ -130,7 +130,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests a normal case non-square matrix with more rows than columns for CovarianceMatrix")]
         public void CovarianceMatrixNormalCaseNonSquareMoreRowsTest2()
         {
-            Pca p = new Pca();
+            PCA p = new PCA();
             double[,] matrixArr = new double[10,2] 
             {
                 {1.507, 0.988},
@@ -160,7 +160,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests a normal case non-square matrix with more columns than rows for CovarianceMatrix")]
         public void CovarianceMatrixNormalCaseNonSquareMoreColumnsTest()
         {
-            Pca p = new Pca();
+            PCA p = new PCA();
             double[,] matrixArr = new double[2,10] {
                     {0.69, 0.49, -1.31, -1.21, 0.39, 0.99, 0.09, 0.29, 1.29, 1.09},
                     {0.49, 0.79, 0.19, -0.31, -0.81, -0.81, -0.31, -0.31, -0.71, -1.01}
@@ -285,7 +285,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests another normal square case for CovarianceMatrix")]
         public void CovarianceMatrixNormalCaseSquareTest()
         {
-            Pca p = new Pca();
+            PCA p = new PCA();
             double[,] matrixArr = new double[9, 9] {
                     {-3617,7121,-1770,-3850,-5723,8288,1787,5367,-1375},
                     {-1733,722,946,5770,-399,-5187,-4681,9403,3872},
@@ -393,7 +393,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests PCA training where number of components is tested")]
         public void TrainNumberOfComponents()
         {
-            Pca p = new Pca();
+            PCA p = new PCA();
             
             double[,] matrix2 = new double[10,2] {
                 {1.507, 0.988},
@@ -417,7 +417,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests PCA training in a normal case")]
         public void TrainNormalCase()
         {
-            Pca p = new Pca();
+            PCA p = new PCA();
             double[,] matrix = new double[10,2] {
                 {0.69, 0.49},
                 {-1.31, -1.21},
@@ -442,7 +442,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests PCA training and the eigenvalues")]
         public void TrainNormalCaseEigenValues()
         {
-            Pca p = new Pca();
+            PCA p = new PCA();
             double[,] matrix = new double[10,2] {
                 {0.69, 0.49},
                 {-1.31, -1.21},
@@ -466,7 +466,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests PCA training in a normal case jagged array")]
         public void TrainNormalCaseJaggedArray()
         {
-            Pca p = new Pca();
+            PCA p = new PCA();
             double[][] matrix = new double[10][];
             matrix[0] = new double[] {0.69, 0.49};
             matrix[1] = new double[] {-1.31, -1.21};
@@ -490,7 +490,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests GetComponentFromImage in a normal case")]
         public void GetComponentFromImageNormalCase()
         {
-            Pca p = new Pca();
+            PCA p = new PCA();
             double[,] matrixArr = new double[10,2] 
             {
                 {1.507, 0.988},
@@ -520,7 +520,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests GetComponentFromImage in a normal case ushortarray")]
         public void GetComponentFromImageNormalCaseUShortArray()
         {
-            Pca p = new Pca();
+            PCA p = new PCA();
             byte[] matrixArr = new byte[16] 
             {
                 10, 20, 59, 223, 
@@ -557,7 +557,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests GetMatrixFromImage where Train has not run")]
         public void GetComponentFromImageException()
         {
-            Pca p = new Pca();
+            PCA p = new PCA();
             double[,] image = new double[2,2] {{5,10},{10,5}};
             Assert.Throws<NullReferenceException>(() => p.GetComponentsFromImage(image, 1));
         }
@@ -565,7 +565,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests GetMatrixFromImage in a normal case ushortarray to double[,]")]
         public void GetMatrixFromImageNormalTest()
         {
-            Pca p = new Pca();
+            PCA p = new PCA();
             byte[] matrixArr = new byte[16] 
             {
                 10, 20, 59, 223, 
@@ -585,7 +585,7 @@ namespace DimensionReduction.Tests
             List<UShortArrayAsImage> img = new List<UShortArrayAsImage>();
             img.Add(new UShortArrayAsImage(matrixArr,4,4));
             
-            double[,] imgDoubles = Pca.GetMatrixFromImage(img);
+            double[,] imgDoubles = PCA.GetMatrixFromImage(img);
             
             CollectionAssert.AreEqual(expectation,
                 imgDoubles,
@@ -596,7 +596,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests SolvForEigen where a exception is expected")]
         public void SolvForEigenException()
         {
-            Pca p = new Pca();
+            PCA p = new PCA();
             double[,] matrixArr = new double[10,2] 
             {
                 {1.507, 0.988},
@@ -617,17 +617,17 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests LoadModelFromFile where a exception is expected")]
         public void LoadModelFromFileException()
         {
-            Assert.Throws<FileNotFoundException>(() => Pca.LoadModelFromFile("FileNotFound.bin"));
+            Assert.Throws<FileNotFoundException>(() => PCA.LoadModelFromFile("FileNotFound.bin"));
         }
         
         [Test, Description("Tests LoadModelFromFile normal case")]
         public void LoadModelFromFileNormal()
         {
-            Pca p = new Pca();
+            PCA p = new PCA();
             
             p.Eigenvalues = new double[1] {1};
             p.Save("modelTest.bin");
-            var pTest = Pca.LoadModelFromFile("modelTest.bin");
+            var pTest = PCA.LoadModelFromFile("modelTest.bin");
             Assert.AreEqual(p.Eigenvalues,pTest.Eigenvalues);
         }
     }

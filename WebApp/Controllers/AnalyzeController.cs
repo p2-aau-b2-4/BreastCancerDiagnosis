@@ -106,7 +106,7 @@ namespace WebApp.Controllers
                 new Task(() =>
                 {
                     //PCA
-                    Pca pca = Pca.LoadModelFromFile("pca_model.bin");
+                    PCA pca = PCA.LoadModelFromFile("pca_model.bin");
 
                     if (!int.TryParse(Configuration.Get("componentsToUse"), out int components))
                     {

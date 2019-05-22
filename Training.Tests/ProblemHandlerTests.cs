@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using DimensionReduction;
 using ImagePreprocessing;
@@ -95,9 +96,11 @@ namespace Training.Tests
                 resultImage1,
                 resultImage2
             };
-
+            
+            File.Delete(@"pca_model-100x100-CC-Train-MassCalc-BI.bin");
             
             PCA pca = TrainingHelper.GetPca(images);
+            PCA pca2 = TrainingHelper.GetPca(images);
             
             SVMProblem problem = ProblemHandler.GetProblemFromImageModelResultList(images, pca,10);
             
@@ -106,33 +109,62 @@ namespace Training.Tests
             
             realValue.Add(new SVMNode[]
             {
-                new SVMNode(1, Double.NaN), 
-                new SVMNode(2, Double.NaN), 
-                new SVMNode(3, 1), 
-                new SVMNode(4, Double.NaN), 
-                new SVMNode(5, Double.NaN), 
-                new SVMNode(6, Double.NaN), 
-                new SVMNode(7, Double.NaN), 
-                new SVMNode(8, Double.NaN), 
-                new SVMNode(9, Double.NaN), 
-                new SVMNode(10, Double.NaN), 
+                new SVMNode(1, 20.056853498561878), 
+                new SVMNode(2, 13.190302568584602), 
+                new SVMNode(3, -1.0813980605883611), 
+                new SVMNode(4, 0.38976510872122916), 
+                new SVMNode(5, 8.8596355929840787), 
+                new SVMNode(6, -7.3433006502883726), 
+                new SVMNode(7, 10.837768344992746), 
+                new SVMNode(8, 20.626727358988219), 
+                new SVMNode(9, -1.7552480617394235), 
+                new SVMNode(10, 25), 
             }, 0);
             
             realValue.Add(new SVMNode[]
             {
-                new SVMNode(1, Double.NaN), 
-                new SVMNode(2, Double.NaN), 
-                new SVMNode(3, 1), 
-                new SVMNode(4, Double.NaN), 
-                new SVMNode(5, Double.NaN), 
-                new SVMNode(6, Double.NaN), 
-                new SVMNode(7, Double.NaN), 
-                new SVMNode(8, Double.NaN), 
-                new SVMNode(9, Double.NaN), 
-                new SVMNode(10, Double.NaN), 
+                new SVMNode(1, 22.292105243883533), 
+                new SVMNode(2, 11.126898461982794), 
+                new SVMNode(3, -2.3028333386433371), 
+                new SVMNode(4, -6.2077696783291429), 
+                new SVMNode(5, 12.172991455602181), 
+                new SVMNode(6, -4.385545310384054), 
+                new SVMNode(7, 13.837367251719812), 
+                new SVMNode(8, 20.646721554636255), 
+                new SVMNode(9, -1.8000434956830436), 
+                new SVMNode(10, 25), 
             }, 1);
+            
+            bool fail = false;
 
-            Assert.AreEqual(realValue, problem);
+            for (int i = 0; i < realValue.Y.Count; i++)
+            {
+                // Expected values
+                var y = realValue.Y[i];
+                var x = realValue.X[i];
+                
+                // Actual values
+                var py = problem.Y[i];
+                var px = problem.X[i];
+                
+                for (int j = 0; j < x.Length; j++)
+                {
+                    if (x[j].Value != px[j].Value)
+                    {
+                        fail = true;
+                    }
+                }
+                
+            }
+            
+            if (!fail)
+            {
+                Assert.Pass();
+            }
+            else
+            {
+                Assert.Fail();
+            }
             
         }
 

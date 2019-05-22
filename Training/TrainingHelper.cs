@@ -114,17 +114,17 @@ namespace Training
             return results.First(x => x.Accuracy == highestScore);
         }
 
-        public static Pca GetPca(List<ImageWithResultModel> images)
+        public static PCA GetPca(List<ImageWithResultModel> images)
         {
             if (File.Exists(Configuration.Get("PcaModelLocation")))
             {
                 Console.WriteLine("Loaded PCA from file..");
-                return Pca.LoadModelFromFile(Configuration.Get("PcaModelLocation"));
+                return PCA.LoadModelFromFile(Configuration.Get("PcaModelLocation"));
             }
             else
             {
                 //train PCA:
-                Pca pca = new Pca();
+                PCA pca = new PCA();
                 Console.WriteLine("Training PCA...");
                 pca.Train(images.Select(x => x.Image).ToList());
                 pca.Save(Configuration.Get("PcaModelLocation"));
