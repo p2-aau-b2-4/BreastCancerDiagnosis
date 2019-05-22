@@ -69,6 +69,8 @@ namespace ImagePreprocessing
         /// </summary>
         /// <param name="csvFilePath"> The path to the CSV file </param>
         /// <returns> List of all DDSM images to return </returns>
+        public DdsmImage(){}
+
         public static List<DdsmImage> GetAllImagesFromCsvFile(String csvFilePath)
         {
             List<DdsmImage> imagesToReturn = new List<DdsmImage>();

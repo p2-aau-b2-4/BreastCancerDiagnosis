@@ -21,7 +21,7 @@ namespace Tests
         {
             _oc = new OperationsController();
             var cache = new MemoryCache(new MemoryCacheOptions());
-            _ac = new AnalyzeController(cache);
+            _ac = new AnalyzeController();
         }
         
         [Test]
