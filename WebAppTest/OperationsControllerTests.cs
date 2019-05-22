@@ -126,7 +126,7 @@ namespace Tests
         public void Test1()
         {
             var cache = new MemoryCache(new MemoryCacheOptions());
-            var controller = new AnalyzeController(cache);
+            var controller = new AnalyzeController();
 
             controller.SelectRegion("");
             Assert.Pass();

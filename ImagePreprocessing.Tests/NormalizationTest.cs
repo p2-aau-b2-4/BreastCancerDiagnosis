@@ -31,12 +31,10 @@ namespace ImagePreprocessing.Tests
         [TestCase]
         public void GetTumourPositionFromMaskTestNoWhiteColour()
         {
-            Rectangle RealValue = new Rectangle(-1, -1, 3, 3);
             byte[,] testValue = new byte[,] { { 253, 102, 133 }, { 137, 0, 0 }, { 90, 0, 65 } };
             UByteArrayAsImage image = new UByteArrayAsImage(testValue);
-            Rectangle rectangleTestValue = GetTumourPositionFromMask(image);
 
-            Assert.AreEqual(RealValue, rectangleTestValue);
+            Assert.Throws<ArgumentException>(() =>GetTumourPositionFromMask(image));
         }
 
         [TestCase]
