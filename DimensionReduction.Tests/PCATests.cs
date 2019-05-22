@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Accord.IO;
 using Accord.Math;
 using Accord.Statistics;
 using ImagePreprocessing;
@@ -519,7 +520,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests GetComponentFromImage in a normal case ushortarray")]
         public void GetComponentFromImageNormalCaseUShortArray()
         {
-            PCA p = new PCA();
+            Pca p = new Pca();
             byte[] matrixArr = new byte[16] 
             {
                 10, 20, 59, 223, 
@@ -556,7 +557,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests GetMatrixFromImage where Train has not run")]
         public void GetComponentFromImageException()
         {
-            PCA p = new PCA();
+            Pca p = new Pca();
             double[,] image = new double[2,2] {{5,10},{10,5}};
             Assert.Throws<NullReferenceException>(() => p.GetComponentsFromImage(image, 1));
         }
@@ -564,7 +565,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests GetMatrixFromImage in a normal case ushortarray to double[,]")]
         public void GetMatrixFromImageNormalTest()
         {
-            PCA p = new PCA();
+            Pca p = new Pca();
             byte[] matrixArr = new byte[16] 
             {
                 10, 20, 59, 223, 
@@ -584,7 +585,7 @@ namespace DimensionReduction.Tests
             List<UShortArrayAsImage> img = new List<UShortArrayAsImage>();
             img.Add(new UShortArrayAsImage(matrixArr,4,4));
             
-            double[,] imgDoubles = PCA.GetMatrixFromImage(img);
+            double[,] imgDoubles = Pca.GetMatrixFromImage(img);
             
             CollectionAssert.AreEqual(expectation,
                 imgDoubles,
@@ -595,7 +596,7 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests SolvForEigen where a exception is expected")]
         public void SolvForEigenException()
         {
-            PCA p = new PCA();
+            Pca p = new Pca();
             double[,] matrixArr = new double[10,2] 
             {
                 {1.507, 0.988},
@@ -616,14 +617,18 @@ namespace DimensionReduction.Tests
         [Test, Description("Tests LoadModelFromFile where a exception is expected")]
         public void LoadModelFromFileException()
         {
-            Assert.Throws<FileNotFoundException>(() => PCA.LoadModelFromFile("FileNotFound.bin"));
+            Assert.Throws<FileNotFoundException>(() => Pca.LoadModelFromFile("FileNotFound.bin"));
         }
         
-        /*[Test, Description("Tests LoadModelFromFile normal case")]
+        [Test, Description("Tests LoadModelFromFile normal case")]
         public void LoadModelFromFileNormal()
         {
-            PCA.LoadModelFromFile("ImageWithResultModel-100x100-CC-Test-Mass.bin");
-            Assert.Pass();
-        }*/
+            Pca p = new Pca();
+            
+            p.Eigenvalues = new double[1] {1};
+            p.Save("modelTest.bin");
+            var pTest = Pca.LoadModelFromFile("modelTest.bin");
+            Assert.AreEqual(p.Eigenvalues,pTest.Eigenvalues);
+        }
     }
 }
