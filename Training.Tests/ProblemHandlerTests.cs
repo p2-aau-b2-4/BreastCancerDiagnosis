@@ -97,7 +97,7 @@ namespace Training.Tests
             };
 
             
-            PCA pca = TrainingHelper.GetPca(images);
+            Pca pca = TrainingHelper.GetPca(images);
             
             SVMProblem problem = ProblemHandler.GetProblemFromImageModelResultList(images, pca,10);
             

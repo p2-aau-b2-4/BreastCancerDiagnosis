@@ -158,7 +158,7 @@ namespace Training
 
 
         public static SVMProblem GetProblemFromImageModelResultList(List<ImageWithResultModel> images,
-            PCA pca,int components)
+            Pca pca,int components)
         {
             SVMProblem problem = new SVMProblem();
             foreach (ImageWithResultModel image in images)
