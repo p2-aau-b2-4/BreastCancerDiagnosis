@@ -41,8 +41,8 @@ ModelLocation=FinishedModels/svm_model-100x100-CC-MassCalc-BI.txt
 
 ////
 // SVM PARAMETERS:
-C=2
-Gamma=1
+C=0.5
+Gamma=4
 nFold=5
 
 

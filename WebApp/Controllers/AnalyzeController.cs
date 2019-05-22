@@ -13,7 +13,9 @@ using Microsoft.Extensions.Caching.Memory;
 using DimensionReduction;
 using LibSVMsharp;
 using LibSVMsharp.Extensions;
+using LibSVMsharp.Helpers;
 using LiteDB;
+using Microsoft.AspNetCore.Identity.UI.V3.Pages.Internal.Account.Manage;
 using WebApp.Models;
 using Configuration = ImagePreprocessing.Configuration;
 using Serializer = Accord.IO.Serializer;
@@ -98,6 +100,7 @@ namespace WebApp.Controllers
                 new Task(() =>
                 {
                     image = Contrast.ApplyHistogramEqualization(image);
+
                     db.FileStorage.Upload($"images/{path}-croppedContrast", $"{path}-croppedContrast",
                         image.GetPngAsMemoryStream());
 
@@ -106,7 +109,7 @@ namespace WebApp.Controllers
                 new Task(() =>
                 {
                     //PCA
-                    PCA pca = PCA.LoadModelFromFile("pca_model.bin");
+                    PCA pca = PCA.LoadModelFromFile(Configuration.Get("PcaModelLocation"));
 
                     if (!int.TryParse(Configuration.Get("componentsToUse"), out int components))
                     {
@@ -129,14 +132,16 @@ namespace WebApp.Controllers
 
                     svmProblem.Add(nodes, 0);
 
+                    svmProblem = svmProblem.Normalize(SVMNormType.L2);
+
                     SVMModel svmModel = SVM.LoadModel(Configuration.Get("ModelLocation"));
                     
-                    double results = SVM.PredictProbability(svmModel,nodes, out var probabilities);
+                    double[] results = svmProblem.PredictProbability(svmModel, out var probabilities);
 
                     var analysis = db.GetCollection<Analysis>("analysis");
                     Analysis currentAnalysis = analysis.FindOne(x => x.Id.ToString().Equals(path));
-                    currentAnalysis.Certainty = probabilities[0]*100;
-                    currentAnalysis.Diagnosis = results == 0
+                    currentAnalysis.Certainty = results[0] == 0 ? probabilities[0][1]*100 : probabilities[0][0]*100;
+                    currentAnalysis.Diagnosis = results[0] == 0
                         ? DdsmImage.Pathologies.Benign
                         : DdsmImage.Pathologies
                             .Malignant;
