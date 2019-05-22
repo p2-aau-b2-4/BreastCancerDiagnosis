@@ -216,6 +216,7 @@ namespace DimensionReduction
         {
             double[,] scArrayMatrix = new double[matrix.Columns(), matrix.Columns()];
             double[,] tmpArrayMatrix = matrix;
+            double division = 1.0 / (matrix.Rows() - 1.0);
             Parallel.For(0, matrix.Columns(),
                 x =>
                 {
@@ -224,7 +225,7 @@ namespace DimensionReduction
                         for (int y = 0; y < matrix.Columns(); y++)
                         {
                             scArrayMatrix[x, y] +=
-                                (tmpArrayMatrix[i, x] * tmpArrayMatrix[i, y]) / (matrix.Rows() - 1);
+                                (tmpArrayMatrix[i, x] * tmpArrayMatrix[i, y]) * division;
                         }
                     }
                 });
