@@ -39,7 +39,7 @@ namespace DimensionReduction
         ///<param name="numberOfDimensions">Number of eigenvectors to project image onto</param>
         public double[] GetComponentsFromImage(double[,] image, int numberOfDimensions)
         {
-            if (ComponentVectors.Length <= 0)
+            if (ComponentVectors == null)
             {
                 throw new NullReferenceException("Run PCA train first");
             }
