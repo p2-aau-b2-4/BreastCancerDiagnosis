@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <DefaultProjectTypeGuid>FAE04EC0-301F-11D3-BF4B-00C04F79EFBC</DefaultProjectTypeGuid>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="12.1.2" />
+    <PackageReference Include="fo-dicom.Drawing" Version="4.0.0" />
+    <PackageReference Include="fo-dicom.NetCore" Version="4.0.1" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="2.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+  </ItemGroup>
+
+</Project>

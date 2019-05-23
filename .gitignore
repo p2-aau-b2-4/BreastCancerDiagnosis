@@ -332,3 +332,12 @@ ASALocalRun/
 #P2 changes
 *.bmp
 *.dcm
+*.png
+*.jpg
+*.gz
+
+# allow 
+!*.Tests/*.dcm
+!*Test/*.dcm
+Training/App.config
+*.config
