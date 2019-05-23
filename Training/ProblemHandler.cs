@@ -46,7 +46,7 @@ namespace Training
                 Weights = new[] {(1 - mbTrainRatio)/mbTrainRatio, 1}
             };
 
-            parameter = TrainingHelper.FindBestHyperparameters(trainingSet, parameter);
+            //parameter = TrainingHelper.FindBestHyperparameters(trainingSet, parameter);
             Console.WriteLine($"Found best parameters: c={parameter.C},gamma={parameter.Gamma}");
 
             SVMModel model = trainingSet.Train(parameter);
@@ -138,17 +138,17 @@ namespace Training
         public static List<ImageWithResultModel> TransformDdsmImageList(List<DdsmImage> images)
         {
             List<ImageWithResultModel> result = new List<ImageWithResultModel>();
-            List<DdsmImage> imagesCc = images.Where(x => (x.ImageView == DdsmImage.ImageViewEnum.Mlo)).ToList();
+            List<DdsmImage> imagesCc = images.Where(x => (x.ImageView == DdsmImage.ImageViewEnum.Cc)).ToList();
             foreach (DdsmImage image in imagesCc)
             {
                 Console.WriteLine($"{result.Count * 100 / imagesCc.Count}% done");
                 var imageResult = new ImageWithResultModel
                 {
                     Result = image.Pathology == DdsmImage.Pathologies.Malignant ? 1 : 0,
-                    Image = Contrast.ApplyHistogramEqualization(
+                    Image = 
                         Normalization.GetNormalizedImage(image.DcomOriginalImage,
                             Normalization.GetTumourPositionFromMask(image.DcomMaskImage),
-                            int.Parse(Configuration.Get("sizeImageToAnalyze"))))
+                            int.Parse(Configuration.Get("sizeImageToAnalyze")))    
                 };
                 result.Add(imageResult);
             }

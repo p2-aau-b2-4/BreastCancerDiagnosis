@@ -31,9 +31,9 @@ namespace Training
                 Serializer.Load<List<ImageWithResultModel>>(Configuration.Get("TestReadyImage"));
 
             PCA pca = TrainingHelper.GetPca(imagesToTrainOn);
-
+            
             Console.WriteLine($"{pca.ComponentVectors.Length}x{pca.ComponentVectors[0].Length}");
-            int[] componentsArr = new[] {50, 100, 200, pca.Eigenvalues.Length};
+            int[] componentsArr = new[] {50,100,150,300};
             foreach (int components in componentsArr)
             {
                 Console.WriteLine($"Training with #{components}...");
@@ -65,7 +65,7 @@ namespace Training
                 using (StreamWriter file = new StreamWriter(@"svmData.txt", true))
                 {
                     file.WriteLine(
-                        $"PCACOMPONENTS={components}, C={result.C}, GAMMA={result.Gamma} testAccuracy={result.TestAccuracy}, sensitivity={result.Sensitivity}, specificity={result.Specificity}");
+                        $"PCACOMPONENTS={components},CC C={result.C}, GAMMA={result.Gamma} testAccuracy={result.TestAccuracy}, sensitivity={result.Sensitivity}, specificity={result.Specificity}");
                 }
             }
         }

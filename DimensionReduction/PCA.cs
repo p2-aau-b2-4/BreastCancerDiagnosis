@@ -240,26 +240,5 @@ namespace DimensionReduction
             ComponentVectors = evd.Eigenvectors.Transpose();
             Eigenvalues = evd.RealEigenvalues;
         }
-
-        public void GetNoget()
-        {
-            double sum = 0;
-            double allSum = 0;
-            int i = 0;
-
-            for (int j = 0; j < Eigenvalues.Length; j++)
-            {
-                allSum += Eigenvalues[j];
-            }
-            
-            while ((sum / allSum) < 0.9)
-            {
-                sum += Eigenvalues[i];
-                i++;
-            }
-
-            Console.WriteLine("noget");
-            Console.WriteLine(i);
-        }
     }
 }

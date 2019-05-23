@@ -11,6 +11,11 @@ window.setInterval(function(){
         if(dataSplitted[1] === ("100")){ //100% done
             $("#redirect").submit();
         }
+        if(dataSplitted[0].startsWith("FATAL FEJL")){
+            // lets remove the loadinganimation:
+            $(".spinner-border").remove();
+            $(".result").append("<h3>"+dataSplitted.slice(1,dataSplitted.length-1)+"</h3>")
+        }
     });
     
     

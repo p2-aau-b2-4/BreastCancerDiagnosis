@@ -56,7 +56,7 @@ namespace WebApp.Controllers
 
             //before returning, lets start the async task of analyzing.
 #pragma warning disable 4014 // disable warning about starting async task without awaiting. This is not needed here.
-            PerformAnalysis(Request.Form["filePath"], rectangle);
+            StartAnalyzeTaskAndHandleError(Request.Form["filePath"], rectangle);
 #pragma warning restore 4014
 
             return View();
@@ -193,5 +193,22 @@ namespace WebApp.Controllers
             ms.Seek(0, 0);
             return new FileStreamResult(ms, "image/png");
         }
+        private async void StartAnalyzeTaskAndHandleError(String imageId, Rectangle rectangle)
+        {
+            // try-catch block catchin every exception. This is generally a bad idea,
+            // but we need to report an error if the async thread crashes, no matter where.
+            try
+            {
+                await PerformAnalysis(imageId,rectangle);
+            }
+            catch (Exception e)
+            {
+                UpdateStatus(imageId, "FATAL FEJL:,Der skete en fatal fejl under udførslen af klassificeringen. Hvis denne fejl kommer gentagende gange, bedes du rapportere fejlen, så det kan blive løst.");
+                Console.WriteLine("[EXCEPTION] thrown while performing analysis:");
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+            }
+        }
+        
     }
 }
