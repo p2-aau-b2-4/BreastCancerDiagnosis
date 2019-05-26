@@ -8,6 +8,9 @@ using ImagePreprocessing;
 
 namespace DimensionReduction
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public class PCA
     {
@@ -232,6 +235,11 @@ namespace DimensionReduction
             return scArrayMatrix;
         }
         
+        /// <summary>
+        /// This method contains inspiration from the library Accord 
+        /// </summary>
+        /// <param name="matrix"></param>
+        /// <exception cref="ArgumentException"></exception>
         public void SolveForEigen(double[][] matrix)
         {
             if (matrix.Rows() != matrix.Columns())
