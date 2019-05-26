@@ -53,7 +53,6 @@ namespace ImagePreprocessing
         public static float Map(float s, float a1, float a2, float b1, float b2)
             // lånt fra https://forum.unity.com/threads/re-map-a-number-from-one-range-to-another.119437/
         {
-            //todo denne kode er flere steder
             return b1 + (s - a1) * (b2 - b1) / (a2 - a1);
         }
         

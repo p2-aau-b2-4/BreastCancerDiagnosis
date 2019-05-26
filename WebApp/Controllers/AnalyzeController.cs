@@ -50,7 +50,6 @@ namespace WebApp.Controllers
 
             Point a = new Point(int.Parse(Request.Form["x1"]), int.Parse(Request.Form["y1"]));
             Point b = new Point(int.Parse(Request.Form["x2"]), int.Parse(Request.Form["y2"]));
-            // todo: fix if b is upper left corner
             Rectangle rectangle = new Rectangle(new Point(Math.Min(a.X,b.X),Math.Min(a.Y,b.Y)), 
                 new Size(Math.Max(a.X,b.X)-Math.Min(a.X,b.X), Math.Max(a.Y,b.Y)-Math.Min(a.Y,b.Y)));
 

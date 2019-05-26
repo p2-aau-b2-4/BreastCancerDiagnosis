@@ -111,7 +111,6 @@ namespace ImagePreprocessing
             stringBuilder.Append(folders[0]);
             String folderFound = Directory.GetDirectories(stringBuilder.ToString())[0];
             folderFound = Directory.GetDirectories(folderFound)[0];
-            //todo maybe check if filename is equal to last element of folders string array.
             return Directory.GetFiles(folderFound)[0];
         }
         

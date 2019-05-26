@@ -34,19 +34,16 @@ namespace BrysterAsp.Controllers
         public IActionResult About()
         {
             return View();
-            throw new NotImplementedException();
         }
 
         public IActionResult Statistics()
         {
             return View();
-            throw new NotImplementedException();
         }
 
         public IActionResult Contact()
         {
             return View();
-            throw new NotImplementedException();
         }
     }
 }
