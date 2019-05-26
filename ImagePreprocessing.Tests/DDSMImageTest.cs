@@ -17,7 +17,7 @@ namespace ImagePreprocessing.Tests
         [SetUp]
         public void Setup()
         {
-            string localPathFile = Configuration.Get("testSetCsvPath");
+            string localPathFile = Configuration.Get("massTestSetCsvPath");
             DDSMImages =
             DdsmImage.GetAllImagesFromCsvFile(localPathFile);
             localPath =  localPathFile.Substring(0, localPathFile.LastIndexOf(@"\", StringComparison.Ordinal));
