@@ -26,7 +26,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost("UploadFiles")]
-        public async Task<IActionResult> UploadFile(List<IFormFile> files)
+        public IActionResult UploadFile(List<IFormFile> files)
         {
             if (files.Count == 0) return RedirectToAction("Index", "Home", new {error = true});
             var formFile = files.First();
