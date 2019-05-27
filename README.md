@@ -27,7 +27,7 @@ The following paths is the configuration of where to save/load files from:
 The configuration
 ```ShouldCreateSVMSetsWithPca``` should be 1 if one would like the PCA model to be loaded/trained, and generate the test and train problems from the normalized images. Should be 0, if the existing SVM-test and SVM-train problems should be used.
 
-```nFold``` can be changde to specify the n-Fold-Crossvalidation used in SVM.
+```nFold``` can be changed to specify the n-Fold-Crossvalidation used in SVM.
 
 ## How to run WebApp
 To run the web application, one have to ensure the configurated path of pca model location and svm model location, relative to the WebApp.csproj, does exists, and are trained for the configuration currently in the configuration file. If this is not the case, the classification algorithm will result in an error.
