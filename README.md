@@ -19,9 +19,13 @@ Please note, that the training algorithm, depending on configuration and hardwar
 ```TrainReadyImage``` and ```TestReadyImage``` Specifies the path to save/load the already cropped and normalized images. Must be existing files, if ```ShouldCreateImages``` is configured to 0.
 
 The following paths is the configuration of where to save/load files from:
+
 ```PcaModelLocation``` The trained PCA-model
+
 ```TestSetLocation``` The constructed SVM-test problem
+
 ```TrainSetLocation``` The constructed SVM-train problem
+
 ```ModelLocation```  The trained SVM-model
 
 The configuration
