@@ -7,12 +7,12 @@ Furthermore there are two C# runnables, namely Training and WebApp. Also a modif
 ## How to run Training
 To perform a training sequence, the following considerations needs to be made in the configuration file, found in the root of the solution.
 
-Please note, that the training algorithm, depending on configuration and hardware, can be a while.
+Please note that the training algorithm depending on configuration and hardware can take a while.
 
 ### Configuration
 ```sizeImageToAnalyze``` Specifies the quadratic size of the normalized image of the breast tumour to train the algorithm on.
 
-```<name>CsvPath``` Specifies the location on the local filesystem, where to look for the datasets CSV-files. All four of these lines needs to point to proper csv files, located in the same folder, as the image folders of the dataset.
+```<name>CsvPath``` Specifies the location on the local filesystem, where to look for the datasets CSV-files. All four of these lines needs to point to proper csv files, which located in the same folder, as the image folders of the dataset.
 
 ```ShouldCreateImages``` This tells the algorithm whether to load images from the datasets csv files, or to load the prepared image, from a previous run of the training algorithm. If this is 0, then make sure the following files exists and are valid before training:
 
