@@ -1,6 +1,6 @@
 # BreastCancerDiagnosis
 ## Structure
-This solution is a combination of the two C# libaries ImagePreprocessing and DimensionReduction, which performs relevant imageprocessing/loading and reduces dimensions of these images using Principal Component Analysis.
+This solution is a combination of the two C# libraries ImagePreprocessing and DimensionReduction, which performs relevant imageprocessing/loading and reduces dimensions of these images using Principal Component Analysis.
 
 Furthermore there are two C# runnables, namely Training and WebApp. Also a modified version of LibSvmSharp is included in this git.
 
